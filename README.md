@@ -10,7 +10,7 @@ A modern desktop application containing multiple useful local tools in a single 
 [![Electron](https://img.shields.io/badge/Electron-35.x-purple.svg)](https://www.electronjs.org/)
 [![React](https://img.shields.io/badge/React-19.x-61DAFB.svg)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6.svg)](https://www.typescriptlang.org/)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/toolbox-pro/toolbox-pro/ci.yml?branch=main)](https://github.com/toolbox-pro/toolbox-pro/actions)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/toolbox-pro/toolbox-pro/ci.yml?branch=main)](https://github.com/v0idjs/toolbox-pro/actions)
 
 </div>
 
@@ -83,7 +83,7 @@ A modern desktop application containing multiple useful local tools in a single 
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/toolbox-pro/toolbox-pro.git
+git clone https://github.com/v0idjs/ToolBox-Pro.git
 cd toolbox-pro
 ```
 
