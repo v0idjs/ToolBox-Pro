@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #090E1A;
+  --color-foreground: #FFFFFF;
+  --color-card: #121827;
+  --color-card-foreground: #FFFFFF;
+  --color-primary: #2563EB;
+  --color-primary-foreground: #FFFFFF;
+  --color-secondary: #1E293B;
+  --color-secondary-foreground: #94A3B8;
+  --color-muted: #1E293B;
+  --color-muted-foreground: #94A3B8;
+  --color-border: #1E293B;
+  --color-input: #1E293B;
+  --color-ring: #2563EB;
+  --color-destructive: #EF4444;
+  --color-destructive-foreground: #FFFFFF;
+}
+
+:root {
+  --color-background: #090E1A;
+  --color-foreground: #FFFFFF;
+  --color-card: #121827;
+  --color-card-foreground: #FFFFFF;
+  --color-primary: #2563EB;
+  --color-primary-foreground: #FFFFFF;
+  --color-secondary: #1E293B;
+  --color-secondary-foreground: #94A3B8;
+  --color-muted: #1E293B;
+  --color-muted-foreground: #94A3B8;
+  --color-border: #1E293B;
+  --color-input: #1E293B;
+  --color-ring: #2563EB;
+  --color-destructive: #EF4444;
+  --color-destructive-foreground: #FFFFFF;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  overflow: hidden;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted-foreground);
+}
