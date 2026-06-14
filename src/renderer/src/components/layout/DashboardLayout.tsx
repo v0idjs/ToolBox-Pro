@@ -1,14 +1,17 @@
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Sidebar } from './Sidebar'
 import { TopNavbar } from './TopNavbar'
 import { useThemeColors } from '@/lib/theme'
+import { pageVariants, defaultTransition } from '@/lib/animations'
 
 interface DashboardLayoutProps {
   children: React.ReactNode
   onSettingsClick?: () => void
+  activeTool?: string
 }
 
-export function DashboardLayout({ children, onSettingsClick }: DashboardLayoutProps) {
+export function DashboardLayout({ children, onSettingsClick, activeTool }: DashboardLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const colors = useThemeColors()
 
@@ -20,7 +23,21 @@ export function DashboardLayout({ children, onSettingsClick }: DashboardLayoutPr
           collapsed={sidebarCollapsed}
           onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
         />
-        <main style={{ flex: 1, overflowY: 'auto', padding: 24 }}>{children}</main>
+        <main style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTool || 'default'}
+              variants={pageVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={defaultTransition}
+              style={{ height: '100%' }}
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
+        </main>
       </div>
     </div>
   )

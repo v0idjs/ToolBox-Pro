@@ -7,9 +7,9 @@ node_modules/
 dist/
 out/
 build/
+release/
 
 # Electron
-release/
 *.dmg
 *.AppImage
 *.deb
@@ -28,9 +28,17 @@ release/
 *.swp
 *.swo
 *~
+
+# OS
 .DS_Store
 Thumbs.db
 Desktop.ini
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+ehthumbs_vista.db
+*.lnk
 
 # Logs
 logs/
@@ -43,27 +51,25 @@ pnpm-debug.log*
 # Testing
 coverage/
 .nyc_output/
+test-results/
+playwright-report/
 
 # TypeScript
 *.tsbuildinfo
 
-# OS
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-ehthumbs_vista.db
-*.lnk
-
-# Misc
-*.map
-*.map.js
+# Cache
 .cache/
 temp/
 tmp/
 
+# AI tools
+.opencode/
+.specify/
+
+# Auto-generated configs
+electron.vite.config.*.mjs
+
 # Product & Planning
 tasks.md
+PRD.md
 prd.md

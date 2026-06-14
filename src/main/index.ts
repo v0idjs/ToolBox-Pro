@@ -37,10 +37,24 @@ function createWindow(): void {
 
   const isDev = !app.isPackaged
 
-  if (isDev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
-  } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+  const loadContent = () => {
+    if (isDev && process.env['ELECTRON_RENDERER_URL']) {
+      mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL']).catch(() => {
+        setTimeout(loadContent, 1000)
+      })
+    } else {
+      mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+    }
+  }
+
+  loadContent()
+
+  if (isDev) {
+    mainWindow.webContents.on('did-fail-load', (_event, errorCode, errorDescription) => {
+      if (errorCode === -102 || errorCode === -106) {
+        setTimeout(loadContent, 2000)
+      }
+    })
   }
 }
 

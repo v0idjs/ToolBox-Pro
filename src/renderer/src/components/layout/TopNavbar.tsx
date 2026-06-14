@@ -100,6 +100,7 @@ export function TopNavbar({ onSettingsClick }: TopNavbarProps) {
         </button>
         <button
           onClick={onSettingsClick}
+          aria-label="Settings"
           style={{
             padding: 8,
             borderRadius: 8,

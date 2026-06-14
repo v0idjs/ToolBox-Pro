@@ -9,6 +9,9 @@ export interface ThemeColors {
   accent: string
   accentHover: string
   input: string
+  success: string
+  warning: string
+  error: string
 }
 
 const darkColors: ThemeColors = {
@@ -19,7 +22,10 @@ const darkColors: ThemeColors = {
   textSecondary: '#94A3B8',
   accent: '#2563EB',
   accentHover: '#1D4ED8',
-  input: '#0F172A'
+  input: '#0F172A',
+  success: '#22C55E',
+  warning: '#F59E0B',
+  error: '#EF4444'
 }
 
 const lightColors: ThemeColors = {
@@ -30,7 +36,10 @@ const lightColors: ThemeColors = {
   textSecondary: '#64748B',
   accent: '#2563EB',
   accentHover: '#1D4ED8',
-  input: '#F8FAFC'
+  input: '#F8FAFC',
+  success: '#22C55E',
+  warning: '#F59E0B',
+  error: '#EF4444'
 }
 
 export function useThemeColors(): ThemeColors {
@@ -50,4 +59,13 @@ export function useThemeColors(): ThemeColors {
     accent: accentColor,
     accentHover: accentColor + 'DD',
   }
+}
+
+export function getThemeColors(theme: 'dark' | 'light'): ThemeColors {
+  return theme === 'dark' ? darkColors : lightColors
+}
+
+export function applyAccentColor(color: string): void {
+  document.documentElement.style.setProperty('--color-accent', color)
+  document.documentElement.style.setProperty('--color-accent-hover', color + 'DD')
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Copy, Check } from 'lucide-react'
+import { Copy, Check, Key } from 'lucide-react'
 import { useThemeColors } from '@/lib/theme'
 
 interface JWTHeader {
@@ -61,9 +61,14 @@ export function JWTDecoder() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <label className="text-sm block mb-1" style={{ color: colors.textSecondary }}>
+    <div style={{ color: colors.text }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+        <Key size={24} color={colors.accent} />
+        <h1 style={{ fontSize: 24, fontWeight: 600, margin: 0 }}>JWT Decoder</h1>
+      </div>
+
+      <div style={{ marginBottom: 24 }}>
+        <label style={{ display: 'block', fontSize: 14, color: colors.textSecondary, marginBottom: 8 }}>
           JWT Token
         </label>
         <textarea
@@ -71,96 +76,155 @@ export function JWTDecoder() {
           onChange={(e) => setToken(e.target.value)}
           placeholder="Paste your JWT token here..."
           rows={4}
-          className="w-full px-3 py-2 rounded-lg border text-sm outline-none resize-none font-mono"
           style={{
-            backgroundColor: colors.input,
-            borderColor: colors.border,
-            color: colors.text
+            width: '100%',
+            padding: 12,
+            borderRadius: 8,
+            border: `1px solid ${colors.border}`,
+            backgroundColor: colors.bg,
+            color: colors.text,
+            fontSize: 14,
+            fontFamily: 'monospace',
+            resize: 'vertical',
+            outline: 'none',
+            boxSizing: 'border-box'
           }}
         />
       </div>
 
-      <button
-        onClick={decode}
-        disabled={!token}
-        className="px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
-        style={{
-          backgroundColor: colors.accent,
-          color: colors.text
-        }}
-      >
-        Decode
-      </button>
+      <div style={{ marginBottom: 24 }}>
+        <button
+          onClick={decode}
+          disabled={!token}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '10px 16px',
+            borderRadius: 8,
+            border: 'none',
+            backgroundColor: colors.accent,
+            color: colors.text,
+            fontSize: 14,
+            fontWeight: 500,
+            cursor: token ? 'pointer' : 'not-allowed',
+            opacity: token ? 1 : 0.5,
+            transition: 'opacity 0.2s'
+          }}
+        >
+          Decode
+        </button>
+      </div>
 
       {parsed && (
-        <div className="space-y-4">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {parsed.error && (
-            <div
-              className="p-3 rounded-lg border text-sm"
-              style={{
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderColor: '#EF4444',
-                color: '#EF4444'
-              }}
-            >
+            <div style={{
+              padding: '12px 16px',
+              borderRadius: 8,
+              backgroundColor: '#7F1D1D',
+              border: '1px solid #B91C1C',
+              color: '#FCA5A5',
+              fontSize: 14
+            }}>
               {parsed.error}
             </div>
           )}
 
-          <div
-            className="p-4 rounded-lg border"
-            style={{ backgroundColor: colors.card, borderColor: colors.border }}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-semibold" style={{ color: colors.text }}>
+          <div style={{
+            padding: 16,
+            borderRadius: 8,
+            border: `1px solid ${colors.border}`,
+            backgroundColor: colors.card
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+              <h3 style={{ fontSize: 14, fontWeight: 600, margin: 0, color: colors.text }}>
                 Header
               </h3>
               <button
                 onClick={() => copyToClipboard(JSON.stringify(parsed.header, null, 2), 'header')}
-                className="flex items-center gap-1 text-xs"
-                style={{ color: colors.accent }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '6px 12px',
+                  borderRadius: 6,
+                  border: `1px solid ${colors.border}`,
+                  backgroundColor: colors.card,
+                  color: copied === 'header' ? '#10B981' : colors.textSecondary,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                  transition: 'color 0.2s'
+                }}
               >
-                {copied === 'header' ? <Check size={12} /> : <Copy size={12} />}
+                {copied === 'header' ? <Check size={14} /> : <Copy size={14} />}
                 {copied === 'header' ? 'Copied!' : 'Copy'}
               </button>
             </div>
-            <pre className="font-mono text-xs whitespace-pre-wrap" style={{ color: colors.text }}>
+            <pre style={{
+              fontFamily: 'monospace',
+              fontSize: 12,
+              whiteSpace: 'pre-wrap',
+              color: colors.text,
+              margin: 0
+            }}>
               {JSON.stringify(parsed.header, null, 2)}
             </pre>
           </div>
 
-          <div
-            className="p-4 rounded-lg border"
-            style={{ backgroundColor: colors.card, borderColor: colors.border }}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-semibold" style={{ color: colors.text }}>
+          <div style={{
+            padding: 16,
+            borderRadius: 8,
+            border: `1px solid ${colors.border}`,
+            backgroundColor: colors.card
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+              <h3 style={{ fontSize: 14, fontWeight: 600, margin: 0, color: colors.text }}>
                 Payload
               </h3>
               <button
                 onClick={() => copyToClipboard(JSON.stringify(parsed.payload, null, 2), 'payload')}
-                className="flex items-center gap-1 text-xs"
-                style={{ color: colors.accent }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '6px 12px',
+                  borderRadius: 6,
+                  border: `1px solid ${colors.border}`,
+                  backgroundColor: colors.card,
+                  color: copied === 'payload' ? '#10B981' : colors.textSecondary,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                  transition: 'color 0.2s'
+                }}
               >
-                {copied === 'payload' ? <Check size={12} /> : <Copy size={12} />}
+                {copied === 'payload' ? <Check size={14} /> : <Copy size={14} />}
                 {copied === 'payload' ? 'Copied!' : 'Copy'}
               </button>
             </div>
-            <pre className="font-mono text-xs whitespace-pre-wrap" style={{ color: colors.text }}>
+            <pre style={{
+              fontFamily: 'monospace',
+              fontSize: 12,
+              whiteSpace: 'pre-wrap',
+              color: colors.text,
+              margin: 0
+            }}>
               {JSON.stringify(parsed.payload, null, 2)}
             </pre>
           </div>
 
-          <div
-            className="p-4 rounded-lg border"
-            style={{ backgroundColor: colors.card, borderColor: colors.border }}
-          >
-            <h3 className="text-sm font-semibold mb-2" style={{ color: colors.text }}>
+          <div style={{
+            padding: 16,
+            borderRadius: 8,
+            border: `1px solid ${colors.border}`,
+            backgroundColor: colors.card
+          }}>
+            <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, marginTop: 0, color: colors.text }}>
               Claims
             </h3>
-            <div className="space-y-1 text-xs">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               {parsed.payload.exp && (
-                <div className="flex justify-between">
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
                   <span style={{ color: colors.textSecondary }}>Expires:</span>
                   <span style={{ color: colors.text }}>
                     {formatDate(parsed.payload.exp)}
@@ -168,7 +232,7 @@ export function JWTDecoder() {
                 </div>
               )}
               {parsed.payload.iat && (
-                <div className="flex justify-between">
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
                   <span style={{ color: colors.textSecondary }}>Issued:</span>
                   <span style={{ color: colors.text }}>
                     {formatDate(parsed.payload.iat)}
@@ -176,7 +240,7 @@ export function JWTDecoder() {
                 </div>
               )}
               {parsed.payload.sub && (
-                <div className="flex justify-between">
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
                   <span style={{ color: colors.textSecondary }}>Subject:</span>
                   <span style={{ color: colors.text }}>{parsed.payload.sub}</span>
                 </div>
