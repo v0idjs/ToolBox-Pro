@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { Play, Pause, RotateCcw, Flag } from 'lucide-react';
+import { Play, Pause, RotateCcw, Flag, Timer } from 'lucide-react';
 import { useThemeColors } from '@/lib/theme';
 
 interface Lap {
@@ -9,20 +9,20 @@ interface Lap {
 }
 
 function formatTime(ms: number): string {
-  const totalCentiseconds = Math.floor(ms / 10);
-  const hours = Math.floor(totalCentiseconds / 36000);
-  const minutes = Math.floor((totalCentiseconds % 36000) / 600);
-  const seconds = Math.floor((totalCentiseconds % 600) / 10);
-  const centiseconds = totalCentiseconds % 10;
+  const totalMs = Math.floor(ms);
+  const hours = Math.floor(totalMs / 3600000);
+  const minutes = Math.floor((totalMs % 3600000) / 60000);
+  const seconds = Math.floor((totalMs % 60000) / 1000);
+  const centiseconds = Math.floor((totalMs % 1000) / 10);
 
-  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${centiseconds}`;
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(centiseconds).padStart(2, '0')}`;
 }
 
 function formatLapTime(ms: number): string {
-  const totalCentiseconds = Math.floor(ms / 10);
-  const minutes = Math.floor(totalCentiseconds / 6000);
-  const seconds = Math.floor((totalCentiseconds % 6000) / 100);
-  const centiseconds = totalCentiseconds % 100;
+  const totalMs = Math.floor(ms);
+  const minutes = Math.floor(totalMs / 60000);
+  const seconds = Math.floor((totalMs % 60000) / 1000);
+  const centiseconds = Math.floor((totalMs % 1000) / 10);
 
   if (minutes > 0) {
     return `${minutes}:${String(seconds).padStart(2, '0')}.${String(centiseconds).padStart(2, '0')}`;
@@ -41,19 +41,19 @@ export function Stopwatch() {
   const lapIdCounterRef = useRef(0);
 
   const tick = useCallback(() => {
-    setTime(Date.now() - startTimeRef.current);
+    setTime(performance.now() - startTimeRef.current);
     rafRef.current = requestAnimationFrame(tick);
   }, []);
 
   const start = useCallback(() => {
-    startTimeRef.current = Date.now() - pausedAtRef.current;
+    startTimeRef.current = performance.now() - pausedAtRef.current;
     rafRef.current = requestAnimationFrame(tick);
     setIsRunning(true);
   }, [tick]);
 
   const stop = useCallback(() => {
     cancelAnimationFrame(rafRef.current);
-    pausedAtRef.current = Date.now() - startTimeRef.current;
+    pausedAtRef.current = performance.now() - startTimeRef.current;
     setIsRunning(false);
   }, []);
 
@@ -69,16 +69,18 @@ export function Stopwatch() {
 
   const lap = useCallback(() => {
     if (!isRunning) return;
-    const currentElapsed = Date.now() - startTimeRef.current;
-    const lastLapTotal = laps.length > 0 ? laps[laps.length - 1].totalTime : 0;
-    const lapTime = currentElapsed - lastLapTotal;
+    const currentElapsed = performance.now() - startTimeRef.current;
 
-    lapIdCounterRef.current += 1;
-    setLaps((prev) => [
-      ...prev,
-      { id: lapIdCounterRef.current, lapTime, totalTime: currentElapsed },
-    ]);
-  }, [isRunning, laps]);
+    setLaps((prev) => {
+      const lastLapTotal = prev.length > 0 ? prev[prev.length - 1].totalTime : 0;
+      const lapTime = currentElapsed - lastLapTotal;
+      lapIdCounterRef.current += 1;
+      return [
+        ...prev,
+        { id: lapIdCounterRef.current, lapTime, totalTime: currentElapsed },
+      ];
+    });
+  }, [isRunning]);
 
   useEffect(() => {
     return () => {
@@ -213,6 +215,11 @@ export function Stopwatch() {
 
   return (
     <div style={styles.container}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24, alignSelf: 'flex-start' }}>
+        <Timer size={24} color={colors.accent} />
+        <h1 style={{ fontSize: 24, fontWeight: 600, margin: 0, color: colors.text }}>Stopwatch</h1>
+      </div>
+
       <div style={styles.card}>
         <div style={styles.timeDisplay}>{formatTime(time)}</div>
 
