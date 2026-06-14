@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { FolderOpen, Merge, Save, Trash2, ArrowUp, ArrowDown } from "lucide-react";
+import { FolderOpen, Merge, Save, Trash2, ArrowUp, ArrowDown, Zap } from "lucide-react";
 import { useThemeColors } from '@/lib/theme';
 
 interface FileEntry {
@@ -14,11 +14,13 @@ export function FileMerger() {
   const [separator, setSeparator] = useState<"none" | "newline" | "custom">("none");
   const [customSep, setCustomSep] = useState("");
   const [result, setResult] = useState("");
+  const [copied, setCopied] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const themeColors = useThemeColors();
   const colors = {
     bg: themeColors.bg,
     card: themeColors.card,
+    input: themeColors.input,
     border: themeColors.border,
     text: themeColors.text,
     muted: themeColors.textSecondary,
@@ -78,46 +80,59 @@ export function FileMerger() {
     await window.api.saveFile('merged-output.txt', result);
   };
 
+  const handleCopy = async () => {
+    if (!result) return;
+    try {
+      await navigator.clipboard.writeText(result);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {}
+  };
+
   const totalSize = files.reduce((acc, f) => acc + f.size, 0);
 
   return (
-    <div style={{ color: colors.text, fontFamily: "system-ui, sans-serif" }}>
-      <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 24 }}>File Merger</h1>
+    <div style={{ color: colors.text }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+        <Merge size={28} color={colors.primary} />
+        <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0 }}>File Merger</h1>
+      </div>
+      <p style={{ fontSize: 15, color: colors.muted, margin: 0, marginBottom: 32 }}>
+        Combine multiple text files into one, with configurable separators
+      </p>
 
-      {/* Load button */}
       <button
         onClick={loadFiles}
         style={{
           display: "flex",
           alignItems: "center",
           gap: 8,
-          padding: "10px 18px",
+          padding: "14px 28px",
           background: colors.primary,
           color: colors.text,
           border: "none",
-          borderRadius: 8,
+          borderRadius: 10,
           cursor: "pointer",
-          fontSize: 14,
-          fontWeight: 600,
-          marginBottom: 20,
+          fontSize: 15,
+          fontWeight: 500,
+          marginBottom: 32,
         }}
       >
-        <FolderOpen size={16} /> Open Files
+        <Zap size={16} /> Open Files
       </button>
 
-      {/* File list */}
       {files.length > 0 && (
         <div
           style={{
-            background: colors.card,
+            background: colors.input,
             border: `1px solid ${colors.border}`,
             borderRadius: 10,
             padding: 16,
-            marginBottom: 20,
+            marginBottom: 32,
           }}
         >
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
-            <span style={{ fontWeight: 600 }}>{files.length} file(s) loaded</span>
+            <span style={{ fontWeight: 500, fontSize: 15 }}>{files.length} file(s) loaded</span>
             <span style={{ color: colors.muted, fontSize: 13 }}>
               Total: {totalSize.toLocaleString()} bytes
             </span>
@@ -131,9 +146,9 @@ export function FileMerger() {
                   display: "flex",
                   alignItems: "center",
                   gap: 10,
-                  padding: "8px 12px",
+                  padding: "10px 14px",
                   background: colors.bg,
-                  borderRadius: 6,
+                  borderRadius: 8,
                   border: `1px solid ${colors.border}`,
                 }}
               >
@@ -152,10 +167,10 @@ export function FileMerger() {
                   <ArrowDown size={14} />
                 </button>
 
-                <span style={{ flex: 1, fontSize: 14, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                <span style={{ flex: 1, fontSize: 15, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {f.name}
                 </span>
-                <span style={{ color: colors.muted, fontSize: 12, whiteSpace: "nowrap" }}>
+                <span style={{ color: colors.muted, fontSize: 13, whiteSpace: "nowrap" }}>
                   {f.size.toLocaleString()} bytes
                 </span>
                 <button
@@ -170,18 +185,17 @@ export function FileMerger() {
         </div>
       )}
 
-      {/* Separator options */}
       {files.length > 0 && (
         <div
           style={{
-            background: colors.card,
+            background: colors.input,
             border: `1px solid ${colors.border}`,
             borderRadius: 10,
             padding: 16,
-            marginBottom: 20,
+            marginBottom: 32,
           }}
         >
-          <label style={{ fontWeight: 600, display: "block", marginBottom: 8 }}>Separator</label>
+          <label style={{ fontWeight: 500, display: "block", marginBottom: 10, fontSize: 15 }}>Separator</label>
           <div style={{ display: "flex", gap: 8, marginBottom: separator === "custom" ? 10 : 0 }}>
             {([
               ["none", "No separator"],
@@ -192,13 +206,14 @@ export function FileMerger() {
                 key={val}
                 onClick={() => setSeparator(val)}
                 style={{
-                  padding: "6px 14px",
-                  borderRadius: 6,
+                  padding: "10px 20px",
+                  borderRadius: 8,
                   border: `1px solid ${separator === val ? colors.primary : colors.border}`,
                   background: separator === val ? colors.primary : colors.bg,
                   color: colors.text,
                   cursor: "pointer",
-                  fontSize: 13,
+                  fontSize: 15,
+                  fontWeight: separator === val ? 500 : 400,
                 }}
               >
                 {label}
@@ -212,21 +227,20 @@ export function FileMerger() {
               placeholder="Enter separator string"
               style={{
                 width: "100%",
-                padding: "8px 12px",
-                borderRadius: 6,
+                padding: 14,
+                borderRadius: 10,
                 border: `1px solid ${colors.border}`,
                 background: colors.bg,
                 color: colors.text,
-                fontSize: 13,
+                fontSize: 15,
                 boxSizing: "border-box",
-                marginTop: 8,
+                marginTop: 10,
               }}
             />
           )}
         </div>
       )}
 
-      {/* Merge button */}
       {files.length > 0 && (
         <button
           onClick={mergeFiles}
@@ -234,70 +248,88 @@ export function FileMerger() {
             display: "flex",
             alignItems: "center",
             gap: 8,
-            padding: "10px 18px",
+            padding: "14px 28px",
             background: colors.primary,
             color: colors.text,
             border: "none",
-            borderRadius: 8,
+            borderRadius: 10,
             cursor: "pointer",
-            fontSize: 14,
-            fontWeight: 600,
-            marginBottom: 20,
+            fontSize: 15,
+            fontWeight: 500,
+            marginBottom: 32,
           }}
         >
-          <Merge size={16} /> Merge Files
+          <Zap size={16} /> Merge Files
         </button>
       )}
 
-      {/* Result preview */}
       {result && (
-        <div
-          style={{
-            background: colors.card,
-            border: `1px solid ${colors.border}`,
-            borderRadius: 10,
-            padding: 16,
-            marginBottom: 20,
-          }}
-        >
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <span style={{ fontWeight: 600 }}>Preview ({result.length.toLocaleString()} chars)</span>
-            <button
-              onClick={saveResult}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                padding: "8px 14px",
-                background: colors.primary,
-                color: colors.text,
-                border: "none",
-                borderRadius: 6,
-                cursor: "pointer",
-                fontSize: 13,
-                fontWeight: 600,
-              }}
-            >
-              <Save size={14} /> Save
-            </button>
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+            <label style={{ fontSize: 15, fontWeight: 500 }}>Result ({result.length.toLocaleString()} chars)</label>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                onClick={handleCopy}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  padding: "8px 16px",
+                  background: copied ? '#22C55E' : colors.input,
+                  color: copied ? '#fff' : colors.text,
+                  border: `1px solid ${copied ? '#22C55E' : colors.border}`,
+                  borderRadius: 8,
+                  cursor: "pointer",
+                  fontSize: 13,
+                  fontWeight: 500,
+                }}
+              >
+                {copied ? 'Copied' : 'Copy'}
+              </button>
+              <button
+                onClick={saveResult}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  padding: "8px 16px",
+                  background: colors.primary,
+                  color: colors.text,
+                  border: "none",
+                  borderRadius: 8,
+                  cursor: "pointer",
+                  fontSize: 13,
+                  fontWeight: 500,
+                }}
+              >
+                <Save size={14} /> Save
+              </button>
+            </div>
           </div>
-          <pre
+          <div
             style={{
               background: colors.bg,
               border: `1px solid ${colors.border}`,
-              borderRadius: 6,
-              padding: 12,
-              fontSize: 13,
+              borderRadius: 10,
+              padding: 16,
+              fontSize: 15,
               whiteSpace: "pre-wrap",
               wordBreak: "break-all",
               maxHeight: 300,
               overflow: "auto",
               color: colors.muted,
-              margin: 0,
+              fontFamily: 'monospace',
             }}
           >
             {result.length > 500 ? result.slice(0, 500) + "\n... (truncated)" : result}
-          </pre>
+          </div>
+          <div style={{ marginTop: 10, display: 'flex', gap: 12, fontSize: 13, color: colors.muted }}>
+            <span>{files.length} files merged</span>
+            <span>|</span>
+            <span>{result.length.toLocaleString()} characters</span>
+            <span>|</span>
+            <span>{new Blob([result]).size.toLocaleString()} bytes</span>
+          </div>
         </div>
       )}
     </div>

@@ -85,7 +85,7 @@ function App() {
           <SettingsPage />
         </div>
       ) : tool ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '32px 40px' }}>
           <button
             onClick={() => setActiveTool('home')}
             style={{
@@ -96,31 +96,15 @@ function App() {
               color: colors.textSecondary,
               background: 'none',
               border: 'none',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              marginBottom: 16
             }}
           >
             <ArrowLeft size={14} />
             Back to Dashboard
           </button>
-          <div>
-            <h1 style={{ fontSize: 20, fontWeight: 'bold', color: colors.text }}>
-              {tool.name}
-            </h1>
-            <p style={{ fontSize: 14, marginTop: 4, color: colors.textSecondary }}>
-              {tool.description}
-            </p>
-          </div>
           <ErrorBoundary>
-            <div
-              style={{
-                borderRadius: 12,
-                border: `1px solid ${colors.border}`,
-                padding: 24,
-                backgroundColor: colors.card
-              }}
-            >
-              {tool.render()}
-            </div>
+            {tool.render()}
           </ErrorBoundary>
         </div>
       ) : (

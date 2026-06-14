@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
-import { Upload, Info, Camera, FileImage } from 'lucide-react';
+import { Upload, Info, Camera, FileImage, Zap } from 'lucide-react';
 import { useThemeColors } from '@/lib/theme';
 
 function getStyles(c: { bg: string; card: string; border: string; text: string; textSecondary: string; accent: string; input: string }) {
@@ -13,30 +13,31 @@ function getStyles(c: { bg: string; card: string; border: string; text: string; 
       display: 'flex',
       alignItems: 'center',
       gap: '12px',
-      marginBottom: '24px',
+      marginBottom: '32px',
     },
     title: {
-      fontSize: '24px',
+      fontSize: '28px',
       fontWeight: 700,
       color: c.text,
       margin: 0,
     },
     subtitle: {
-      fontSize: '14px',
+      fontSize: '15px',
       color: c.textSecondary,
       margin: 0,
+      marginTop: '4px',
     },
     card: {
-      backgroundColor: c.card,
+      backgroundColor: c.input,
       border: `1px solid ${c.border}`,
       borderRadius: '12px',
       padding: '24px',
-      marginBottom: '20px',
+      marginBottom: '32px',
     },
     dropZone: {
       border: `2px dashed ${c.border}`,
       borderRadius: '12px',
-      padding: '48px 24px',
+      padding: '56px 24px',
       textAlign: 'center' as const,
       cursor: 'pointer',
       transition: 'border-color 0.2s, background-color 0.2s',
@@ -53,22 +54,22 @@ function getStyles(c: { bg: string; card: string; border: string; text: string; 
     dropText: {
       fontSize: '16px',
       color: c.text,
-      marginBottom: '8px',
+      marginBottom: '10px',
     },
     dropSubtext: {
-      fontSize: '13px',
+      fontSize: '14px',
       color: c.textSecondary,
     },
     browseButton: {
       display: 'inline-flex',
       alignItems: 'center',
-      gap: '8px',
+      gap: '10px',
       backgroundColor: c.accent,
       color: c.text,
       border: 'none',
-      borderRadius: '8px',
-      padding: '10px 20px',
-      fontSize: '14px',
+      borderRadius: '10px',
+      padding: '14px 28px',
+      fontSize: '15px',
       fontWeight: 500,
       cursor: 'pointer',
       marginTop: '16px',
@@ -76,9 +77,9 @@ function getStyles(c: { bg: string; card: string; border: string; text: string; 
     },
     previewContainer: {
       display: 'flex',
-      gap: '24px',
+      gap: '28px',
       flexWrap: 'wrap' as const,
-      marginTop: '20px',
+      marginTop: '24px',
     },
     previewWrapper: {
       flex: '1 1 300px',
@@ -88,7 +89,7 @@ function getStyles(c: { bg: string; card: string; border: string; text: string; 
       width: '100%',
       maxHeight: '400px',
       objectFit: 'contain' as const,
-      borderRadius: '8px',
+      borderRadius: '10px',
       border: `1px solid ${c.border}`,
       backgroundColor: c.input,
     },
@@ -99,13 +100,13 @@ function getStyles(c: { bg: string; card: string; border: string; text: string; 
     metadataTable: {
       width: '100%',
       borderCollapse: 'collapse' as const,
-      fontSize: '14px',
+      fontSize: '15px',
     },
     metadataRow: {
       borderBottom: `1px solid ${c.border}`,
     },
     metadataLabel: {
-      padding: '12px 16px',
+      padding: '14px 16px',
       color: c.textSecondary,
       fontWeight: 500,
       whiteSpace: 'nowrap' as const,
@@ -113,29 +114,29 @@ function getStyles(c: { bg: string; card: string; border: string; text: string; 
       verticalAlign: 'top' as const,
     },
     metadataValue: {
-      padding: '12px 16px',
+      padding: '14px 16px',
       color: c.text,
       wordBreak: 'break-word' as const,
     },
     sectionHeader: {
       display: 'flex',
       alignItems: 'center',
-      gap: '8px',
-      fontSize: '14px',
+      gap: '10px',
+      fontSize: '15px',
       fontWeight: 600,
       color: c.accent,
-      marginBottom: '12px',
-      marginTop: '20px',
+      marginBottom: '14px',
+      marginTop: '24px',
     },
     noImage: {
       display: 'flex',
       flexDirection: 'column' as const,
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '48px',
+      padding: '56px',
       color: c.textSecondary,
-      fontSize: '14px',
-      gap: '12px',
+      fontSize: '15px',
+      gap: '14px',
     },
   };
 }
@@ -422,7 +423,7 @@ export function ImageMetadata() {
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <FileImage size={28} color="#2563EB" />
+        <FileImage size={28} color={themeColors.accent} />
         <div>
           <h1 style={styles.title}>Image Metadata</h1>
           <p style={styles.subtitle}>View image properties and EXIF data</p>
@@ -450,7 +451,7 @@ export function ImageMetadata() {
               handleBrowseClick();
             }}
           >
-            <Upload size={16} />
+            <Upload size={18} />
             Browse Files
           </button>
         </div>
@@ -473,7 +474,7 @@ export function ImageMetadata() {
             {dimensions && (
               <>
                 <div style={styles.sectionHeader}>
-                  <Info size={16} />
+                  <Info size={18} />
                   Image Properties
                 </div>
                 <table style={styles.metadataTable}>
@@ -490,7 +491,7 @@ export function ImageMetadata() {
             {Object.keys(metadata).length > 0 && (
               <>
                 <div style={styles.sectionHeader}>
-                  <Camera size={16} />
+                  <Camera size={18} />
                   File & Metadata
                 </div>
                 <table style={styles.metadataTable}>

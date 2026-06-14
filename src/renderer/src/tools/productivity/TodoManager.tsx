@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, KeyboardEvent } from 'react'
-import { Plus, Trash2, Check, Circle, CheckCircle2, ChevronUp, ChevronDown } from 'lucide-react'
+import { Plus, Trash2, Check, Circle, CheckCircle2, ChevronUp, ChevronDown, ListTodo, Zap } from 'lucide-react'
 import { useThemeColors } from '@/lib/theme'
 
 type Todo = {
@@ -111,7 +111,19 @@ export function TodoManager() {
   ]
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+        <ListTodo size={28} color={colors.accent} />
+        <div>
+          <h1 style={{ fontSize: '28px', fontWeight: 700, margin: 0, color: colors.text }}>
+            Todo Manager
+          </h1>
+          <p style={{ fontSize: '15px', color: colors.textSecondary, margin: 0, marginTop: '4px' }}>
+            Keep track of your tasks and stay organized
+          </p>
+        </div>
+      </div>
+
       <div style={{ display: 'flex', gap: '12px' }}>
         <input
           ref={inputRef}
@@ -122,12 +134,12 @@ export function TodoManager() {
           placeholder="What needs to be done?"
           style={{
             flex: 1,
-            padding: '12px 16px',
-            borderRadius: '8px',
+            padding: '14px',
+            borderRadius: '10px',
             border: `1px solid ${colors.border}`,
             backgroundColor: colors.bg,
             color: colors.text,
-            fontSize: '14px',
+            fontSize: '15px',
             outline: 'none',
             boxSizing: 'border-box'
           }}
@@ -138,36 +150,36 @@ export function TodoManager() {
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
-            padding: '10px 16px',
-            borderRadius: '8px',
+            gap: '10px',
+            padding: '14px 28px',
+            borderRadius: '10px',
             border: 'none',
             backgroundColor: colors.accent,
             color: colors.text,
-            fontSize: '14px',
-            fontWeight: 500,
+            fontSize: '15px',
+            fontWeight: 600,
             cursor: input.trim() ? 'pointer' : 'not-allowed',
             opacity: input.trim() ? 1 : 0.5,
             transition: 'opacity 0.2s'
           }}
         >
-          <Plus size={16} />
+          <Zap size={18} />
           Add
         </button>
       </div>
 
-      <div style={{ display: 'flex', gap: '8px' }}>
+      <div style={{ display: 'flex', gap: '10px' }}>
         {filters.map((f) => (
           <button
             key={f.key}
             onClick={() => setFilter(f.key)}
             style={{
-              padding: '8px 16px',
+              padding: '10px 20px',
               borderRadius: '8px',
               border: filter === f.key ? `1px solid ${colors.accent}` : `1px solid ${colors.border}`,
-              backgroundColor: filter === f.key ? colors.accent : colors.card,
+              backgroundColor: filter === f.key ? colors.accent : colors.input,
               color: filter === f.key ? colors.text : colors.textSecondary,
-              fontSize: '13px',
+              fontSize: '14px',
               fontWeight: 500,
               cursor: 'pointer',
               transition: 'all 0.2s'
@@ -178,17 +190,15 @@ export function TodoManager() {
         ))}
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {filteredTodos.length === 0 ? (
           <div
             style={{
-              padding: '40px',
+              padding: '48px',
               textAlign: 'center',
               color: colors.textSecondary,
-              fontSize: '14px',
-              backgroundColor: colors.card,
-              borderRadius: '8px',
-              border: `1px solid ${colors.border}`
+              fontSize: '15px',
+              borderRadius: '10px',
             }}
           >
             {filter === 'all'
@@ -206,11 +216,9 @@ export function TodoManager() {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '12px',
-                  padding: '12px 16px',
-                  backgroundColor: colors.card,
-                  borderRadius: '8px',
-                  border: `1px solid ${colors.border}`,
+                  gap: '14px',
+                  padding: '14px 18px',
+                  borderRadius: '10px',
                   transition: 'opacity 0.2s',
                   opacity: todo.completed ? 0.6 : 1
                 }}
@@ -221,8 +229,8 @@ export function TodoManager() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '24px',
-                    height: '24px',
+                    width: '28px',
+                    height: '28px',
                     padding: 0,
                     border: 'none',
                     backgroundColor: 'transparent',
@@ -231,13 +239,13 @@ export function TodoManager() {
                     flexShrink: 0
                   }}
                 >
-                  {todo.completed ? <CheckCircle2 size={20} /> : <Circle size={20} />}
+                  {todo.completed ? <CheckCircle2 size={24} /> : <Circle size={24} />}
                 </button>
 
                 <span
                   style={{
                     flex: 1,
-                    fontSize: '14px',
+                    fontSize: '15px',
                     color: colors.text,
                     textDecoration: todo.completed ? 'line-through' : 'none',
                     wordBreak: 'break-word'
@@ -246,7 +254,7 @@ export function TodoManager() {
                   {todo.text}
                 </span>
 
-                <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
+                <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
                   <button
                     onClick={() => moveTodo(todo.id, 'up')}
                     disabled={originalIndex === 0}
@@ -255,11 +263,11 @@ export function TodoManager() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      width: '28px',
-                      height: '28px',
+                      width: '32px',
+                      height: '32px',
                       padding: 0,
                       border: `1px solid ${colors.border}`,
-                      borderRadius: '6px',
+                      borderRadius: '8px',
                       backgroundColor: colors.bg,
                       color: colors.textSecondary,
                       cursor: originalIndex === 0 ? 'not-allowed' : 'pointer',
@@ -267,7 +275,7 @@ export function TodoManager() {
                       transition: 'opacity 0.2s'
                     }}
                   >
-                    <ChevronUp size={14} />
+                    <ChevronUp size={16} />
                   </button>
                   <button
                     onClick={() => moveTodo(todo.id, 'down')}
@@ -277,11 +285,11 @@ export function TodoManager() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      width: '28px',
-                      height: '28px',
+                      width: '32px',
+                      height: '32px',
                       padding: 0,
                       border: `1px solid ${colors.border}`,
-                      borderRadius: '6px',
+                      borderRadius: '8px',
                       backgroundColor: colors.bg,
                       color: colors.textSecondary,
                       cursor: originalIndex === todos.length - 1 ? 'not-allowed' : 'pointer',
@@ -289,7 +297,7 @@ export function TodoManager() {
                       transition: 'opacity 0.2s'
                     }}
                   >
-                    <ChevronDown size={14} />
+                    <ChevronDown size={16} />
                   </button>
                 </div>
 
@@ -300,11 +308,11 @@ export function TodoManager() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '32px',
-                    height: '32px',
+                    width: '36px',
+                    height: '36px',
                     padding: 0,
                     border: 'none',
-                    borderRadius: '6px',
+                    borderRadius: '8px',
                     backgroundColor: 'transparent',
                     color: colors.textSecondary,
                     cursor: 'pointer',
@@ -320,7 +328,7 @@ export function TodoManager() {
                     e.currentTarget.style.color = colors.textSecondary
                   }}
                 >
-                  <Trash2 size={16} />
+                  <Trash2 size={18} />
                 </button>
               </div>
             )
@@ -333,22 +341,22 @@ export function TodoManager() {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          paddingTop: '8px'
+          paddingTop: '12px'
         }}
       >
-        <span style={{ color: colors.textSecondary, fontSize: '13px' }}>
+        <span style={{ color: colors.textSecondary, fontSize: '14px' }}>
           {remaining} {remaining === 1 ? 'item' : 'items'} remaining
         </span>
         {hasCompleted && (
           <button
             onClick={clearCompleted}
             style={{
-              padding: '8px 12px',
+              padding: '10px 20px',
               borderRadius: '8px',
               border: `1px solid ${colors.border}`,
-              backgroundColor: colors.card,
+              backgroundColor: colors.input,
               color: colors.textSecondary,
-              fontSize: '13px',
+              fontSize: '14px',
               cursor: 'pointer',
               transition: 'color 0.2s'
             }}

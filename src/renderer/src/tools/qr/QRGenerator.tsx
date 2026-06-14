@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react'
-import { QrCode, Download, Wifi, Type } from 'lucide-react'
+import { QrCode, Download, Wifi, Type, Zap } from 'lucide-react'
 import QRCode from 'qrcode'
 import { useThemeColors } from '@/lib/theme'
 
@@ -63,73 +63,66 @@ export function QRGenerator() {
     container: {
       display: 'flex',
       flexDirection: 'column' as const,
-      alignItems: 'center',
       fontFamily: 'system-ui, -apple-system, sans-serif',
     },
-    card: {
-      backgroundColor: colors.card,
-      border: `1px solid ${colors.border}`,
-      borderRadius: '16px',
-      padding: '32px',
-      width: '100%',
-      maxWidth: '520px',
+    header: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px',
+      marginBottom: '32px',
     },
     title: {
       color: colors.text,
-      fontSize: '24px',
+      fontSize: '28px',
       fontWeight: '700',
-      marginBottom: '4px',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '10px',
     },
     subtitle: {
       color: colors.textSecondary,
-      fontSize: '14px',
-      marginBottom: '24px',
+      fontSize: '15px',
+      marginTop: '4px',
     },
     typeSelector: {
       display: 'flex',
-      gap: '8px',
-      marginBottom: '20px',
+      gap: '10px',
+      marginBottom: '24px',
     },
     typeBtn: (active: boolean) => ({
       display: 'flex',
       alignItems: 'center',
-      gap: '6px',
-      padding: '8px 16px',
+      gap: '8px',
+      padding: '10px 20px',
       borderRadius: '8px',
       border: `1px solid ${active ? colors.accent : colors.border}`,
       backgroundColor: active ? colors.accent + '20' : 'transparent',
       color: active ? colors.text : colors.textSecondary,
       cursor: 'pointer',
-      fontSize: '13px',
+      fontSize: '14px',
       fontWeight: '500',
       transition: 'all 0.15s',
     }),
     label: {
       color: colors.textSecondary,
-      fontSize: '13px',
+      fontSize: '15px',
       fontWeight: '500',
-      marginBottom: '6px',
+      marginBottom: '10px',
       display: 'block',
     },
     input: {
       width: '100%',
-      padding: '10px 12px',
-      borderRadius: '8px',
+      padding: '14px',
+      borderRadius: '10px',
       border: `1px solid ${colors.border}`,
       backgroundColor: colors.input,
       color: colors.text,
-      fontSize: '14px',
+      fontSize: '15px',
       outline: 'none',
-      marginBottom: '16px',
+      marginBottom: '20px',
       boxSizing: 'border-box' as const,
     },
     row: {
       display: 'flex',
-      gap: '12px',
-      marginBottom: '16px',
+      gap: '16px',
+      marginBottom: '20px',
     },
     colorGroup: {
       flex: 1,
@@ -137,11 +130,11 @@ export function QRGenerator() {
     colorRow: {
       display: 'flex',
       alignItems: 'center',
-      gap: '8px',
+      gap: '10px',
     },
     colorInput: {
-      width: '36px',
-      height: '36px',
+      width: '40px',
+      height: '40px',
       border: `1px solid ${colors.border}`,
       borderRadius: '8px',
       cursor: 'pointer',
@@ -150,21 +143,21 @@ export function QRGenerator() {
     },
     colorHex: {
       color: colors.text,
-      fontSize: '13px',
+      fontSize: '14px',
       fontFamily: 'monospace',
     },
     sliderContainer: {
-      marginBottom: '20px',
+      marginBottom: '24px',
     },
     sliderRow: {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: '6px',
+      marginBottom: '8px',
     },
     sliderValue: {
       color: colors.text,
-      fontSize: '13px',
+      fontSize: '14px',
       fontFamily: 'monospace',
     },
     slider: {
@@ -174,7 +167,7 @@ export function QRGenerator() {
     },
     btnPrimary: {
       width: '100%',
-      padding: '12px',
+      padding: '14px 28px',
       borderRadius: '10px',
       border: 'none',
       backgroundColor: colors.accent,
@@ -185,13 +178,13 @@ export function QRGenerator() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      gap: '8px',
-      marginBottom: '12px',
+      gap: '10px',
+      marginBottom: '16px',
       transition: 'opacity 0.15s',
     },
     btnDownload: {
       width: '100%',
-      padding: '10px',
+      padding: '12px',
       borderRadius: '10px',
       border: `1px solid ${colors.border}`,
       backgroundColor: 'transparent',
@@ -204,161 +197,161 @@ export function QRGenerator() {
       justifyContent: 'center',
       gap: '8px',
       transition: 'all 0.15s',
+      marginBottom: '24px',
     },
     canvasContainer: {
       display: 'flex',
       justifyContent: 'center',
-      marginTop: '20px',
-      padding: '20px',
+      padding: '24px',
       backgroundColor: colors.input,
       borderRadius: '12px',
       border: `1px solid ${colors.border}`,
-      minHeight: generated ? 'auto' : '60px',
+      minHeight: generated ? 'auto' : '80px',
     },
     placeholder: {
       color: colors.textSecondary,
-      fontSize: '13px',
+      fontSize: '14px',
       display: 'flex',
       alignItems: 'center',
-      gap: '6px',
+      gap: '8px',
     },
     error: {
       color: '#EF4444',
-      fontSize: '13px',
-      marginBottom: '12px',
+      fontSize: '14px',
+      marginBottom: '16px',
     },
   }
 
   return (
     <div style={styles.container}>
-      <div style={styles.card}>
-        <div style={styles.title}>
-          <QrCode size={24} color={colors.accent} />
-          QR Code Generator
+      <div style={styles.header}>
+        <QrCode size={28} color={colors.accent} />
+        <div>
+          <h1 style={styles.title}>QR Code Generator</h1>
+          <p style={styles.subtitle}>Generate QR codes for text, URLs, or WiFi networks</p>
         </div>
-        <div style={styles.subtitle}>Generate QR codes for text, URLs, or WiFi networks</div>
+      </div>
 
-        <div style={styles.typeSelector}>
-          <button style={styles.typeBtn(qrType === 'text')} onClick={() => setQrType('text')}>
-            <Type size={14} />
-            Text
-          </button>
-          <button style={styles.typeBtn(qrType === 'url')} onClick={() => setQrType('url')}>
-            <QrCode size={14} />
-            URL
-          </button>
-          <button style={styles.typeBtn(qrType === 'wifi')} onClick={() => setQrType('wifi')}>
-            <Wifi size={14} />
-            WiFi
-          </button>
-        </div>
+      <div style={styles.typeSelector}>
+        <button style={styles.typeBtn(qrType === 'text')} onClick={() => setQrType('text')}>
+          <Type size={16} />
+          Text
+        </button>
+        <button style={styles.typeBtn(qrType === 'url')} onClick={() => setQrType('url')}>
+          <QrCode size={16} />
+          URL
+        </button>
+        <button style={styles.typeBtn(qrType === 'wifi')} onClick={() => setQrType('wifi')}>
+          <Wifi size={16} />
+          WiFi
+        </button>
+      </div>
 
-        {qrType === 'wifi' ? (
-          <>
-            <label style={styles.label}>SSID (Network Name)</label>
-            <input
-              style={styles.input}
-              type="text"
-              placeholder="Enter network name"
-              value={ssid}
-              onChange={(e) => setSsid(e.target.value)}
-            />
-            <label style={styles.label}>Password</label>
-            <input
-              style={styles.input}
-              type="password"
-              placeholder="Enter password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </>
-        ) : (
-          <>
-            <label style={styles.label}>{qrType === 'url' ? 'URL' : 'Text Content'}</label>
-            <input
-              style={styles.input}
-              type="text"
-              placeholder={qrType === 'url' ? 'https://example.com' : 'Enter text...'}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-            />
-          </>
-        )}
-
-        <div style={styles.sliderContainer}>
-          <div style={styles.sliderRow}>
-            <span style={styles.label}>Size</span>
-            <span style={styles.sliderValue}>{size}px</span>
-          </div>
+      {qrType === 'wifi' ? (
+        <>
+          <label style={styles.label}>SSID (Network Name)</label>
           <input
-            type="range"
-            min={200}
-            max={600}
-            step={10}
-            value={size}
-            onChange={(e) => setSize(Number(e.target.value))}
-            style={styles.slider}
+            style={styles.input}
+            type="text"
+            placeholder="Enter network name"
+            value={ssid}
+            onChange={(e) => setSsid(e.target.value)}
           />
-        </div>
-
-        <div style={styles.row}>
-          <div style={styles.colorGroup}>
-            <label style={styles.label}>Foreground</label>
-            <div style={styles.colorRow}>
-              <input
-                type="color"
-                value={fgColor}
-                onChange={(e) => setFgColor(e.target.value)}
-                style={styles.colorInput}
-              />
-              <span style={styles.colorHex}>{fgColor}</span>
-            </div>
-          </div>
-          <div style={styles.colorGroup}>
-            <label style={styles.label}>Background</label>
-            <div style={styles.colorRow}>
-              <input
-                type="color"
-                value={bgColor}
-                onChange={(e) => setBgColor(e.target.value)}
-                style={styles.colorInput}
-              />
-              <span style={styles.colorHex}>{bgColor}</span>
-            </div>
-          </div>
-        </div>
-
-        {error && <div style={styles.error}>{error}</div>}
-
-        <button style={styles.btnPrimary} onClick={generateQR}>
-          <QrCode size={18} />
-          Generate QR Code
-        </button>
-
-        <button
-          style={{
-            ...styles.btnDownload,
-            opacity: generated ? 1 : 0.4,
-            pointerEvents: generated ? 'auto' : 'none',
-          }}
-          onClick={downloadPNG}
-        >
-          <Download size={16} />
-          Download as PNG
-        </button>
-
-        <div style={styles.canvasContainer}>
-          <canvas
-            ref={canvasRef}
-            style={{ borderRadius: '8px', display: generated ? 'block' : 'none' }}
+          <label style={styles.label}>Password</label>
+          <input
+            style={styles.input}
+            type="password"
+            placeholder="Enter password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
-          {!generated && (
-            <div style={styles.placeholder}>
-              <QrCode size={16} />
-              QR code will appear here
-            </div>
-          )}
+        </>
+      ) : (
+        <>
+          <label style={styles.label}>{qrType === 'url' ? 'URL' : 'Text Content'}</label>
+          <input
+            style={styles.input}
+            type="text"
+            placeholder={qrType === 'url' ? 'https://example.com' : 'Enter text...'}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+          />
+        </>
+      )}
+
+      <div style={styles.sliderContainer}>
+        <div style={styles.sliderRow}>
+          <span style={styles.label}>Size</span>
+          <span style={styles.sliderValue}>{size}px</span>
         </div>
+        <input
+          type="range"
+          min={200}
+          max={600}
+          step={10}
+          value={size}
+          onChange={(e) => setSize(Number(e.target.value))}
+          style={styles.slider}
+        />
+      </div>
+
+      <div style={styles.row}>
+        <div style={styles.colorGroup}>
+          <label style={styles.label}>Foreground</label>
+          <div style={styles.colorRow}>
+            <input
+              type="color"
+              value={fgColor}
+              onChange={(e) => setFgColor(e.target.value)}
+              style={styles.colorInput}
+            />
+            <span style={styles.colorHex}>{fgColor}</span>
+          </div>
+        </div>
+        <div style={styles.colorGroup}>
+          <label style={styles.label}>Background</label>
+          <div style={styles.colorRow}>
+            <input
+              type="color"
+              value={bgColor}
+              onChange={(e) => setBgColor(e.target.value)}
+              style={styles.colorInput}
+            />
+            <span style={styles.colorHex}>{bgColor}</span>
+          </div>
+        </div>
+      </div>
+
+      {error && <div style={styles.error}>{error}</div>}
+
+      <button style={styles.btnPrimary} onClick={generateQR}>
+        <Zap size={18} />
+        Generate QR Code
+      </button>
+
+      <button
+        style={{
+          ...styles.btnDownload,
+          opacity: generated ? 1 : 0.4,
+          pointerEvents: generated ? 'auto' : 'none',
+        }}
+        onClick={downloadPNG}
+      >
+        <Download size={18} />
+        Download as PNG
+      </button>
+
+      <div style={styles.canvasContainer}>
+        <canvas
+          ref={canvasRef}
+          style={{ borderRadius: '8px', display: generated ? 'block' : 'none' }}
+        />
+        {!generated && (
+          <div style={styles.placeholder}>
+            <QrCode size={18} />
+            QR code will appear here
+          </div>
+        )}
       </div>
     </div>
   )

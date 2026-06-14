@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { Upload, Palette, Copy, Check } from 'lucide-react';
+import { Upload, Palette, Copy, Check, Zap } from 'lucide-react';
 import { useThemeColors } from '@/lib/theme';
 
 export function ColorPicker() {
@@ -112,9 +112,14 @@ export function ColorPicker() {
   return (
     <div style={{ color: themeColors.text, fontFamily: 'system-ui, sans-serif' }}>
       <div style={{ maxWidth: 800, margin: '0 auto' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24 }}>
-          <Palette size={24} color={themeColors.accent} />
-          <h1 style={{ fontSize: 22, fontWeight: 600, margin: 0 }}>Color Picker</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 32 }}>
+          <Palette size={28} color={themeColors.accent} />
+          <div>
+            <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0 }}>Color Picker</h1>
+            <p style={{ color: themeColors.textSecondary, fontSize: 15, margin: 0, marginTop: 4 }}>
+              Pick colors from any image with precision
+            </p>
+          </div>
         </div>
 
         <canvas ref={canvasRef} style={{ display: 'none' }} />
@@ -126,14 +131,16 @@ export function ColorPicker() {
             style={{
               border: `2px dashed ${themeColors.border}`,
               borderRadius: 12,
-              padding: 48,
+              padding: 56,
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 12,
+              gap: 14,
               cursor: 'pointer',
               transition: 'border-color 0.2s',
+              background: themeColors.input,
+              marginBottom: 32,
             }}
             onClick={() => {
               const input = document.createElement('input');
@@ -146,17 +153,17 @@ export function ColorPicker() {
               input.click();
             }}
           >
-            <Upload size={32} color={themeColors.textSecondary} />
-            <span style={{ color: themeColors.textSecondary, fontSize: 14 }}>Drop an image here or click to browse</span>
+            <Upload size={36} color={themeColors.textSecondary} />
+            <span style={{ color: themeColors.textSecondary, fontSize: 15 }}>Drop an image here or click to browse</span>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
             <div
               style={{
-                background: themeColors.card,
+                background: themeColors.input,
                 border: `1px solid ${themeColors.border}`,
                 borderRadius: 12,
-                padding: 12,
+                padding: 14,
                 display: 'inline-block',
                 width: 'fit-content',
               }}
@@ -169,20 +176,20 @@ export function ColorPicker() {
                 onClick={handleClick}
                 style={{
                   maxWidth: '100%',
-                  maxHeight: 400,
+                  maxHeight: 440,
                   display: 'block',
-                  borderRadius: 8,
+                  borderRadius: 10,
                   cursor: 'crosshair',
                 }}
               />
             </div>
 
             {pickedColor && (
-              <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
                 <div
                   style={{
-                    width: 120,
-                    height: 120,
+                    width: 140,
+                    height: 140,
                     borderRadius: 12,
                     background: pickedColor,
                     border: `2px solid ${themeColors.border}`,
@@ -190,7 +197,7 @@ export function ColorPicker() {
                   }}
                 />
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flex: 1, minWidth: 220 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, flex: 1, minWidth: 240 }}>
                   {colorValues.map((cv, i) => (
                     <button
                       key={cv.label}
@@ -199,23 +206,23 @@ export function ColorPicker() {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        background: themeColors.card,
+                        background: themeColors.input,
                         border: `1px solid ${themeColors.border}`,
-                        borderRadius: 8,
-                        padding: '10px 14px',
+                        borderRadius: 10,
+                        padding: '12px 16px',
                         cursor: 'pointer',
                         color: themeColors.text,
                         fontFamily: 'inherit',
                       }}
                     >
-                      <span style={{ color: themeColors.textSecondary, fontSize: 12, fontWeight: 600, textTransform: 'uppercase', marginRight: 12 }}>
+                      <span style={{ color: themeColors.textSecondary, fontSize: 13, fontWeight: 600, textTransform: 'uppercase', marginRight: 14 }}>
                         {cv.label}
                       </span>
-                      <span style={{ fontFamily: 'monospace', fontSize: 14, flex: 1, textAlign: 'left' }}>{cv.value}</span>
+                      <span style={{ fontFamily: 'monospace', fontSize: 15, flex: 1, textAlign: 'left' }}>{cv.value}</span>
                       {copiedIndex === i ? (
-                        <Check size={14} color="#22C55E" />
+                        <Check size={16} color="#22C55E" />
                       ) : (
-                        <Copy size={14} color={themeColors.textSecondary} />
+                        <Copy size={16} color={themeColors.textSecondary} />
                       )}
                     </button>
                   ))}
@@ -225,17 +232,17 @@ export function ColorPicker() {
 
             {history.length > 0 && (
               <div>
-                <div style={{ fontSize: 13, color: themeColors.textSecondary, marginBottom: 8, fontWeight: 600 }}>History</div>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <div style={{ fontSize: 15, color: themeColors.textSecondary, marginBottom: 10, fontWeight: 500 }}>History</div>
+                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                   {history.map((color, i) => (
                     <button
                       key={color + i}
                       onClick={() => copyToClipboard(color, 100 + i)}
                       title={color}
                       style={{
-                        width: 36,
-                        height: 36,
-                        borderRadius: 8,
+                        width: 40,
+                        height: 40,
+                        borderRadius: 10,
                         background: color,
                         border: `2px solid ${themeColors.border}`,
                         cursor: 'pointer',
@@ -259,11 +266,11 @@ export function ColorPicker() {
                 alignSelf: 'flex-start',
                 background: 'transparent',
                 border: `1px solid ${themeColors.border}`,
-                borderRadius: 8,
-                padding: '8px 16px',
+                borderRadius: 10,
+                padding: '10px 20px',
                 color: themeColors.textSecondary,
                 cursor: 'pointer',
-                fontSize: 13,
+                fontSize: 15,
                 fontFamily: 'inherit',
               }}
             >

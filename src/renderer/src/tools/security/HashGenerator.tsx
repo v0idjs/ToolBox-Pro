@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { Hash, Copy, Check } from 'lucide-react'
+import { Hash, Copy, Check, Zap } from 'lucide-react'
 import { useThemeColors } from '@/lib/theme'
 
 const ALGORITHMS = ['SHA-1', 'SHA-256', 'SHA-512', 'MD5'] as const
@@ -141,92 +141,99 @@ export function HashGenerator() {
 
   return (
     <div style={{ color: colors.text }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-        <Hash size={24} color={colors.accent} />
-        <h1 style={{ fontSize: 24, fontWeight: 600, margin: 0 }}>Hash Generator</h1>
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+          <Hash size={28} color={colors.accent} />
+          <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0 }}>Hash Generator</h1>
+        </div>
+        <p style={{ fontSize: 15, color: colors.textSecondary, margin: 0, lineHeight: 1.5 }}>
+          Compute cryptographic hashes from text using SHA-1, SHA-256, SHA-512, or MD5 algorithms.
+        </p>
       </div>
 
-      <div style={{ marginBottom: 16 }}>
-        <label style={{ display: 'block', fontSize: 14, color: colors.textSecondary, marginBottom: 8 }}>Input Text</label>
+      <div style={{ marginBottom: 24 }}>
+        <label style={{ display: 'block', fontSize: 15, fontWeight: 500, color: colors.textSecondary, marginBottom: 10 }}>Input Text</label>
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Enter text to hash..."
           style={{
             width: '100%',
-            minHeight: 120,
-            padding: 12,
+            minHeight: 160,
+            padding: 16,
             background: colors.input,
             border: `1px solid ${colors.border}`,
-            borderRadius: 8,
+            borderRadius: 10,
             color: colors.text,
-            fontSize: 14,
+            fontSize: 15,
             fontFamily: 'monospace',
             resize: 'vertical',
             outline: 'none',
-            boxSizing: 'border-box'
+            boxSizing: 'border-box',
+            lineHeight: 1.6
           }}
         />
       </div>
 
-      <div style={{ marginBottom: 16 }}>
-        <label style={{ display: 'block', fontSize: 14, color: colors.textSecondary, marginBottom: 8 }}>Algorithm</label>
-        <div style={{ display: 'flex', gap: 8 }}>
-          {ALGORITHMS.map((algo) => (
-            <button
-              key={algo}
-              onClick={() => setAlgorithm(algo)}
-              style={{
-                padding: '8px 16px',
-                background: algorithm === algo ? colors.accent : colors.input,
-                color: algorithm === algo ? '#fff' : colors.text,
-                border: `1px solid ${algorithm === algo ? colors.accent : colors.border}`,
-                borderRadius: 6,
-                fontSize: 13,
-                cursor: 'pointer',
-                fontWeight: algorithm === algo ? 600 : 400
-              }}
-            >
-              {algo}
-            </button>
-          ))}
-        </div>
+      <div style={{ display: 'flex', gap: 10, marginBottom: 24 }}>
+        {ALGORITHMS.map((algo) => (
+          <button
+            key={algo}
+            onClick={() => setAlgorithm(algo)}
+            style={{
+              padding: '10px 20px',
+              background: algorithm === algo ? colors.accent : 'transparent',
+              color: algorithm === algo ? '#fff' : colors.text,
+              border: `1px solid ${algorithm === algo ? colors.accent : colors.border}`,
+              borderRadius: 8,
+              fontSize: 14,
+              cursor: 'pointer',
+              fontWeight: algorithm === algo ? 600 : 400
+            }}
+          >
+            {algo}
+          </button>
+        ))}
       </div>
 
       <button
         onClick={generateHash}
         style={{
-          padding: '12px 24px',
+          padding: '14px 28px',
           background: colors.accent,
           color: '#fff',
           border: 'none',
-          borderRadius: 8,
-          fontSize: 14,
+          borderRadius: 10,
+          fontSize: 15,
           fontWeight: 600,
           cursor: 'pointer',
-          marginBottom: 16
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          marginBottom: 32
         }}
       >
+        <Zap size={18} />
         Generate Hash
       </button>
 
       {hash && (
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-            <span style={{ fontSize: 14, color: colors.textSecondary }}>Result ({algorithm})</span>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+            <span style={{ fontSize: 15, fontWeight: 500, color: colors.textSecondary }}>Result ({algorithm})</span>
             <button
               onClick={copyHash}
               style={{
-                padding: '6px 12px',
-                background: copied ? '#22C55E' : colors.input,
-                color: copied ? '#fff' : colors.text,
-                border: `1px solid ${copied ? '#22C55E' : colors.border}`,
-                borderRadius: 6,
-                fontSize: 13,
+                padding: '8px 16px',
+                background: 'transparent',
+                color: colors.textSecondary,
+                border: `1px solid ${colors.border}`,
+                borderRadius: 8,
+                fontSize: 14,
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                gap: 4
+                gap: 6
               }}
             >
               {copied ? <Check size={14} /> : <Copy size={14} />}
@@ -238,9 +245,9 @@ export function HashGenerator() {
               padding: 16,
               background: colors.input,
               border: `1px solid ${colors.border}`,
-              borderRadius: 8,
+              borderRadius: 10,
               fontFamily: 'monospace',
-              fontSize: 13,
+              fontSize: 14,
               wordBreak: 'break-all',
               color: colors.text,
               lineHeight: 1.6
@@ -248,8 +255,12 @@ export function HashGenerator() {
           >
             {hash}
           </div>
-          <div style={{ marginTop: 8, fontSize: 13, color: colors.textSecondary }}>
-            {hash.length * 4} bits
+          <div style={{ marginTop: 12, fontSize: 13, color: colors.textSecondary, display: 'flex', gap: 16 }}>
+            <span>📊 Bits: {hash.length * 4}</span>
+            <span style={{ color: colors.border }}>|</span>
+            <span>📊 Chars: {hash.length}</span>
+            <span style={{ color: colors.border }}>|</span>
+            <span>📊 Algorithm: {algorithm}</span>
           </div>
         </div>
       )}

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Copy, Check, FileText, Minimize2 } from 'lucide-react';
+import { Copy, Check, FileText, Minimize2, Zap } from 'lucide-react';
 import { useThemeColors } from '@/lib/theme';
 
 export function YAMLFormatter() {
@@ -139,82 +139,66 @@ export function YAMLFormatter() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: '100%',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-        color: colors.text,
-      }}
-    >
-      <div
-        style={{
-          maxWidth: '900px',
-          margin: '0 auto',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+    <div style={{ color: colors.text }}>
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
           <FileText size={28} color={colors.accent} />
-          <h1 style={{ fontSize: '24px', fontWeight: 700, margin: 0 }}>YAML Formatter</h1>
+          <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0 }}>YAML Formatter</h1>
         </div>
+        <p style={{ fontSize: 15, color: colors.textSecondary, margin: 0 }}>
+          Beautify, minify, and validate YAML documents with syntax checking
+        </p>
+      </div>
 
-        <div
-          style={{
-            background: colors.card,
-            border: `1px solid ${colors.border}`,
-            borderRadius: '12px',
-            padding: '20px',
-            marginBottom: '16px',
+      <div style={{ maxWidth: 900, margin: '0 auto' }}>
+        <label style={{ display: 'block', fontSize: 15, fontWeight: 500, marginBottom: 10, color: colors.text }}>
+          Raw YAML Input
+        </label>
+        <textarea
+          value={input}
+          onChange={(e) => {
+            setInput(e.target.value);
+            setValidation(null);
           }}
-        >
-          <label style={{ display: 'block', fontSize: '14px', color: colors.textSecondary, marginBottom: '8px' }}>
-            Raw YAML Input
-          </label>
-          <textarea
-            value={input}
-            onChange={(e) => {
-              setInput(e.target.value);
-              setValidation(null);
-            }}
-            placeholder="Paste your YAML here..."
-            style={{
-              width: '100%',
-              minHeight: '300px',
-              background: colors.bg,
-              border: `1px solid ${colors.border}`,
-              borderRadius: '8px',
-              padding: '16px',
-              color: colors.text,
-              fontFamily: '"Fira Code", "Cascadia Code", Consolas, monospace',
-              fontSize: '14px',
-              lineHeight: '1.6',
-              resize: 'vertical',
-              outline: 'none',
-              boxSizing: 'border-box',
-            }}
-          />
-        </div>
+          placeholder="Paste your YAML here..."
+          style={{
+            width: '100%',
+            minHeight: 300,
+            background: colors.input,
+            border: `1px solid ${colors.border}`,
+            borderRadius: 10,
+            padding: 16,
+            color: colors.text,
+            fontFamily: '"Fira Code", "Cascadia Code", Consolas, monospace',
+            fontSize: 15,
+            lineHeight: 1.6,
+            resize: 'vertical',
+            outline: 'none',
+            boxSizing: 'border-box',
+          }}
+        />
 
-        <div style={{ display: 'flex', gap: '10px', marginBottom: '16px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 12, margin: '20px 0', flexWrap: 'wrap' }}>
           <button
             onClick={beautify}
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
-              padding: '10px 20px',
+              gap: 8,
+              padding: '14px 28px',
               background: colors.accent,
               color: colors.text,
               border: 'none',
-              borderRadius: '8px',
-              fontSize: '14px',
-              fontWeight: 600,
+              borderRadius: 10,
+              fontSize: 15,
+              fontWeight: 500,
               cursor: 'pointer',
               transition: 'opacity 0.2s',
             }}
             onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.85')}
             onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
           >
-            <FileText size={16} />
+            <Zap size={16} />
             Beautify
           </button>
 
@@ -223,14 +207,14 @@ export function YAMLFormatter() {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
+              gap: 8,
               padding: '10px 20px',
               background: colors.border,
-              color: colors.text,
+              color: colors.textSecondary,
               border: `1px solid ${colors.border}`,
-              borderRadius: '8px',
-              fontSize: '14px',
-              fontWeight: 600,
+              borderRadius: 8,
+              fontSize: 15,
+              fontWeight: 500,
               cursor: 'pointer',
               transition: 'opacity 0.2s',
             }}
@@ -246,14 +230,14 @@ export function YAMLFormatter() {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
+              gap: 8,
               padding: '10px 20px',
               background: validation?.valid ? '#16A34A' : colors.border,
               color: colors.text,
               border: `1px solid ${validation?.valid ? '#22C55E' : colors.border}`,
-              borderRadius: '8px',
-              fontSize: '14px',
-              fontWeight: 600,
+              borderRadius: 8,
+              fontSize: 15,
+              fontWeight: 500,
               cursor: 'pointer',
               transition: 'opacity 0.2s',
             }}
@@ -269,14 +253,14 @@ export function YAMLFormatter() {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
+              gap: 8,
               padding: '10px 20px',
               background: copied ? '#16A34A' : colors.border,
               color: colors.text,
               border: `1px solid ${copied ? '#22C55E' : colors.border}`,
-              borderRadius: '8px',
-              fontSize: '14px',
-              fontWeight: 600,
+              borderRadius: 8,
+              fontSize: 15,
+              fontWeight: 500,
               cursor: input ? 'pointer' : 'not-allowed',
               opacity: input ? 1 : 0.5,
               transition: 'opacity 0.2s',
@@ -290,27 +274,45 @@ export function YAMLFormatter() {
         {validation && (
           <div
             style={{
-              background: colors.card,
               border: `1px solid ${validation.valid ? '#22C55E' : '#EF4444'}`,
-              borderRadius: '12px',
-              padding: '16px',
+              borderRadius: 10,
+              padding: 16,
               display: 'flex',
               alignItems: 'center',
-              gap: '12px',
+              gap: 12,
             }}
           >
             <div
               style={{
-                width: '10px',
-                height: '10px',
+                width: 10,
+                height: 10,
                 borderRadius: '50%',
                 background: validation.valid ? '#22C55E' : '#EF4444',
                 flexShrink: 0,
               }}
             />
-            <span style={{ color: validation.valid ? '#22C55E' : '#EF4444', fontSize: '14px', fontWeight: 500 }}>
+            <span style={{ color: validation.valid ? '#22C55E' : '#EF4444', fontSize: 15, fontWeight: 500 }}>
               {validation.message}
             </span>
+          </div>
+        )}
+
+        {input && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            marginTop: 20,
+            padding: '10px 0',
+            borderTop: `1px solid ${colors.border}`,
+            fontSize: 13,
+            color: colors.textSecondary,
+          }}>
+            <span>{validation?.valid ? 'Valid YAML' : validation?.message || 'Not validated'}</span>
+            <span style={{ color: colors.border }}>|</span>
+            <span>{input.split('\n').length} lines</span>
+            <span style={{ color: colors.border }}>|</span>
+            <span>{input.length} chars</span>
           </div>
         )}
       </div>

@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
-import { Upload, Download, Image, RefreshCw } from 'lucide-react';
+import { Upload, Download, Image, RefreshCw, Zap } from 'lucide-react';
 import { useThemeColors } from '@/lib/theme';
 
 type OutputFormat = 'image/png' | 'image/jpeg' | 'image/webp' | 'image/bmp';
@@ -136,10 +136,15 @@ export function ImageConverter() {
         style={{ display: 'none' }}
       />
 
-      <div style={{ maxWidth: 800, margin: '0 auto', padding: '32px 24px' }}>
+      <div style={{ maxWidth: 800, margin: '0 auto' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 32 }}>
           <Image size={28} color={colors.accent} />
-          <h1 style={{ fontSize: 24, fontWeight: 700, margin: 0 }}>Image Converter</h1>
+          <div>
+            <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0 }}>Image Converter</h1>
+            <p style={{ color: colors.textSecondary, fontSize: 15, margin: 0, marginTop: 4 }}>
+              Convert images between different formats with ease
+            </p>
+          </div>
         </div>
 
         {!originalImage ? (
@@ -151,67 +156,68 @@ export function ImageConverter() {
             style={{
               border: `2px dashed ${isDragging ? colors.accent : colors.border}`,
               borderRadius: 12,
-              background: colors.card,
-              padding: '60px 24px',
+              background: colors.input,
+              padding: '64px 24px',
               textAlign: 'center',
               cursor: 'pointer',
               transition: 'border-color 0.2s',
+              marginBottom: 32,
             }}
           >
             <Upload size={48} color={colors.textSecondary} style={{ marginBottom: 16 }} />
             <p style={{ fontSize: 16, color: colors.textSecondary, margin: 0 }}>
               Drag and drop an image here, or click to browse
             </p>
-            <p style={{ fontSize: 13, color: colors.textSecondary, marginTop: 8 }}>
+            <p style={{ fontSize: 14, color: colors.textSecondary, marginTop: 10 }}>
               Supports PNG, JPEG, WEBP, BMP, GIF, and more
             </p>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-            <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
-              <div style={{ flex: '1 1 300px', background: colors.card, borderRadius: 12, border: `1px solid ${colors.border}`, padding: 16 }}>
-                <p style={{ fontSize: 12, color: colors.textSecondary, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 1 }}>Original</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
+            <div style={{ display: 'flex', gap: 28, flexWrap: 'wrap' }}>
+              <div style={{ flex: '1 1 300px', background: colors.input, borderRadius: 12, border: `1px solid ${colors.border}`, padding: 20 }}>
+                <p style={{ fontSize: 13, color: colors.textSecondary, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 1 }}>Original</p>
                 <img
                   src={originalImage.src}
                   alt="Original"
-                  style={{ width: '100%', borderRadius: 8, display: 'block', maxHeight: 300, objectFit: 'contain' }}
+                  style={{ width: '100%', borderRadius: 10, display: 'block', maxHeight: 300, objectFit: 'contain' }}
                 />
-                <p style={{ fontSize: 13, color: colors.textSecondary, marginTop: 8 }}>
+                <p style={{ fontSize: 14, color: colors.textSecondary, marginTop: 10 }}>
                   {originalImage.naturalWidth} × {originalImage.naturalHeight} · {formatSize(originalSize)}
                 </p>
               </div>
               {convertedUrl && (
-                <div style={{ flex: '1 1 300px', background: colors.card, borderRadius: 12, border: `1px solid ${colors.border}`, padding: 16 }}>
-                  <p style={{ fontSize: 12, color: colors.textSecondary, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 1 }}>Converted</p>
+              <div style={{ flex: '1 1 300px', background: colors.input, borderRadius: 12, border: `1px solid ${colors.border}`, padding: 20 }}>
+                  <p style={{ fontSize: 13, color: colors.textSecondary, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 1 }}>Converted</p>
                   <img
                     src={convertedUrl}
                     alt="Converted"
-                    style={{ width: '100%', borderRadius: 8, display: 'block', maxHeight: 300, objectFit: 'contain' }}
+                    style={{ width: '100%', borderRadius: 10, display: 'block', maxHeight: 300, objectFit: 'contain' }}
                   />
-                  <p style={{ fontSize: 13, color: colors.textSecondary, marginTop: 8 }}>
+                  <p style={{ fontSize: 14, color: colors.textSecondary, marginTop: 10 }}>
                     {originalImage.naturalWidth} × {originalImage.naturalHeight} · {convertedSize !== null ? formatSize(convertedSize) : '—'}
                   </p>
                 </div>
               )}
             </div>
 
-            <div style={{ background: colors.card, borderRadius: 12, border: `1px solid ${colors.border}`, padding: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ background: colors.input, borderRadius: 12, border: `1px solid ${colors.border}`, padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
               <div>
-                <label style={{ fontSize: 12, color: colors.textSecondary, textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: 8 }}>
+                <label style={{ fontSize: 15, color: colors.textSecondary, fontWeight: 500, display: 'block', marginBottom: 10 }}>
                   Output Format
                 </label>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                   {FORMAT_OPTIONS.map((f) => (
                     <button
                       key={f.value}
                       onClick={() => setOutputFormat(f.value)}
                       style={{
-                        padding: '8px 20px',
-                        borderRadius: 8,
+                        padding: '10px 24px',
+                        borderRadius: 10,
                         border: `1px solid ${outputFormat === f.value ? colors.accent : colors.border}`,
                         background: outputFormat === f.value ? colors.accent : 'transparent',
                         color: colors.text,
-                        fontSize: 14,
+                        fontSize: 15,
                         fontWeight: 500,
                         cursor: 'pointer',
                         transition: 'all 0.15s',
@@ -225,11 +231,11 @@ export function ImageConverter() {
 
               {showQuality && (
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                    <label style={{ fontSize: 12, color: colors.textSecondary, textTransform: 'uppercase', letterSpacing: 1 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                    <label style={{ fontSize: 15, color: colors.textSecondary, fontWeight: 500 }}>
                       Quality
                     </label>
-                    <span style={{ fontSize: 14, color: colors.text, fontWeight: 600 }}>{quality}%</span>
+                    <span style={{ fontSize: 15, color: colors.text, fontWeight: 600 }}>{quality}%</span>
                   </div>
                   <input
                     type="range"
@@ -243,7 +249,7 @@ export function ImageConverter() {
                       height: 6,
                     }}
                   />
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: colors.textSecondary, marginTop: 4 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: colors.textSecondary, marginTop: 6 }}>
                     <span>Smaller</span>
                     <span>Better quality</span>
                   </div>
@@ -251,13 +257,13 @@ export function ImageConverter() {
               )}
 
               {convertedSize !== null && originalSize > 0 && (
-                <div style={{ background: colors.bg, borderRadius: 8, padding: 12, fontSize: 13 }}>
+                <div style={{ background: colors.bg, borderRadius: 10, padding: 14, fontSize: 14 }}>
                   <span style={{ color: colors.textSecondary }}>Original: </span>
                   <span style={{ color: colors.text, fontWeight: 600 }}>{formatSize(originalSize)}</span>
-                  <span style={{ color: colors.textSecondary, margin: '0 12px' }}>→</span>
+                  <span style={{ color: colors.textSecondary, margin: '0 14px' }}>→</span>
                   <span style={{ color: colors.textSecondary }}>Converted: </span>
                   <span style={{ color: colors.text, fontWeight: 600 }}>{formatSize(convertedSize)}</span>
-                  <span style={{ color: colors.textSecondary, marginLeft: 12 }}>(
+                  <span style={{ color: colors.textSecondary, marginLeft: 14 }}>(
                     {convertedSize < originalSize
                       ? `−${(((originalSize - convertedSize) / originalSize) * 100).toFixed(1)}%`
                       : `+${(((convertedSize - originalSize) / originalSize) * 100).toFixed(1)}%`}
@@ -265,12 +271,12 @@ export function ImageConverter() {
                 </div>
               )}
 
-              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
                 <button
                   onClick={convertImage}
                   style={{
-                    padding: '12px 28px',
-                    borderRadius: 8,
+                    padding: '14px 28px',
+                    borderRadius: 10,
                     border: 'none',
                     background: colors.accent,
                     color: colors.text,
@@ -279,12 +285,12 @@ export function ImageConverter() {
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 8,
+                    gap: 10,
                     flex: '1 1 auto',
                     justifyContent: 'center',
                   }}
                 >
-                  <RefreshCw size={18} />
+                  <Zap size={18} />
                   Convert
                 </button>
 
@@ -292,8 +298,8 @@ export function ImageConverter() {
                   <button
                     onClick={handleDownload}
                     style={{
-                      padding: '12px 28px',
-                      borderRadius: 8,
+                      padding: '14px 28px',
+                      borderRadius: 10,
                       border: `1px solid ${colors.border}`,
                       background: 'transparent',
                       color: colors.text,
@@ -302,7 +308,7 @@ export function ImageConverter() {
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: 8,
+                      gap: 10,
                       flex: '1 1 auto',
                       justifyContent: 'center',
                     }}
@@ -315,8 +321,8 @@ export function ImageConverter() {
                 <button
                   onClick={handleReset}
                   style={{
-                    padding: '12px 20px',
-                    borderRadius: 8,
+                    padding: '14px 24px',
+                    borderRadius: 10,
                     border: `1px solid ${colors.border}`,
                     background: 'transparent',
                     color: colors.textSecondary,
@@ -324,7 +330,7 @@ export function ImageConverter() {
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 6,
+                    gap: 8,
                   }}
                 >
                   Reset

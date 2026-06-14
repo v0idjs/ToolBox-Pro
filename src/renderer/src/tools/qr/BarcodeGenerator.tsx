@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { BarChart3, Download } from 'lucide-react';
+import { BarChart3, Download, Zap } from 'lucide-react';
 import { useThemeColors } from '@/lib/theme';
 
 const CODE128B_ENCODING: Record<string, string> = {
@@ -315,174 +315,168 @@ export function BarcodeGenerator() {
     link.click();
   };
 
+  const labelStyle: React.CSSProperties = {
+    color: c.textSecondary,
+    fontSize: '15px',
+    fontWeight: '500',
+    display: 'block',
+    marginBottom: '10px',
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '14px',
+    backgroundColor: c.input,
+    border: `1px solid ${c.border}`,
+    borderRadius: '10px',
+    color: c.text,
+    fontSize: '15px',
+    outline: 'none',
+    boxSizing: 'border-box',
+  };
+
   return (
     <div style={{
       display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
+      flexDirection: 'column',
       fontFamily: 'system-ui, -apple-system, sans-serif',
     }}>
-      <div style={{
-        backgroundColor: c.card,
-        border: `1px solid ${c.border}`,
-        borderRadius: '16px',
-        padding: '40px',
-        width: '100%',
-        maxWidth: '600px',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
-          <div style={{
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
+        <BarChart3 size={28} color={c.accent} />
+        <div>
+          <h1 style={{ color: c.text, fontSize: '28px', fontWeight: '700', margin: 0 }}>
+            Barcode Generator
+          </h1>
+          <p style={{ color: c.textSecondary, fontSize: '15px', margin: 0, marginTop: '4px' }}>
+            Generate barcodes in various formats
+          </p>
+        </div>
+      </div>
+
+      <div style={{ marginBottom: '24px' }}>
+        <label style={labelStyle}>
+          Content
+        </label>
+        <input
+          type="text"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="Enter text or numbers"
+          style={inputStyle}
+        />
+      </div>
+
+      <div style={{ marginBottom: '24px' }}>
+        <label style={labelStyle}>
+          Format
+        </label>
+        <select
+          value={format}
+          onChange={(e) => setFormat(e.target.value)}
+          style={{
+            ...inputStyle,
+            cursor: 'pointer',
+          }}
+        >
+          <option value="CODE128">CODE128</option>
+          <option value="CODE39">CODE39</option>
+          <option value="EAN-13">EAN-13</option>
+        </select>
+      </div>
+
+      <div style={{ marginBottom: '28px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+          <label style={{ ...labelStyle, marginBottom: 0 }}>
+            Size Multiplier
+          </label>
+          <span style={{ color: c.text, fontSize: '14px', fontFamily: 'monospace' }}>
+            {multiplier}x
+          </span>
+        </div>
+        <input
+          type="range"
+          min="1"
+          max="4"
+          step="1"
+          value={multiplier}
+          onChange={(e) => setMultiplier(Number(e.target.value))}
+          style={{
+            width: '100%',
+            accentColor: c.accent,
+            height: '4px',
+          }}
+        />
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px' }}>
+          <span style={{ color: c.textSecondary, fontSize: '13px' }}>1x</span>
+          <span style={{ color: c.textSecondary, fontSize: '13px' }}>4x</span>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: '16px', marginBottom: '28px' }}>
+        <button
+          onClick={handleGenerate}
+          style={{
+            flex: 1,
+            padding: '14px 28px',
             backgroundColor: c.accent,
-            borderRadius: '12px',
-            padding: '10px',
+            color: c.text,
+            border: 'none',
+            borderRadius: '10px',
+            fontSize: '15px',
+            fontWeight: '600',
+            cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-          }}>
-            <BarChart3 size={24} color={c.text} />
-          </div>
-          <div>
-            <h1 style={{ color: c.text, fontSize: '24px', fontWeight: '600', margin: 0 }}>
-              Barcode Generator
-            </h1>
-            <p style={{ color: c.textSecondary, fontSize: '14px', margin: 0 }}>
-              Generate barcodes in various formats
-            </p>
-          </div>
-        </div>
+            gap: '10px',
+            transition: 'opacity 0.2s',
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.9')}
+          onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+        >
+          <Zap size={18} />
+          Generate
+        </button>
+        <button
+          onClick={handleDownload}
+          disabled={!content}
+          style={{
+            padding: '14px 28px',
+            backgroundColor: 'transparent',
+            color: content ? c.text : c.textSecondary,
+            border: `1px solid ${c.border}`,
+            borderRadius: '10px',
+            fontSize: '15px',
+            fontWeight: '600',
+            cursor: content ? 'pointer' : 'not-allowed',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            transition: 'opacity 0.2s',
+          }}
+        >
+          <Download size={18} />
+          Download
+        </button>
+      </div>
 
-        <div style={{ marginBottom: '20px' }}>
-          <label style={{ color: c.textSecondary, fontSize: '14px', display: 'block', marginBottom: '8px' }}>
-            Content
-          </label>
-          <input
-            type="text"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Enter text or numbers"
-            style={{
-              width: '100%',
-              padding: '12px 16px',
-              backgroundColor: c.input,
-              border: `1px solid ${c.border}`,
-              borderRadius: '8px',
-              color: c.text,
-              fontSize: '16px',
-              outline: 'none',
-              boxSizing: 'border-box',
-            }}
-          />
-        </div>
-
-        <div style={{ marginBottom: '20px' }}>
-          <label style={{ color: c.textSecondary, fontSize: '14px', display: 'block', marginBottom: '8px' }}>
-            Format
-          </label>
-          <select
-            value={format}
-            onChange={(e) => setFormat(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '12px 16px',
-              backgroundColor: c.input,
-              border: `1px solid ${c.border}`,
-              borderRadius: '8px',
-              color: c.text,
-              fontSize: '16px',
-              outline: 'none',
-              cursor: 'pointer',
-              boxSizing: 'border-box',
-            }}
-          >
-            <option value="CODE128">CODE128</option>
-            <option value="CODE39">CODE39</option>
-            <option value="EAN-13">EAN-13</option>
-          </select>
-        </div>
-
-        <div style={{ marginBottom: '20px' }}>
-          <label style={{ color: c.textSecondary, fontSize: '14px', display: 'block', marginBottom: '8px' }}>
-            Size Multiplier: {multiplier}x
-          </label>
-          <input
-            type="range"
-            min="1"
-            max="4"
-            step="1"
-            value={multiplier}
-            onChange={(e) => setMultiplier(Number(e.target.value))}
-            style={{
-              width: '100%',
-              accentColor: c.accent,
-            }}
-          />
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px' }}>
-            <span style={{ color: c.textSecondary, fontSize: '12px' }}>1x</span>
-            <span style={{ color: c.textSecondary, fontSize: '12px' }}>4x</span>
-          </div>
-        </div>
-
-        <div style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
-          <button
-            onClick={handleGenerate}
-            style={{
-              flex: 1,
-              padding: '14px 24px',
-              backgroundColor: c.accent,
-              color: c.text,
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '16px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'opacity 0.2s',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.9')}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
-          >
-            Generate
-          </button>
-          <button
-            onClick={handleDownload}
-            disabled={!content}
-            style={{
-              padding: '14px 24px',
-              backgroundColor: 'transparent',
-              color: content ? c.text : c.textSecondary,
-              border: `1px solid ${c.border}`,
-              borderRadius: '8px',
-              fontSize: '16px',
-              fontWeight: '600',
-              cursor: content ? 'pointer' : 'not-allowed',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              transition: 'opacity 0.2s',
-            }}
-          >
-            <Download size={18} />
-            Download
-          </button>
-        </div>
-
-        <div style={{
-          backgroundColor: c.input,
-          border: `1px solid ${c.border}`,
-          borderRadius: '12px',
-          padding: '24px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '150px',
-        }}>
-          <canvas
-            ref={canvasRef}
-            style={{
-              maxWidth: '100%',
-              height: 'auto',
-            }}
-          />
-        </div>
+      <div style={{
+        backgroundColor: c.input,
+        border: `1px solid ${c.border}`,
+        borderRadius: '12px',
+        padding: '24px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '180px',
+      }}>
+        <canvas
+          ref={canvasRef}
+          style={{
+            maxWidth: '100%',
+            height: 'auto',
+          }}
+        />
       </div>
     </div>
   );

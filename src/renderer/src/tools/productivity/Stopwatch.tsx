@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { Play, Pause, RotateCcw, Flag, Timer } from 'lucide-react';
+import { Play, Pause, RotateCcw, Flag, Timer, Zap } from 'lucide-react';
 import { useThemeColors } from '@/lib/theme';
 
 interface Lap {
@@ -98,45 +98,54 @@ export function Stopwatch() {
       alignItems: 'center',
       fontFamily: 'system-ui, -apple-system, sans-serif',
     },
-    card: {
-      backgroundColor: colors.card,
-      border: `1px solid ${colors.border}`,
-      borderRadius: '16px',
-      padding: '32px',
-      width: '100%',
-      maxWidth: '480px',
+    header: {
       display: 'flex',
-      flexDirection: 'column',
       alignItems: 'center',
-      gap: '24px',
+      gap: '12px',
+      marginBottom: '32px',
+      alignSelf: 'flex-start',
+    },
+    title: {
+      fontSize: '28px',
+      fontWeight: 700,
+      margin: 0,
+      color: colors.text,
+    },
+    subtitle: {
+      fontSize: '15px',
+      color: colors.textSecondary,
+      margin: 0,
+      marginTop: '4px',
     },
     timeDisplay: {
-      fontSize: '72px',
+      fontSize: '80px',
       fontWeight: 700,
       color: colors.text,
       fontFamily: 'monospace',
       letterSpacing: '2px',
       lineHeight: 1,
+      marginBottom: '8px',
     },
     buttonRow: {
       display: 'flex',
-      gap: '12px',
+      gap: '16px',
       width: '100%',
       justifyContent: 'center',
+      marginBottom: '32px',
     },
     button: {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      gap: '8px',
-      padding: '12px 24px',
-      borderRadius: '12px',
+      gap: '10px',
+      padding: '14px 28px',
+      borderRadius: '10px',
       border: 'none',
-      fontSize: '16px',
+      fontSize: '15px',
       fontWeight: 600,
       cursor: 'pointer',
       transition: 'opacity 0.15s',
-      minWidth: '100px',
+      minWidth: '120px',
     },
     primaryButton: {
       backgroundColor: colors.accent,
@@ -151,29 +160,30 @@ export function Stopwatch() {
       color: colors.text,
     },
     lapHeader: {
-      fontSize: '14px',
+      fontSize: '15px',
       fontWeight: 600,
       color: colors.textSecondary,
       textTransform: 'uppercase' as const,
       letterSpacing: '1px',
       width: '100%',
       borderBottom: `1px solid ${colors.border}`,
-      paddingBottom: '8px',
+      paddingBottom: '12px',
+      marginBottom: '12px',
     },
     lapList: {
       width: '100%',
-      maxHeight: '300px',
+      maxHeight: '350px',
       overflowY: 'auto' as const,
       display: 'flex',
       flexDirection: 'column' as const,
-      gap: '4px',
+      gap: '8px',
     },
     lapItem: {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      padding: '10px 12px',
-      borderRadius: '8px',
+      padding: '12px 16px',
+      borderRadius: '10px',
       backgroundColor: colors.input,
     },
     lapItemFastest: {
@@ -186,9 +196,9 @@ export function Stopwatch() {
     },
     lapNumber: {
       color: colors.textSecondary,
-      fontSize: '14px',
+      fontSize: '15px',
       fontWeight: 500,
-      minWidth: '50px',
+      minWidth: '60px',
     },
     lapTimeValue: {
       color: colors.text,
@@ -200,88 +210,87 @@ export function Stopwatch() {
     },
     lapTotal: {
       color: colors.textSecondary,
-      fontSize: '14px',
+      fontSize: '15px',
       fontFamily: 'monospace',
-      minWidth: '80px',
+      minWidth: '100px',
       textAlign: 'right' as const,
     },
     emptyState: {
       color: colors.textSecondary,
-      fontSize: '14px',
+      fontSize: '15px',
       textAlign: 'center' as const,
-      padding: '20px',
+      padding: '32px',
     },
   };
 
   return (
     <div style={styles.container}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24, alignSelf: 'flex-start' }}>
-        <Timer size={24} color={colors.accent} />
-        <h1 style={{ fontSize: 24, fontWeight: 600, margin: 0, color: colors.text }}>Stopwatch</h1>
-      </div>
-
-      <div style={styles.card}>
-        <div style={styles.timeDisplay}>{formatTime(time)}</div>
-
-        <div style={styles.buttonRow}>
-          <button
-            style={{ ...styles.button, ...styles.primaryButton }}
-            onClick={isRunning ? stop : start}
-          >
-            {isRunning ? <Pause size={18} /> : <Play size={18} />}
-            {isRunning ? 'Stop' : 'Start'}
-          </button>
-
-          <button
-            style={{ ...styles.button, ...styles.secondaryButton }}
-            onClick={reset}
-          >
-            <RotateCcw size={18} />
-            Reset
-          </button>
-
-          <button
-            style={{ ...styles.button, ...styles.lapButton, opacity: isRunning ? 1 : 0.5 }}
-            onClick={lap}
-            disabled={!isRunning}
-          >
-            <Flag size={18} />
-            Lap
-          </button>
+      <div style={styles.header}>
+        <Timer size={28} color={colors.accent} />
+        <div>
+          <h1 style={styles.title}>Stopwatch</h1>
+          <p style={styles.subtitle}>Track time with precision and record laps</p>
         </div>
-
-        {laps.length > 0 && (
-          <>
-            <div style={styles.lapHeader}>Laps</div>
-            <div style={styles.lapList}>
-              {[...laps].reverse().map((lapEntry, index) => {
-                const realIndex = laps.length - index;
-                const isFastest = fastestLap && lapEntry.id === fastestLap.id;
-                const isSlowest = slowestLap && lapEntry.id === slowestLap.id;
-
-                return (
-                  <div
-                    key={lapEntry.id}
-                    style={{
-                      ...styles.lapItem,
-                      ...(isFastest ? styles.lapItemFastest : {}),
-                      ...(isSlowest && !isFastest ? styles.lapItemSlowest : {}),
-                    }}
-                  >
-                    <span style={styles.lapNumber}>#{realIndex}</span>
-                    <span style={styles.lapTimeValue}>{formatLapTime(lapEntry.lapTime)}</span>
-                    <span style={styles.lapTotal}>{formatLapTime(lapEntry.totalTime)}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </>
-        )}
-
-        {laps.length === 0 && (
-          <div style={styles.emptyState}>Press Start, then Lap to record laps</div>
-        )}
       </div>
+
+      <div style={styles.timeDisplay}>{formatTime(time)}</div>
+
+      <div style={styles.buttonRow}>
+        <button
+          style={{ ...styles.button, ...styles.primaryButton }}
+          onClick={isRunning ? stop : start}
+        >
+          {isRunning ? <Pause size={20} /> : <Play size={20} />}
+          {isRunning ? 'Stop' : 'Start'}
+        </button>
+
+        <button
+          style={{ ...styles.button, ...styles.secondaryButton }}
+          onClick={reset}
+        >
+          <RotateCcw size={20} />
+          Reset
+        </button>
+
+        <button
+          style={{ ...styles.button, ...styles.lapButton, opacity: isRunning ? 1 : 0.5 }}
+          onClick={lap}
+          disabled={!isRunning}
+        >
+          <Flag size={20} />
+          Lap
+        </button>
+      </div>
+
+      {laps.length > 0 ? (
+        <>
+          <div style={styles.lapHeader}>Laps</div>
+          <div style={styles.lapList}>
+            {[...laps].reverse().map((lapEntry, index) => {
+              const realIndex = laps.length - index;
+              const isFastest = fastestLap && lapEntry.id === fastestLap.id;
+              const isSlowest = slowestLap && lapEntry.id === slowestLap.id;
+
+              return (
+                <div
+                  key={lapEntry.id}
+                  style={{
+                    ...styles.lapItem,
+                    ...(isFastest ? styles.lapItemFastest : {}),
+                    ...(isSlowest && !isFastest ? styles.lapItemSlowest : {}),
+                  }}
+                >
+                  <span style={styles.lapNumber}>#{realIndex}</span>
+                  <span style={styles.lapTimeValue}>{formatLapTime(lapEntry.lapTime)}</span>
+                  <span style={styles.lapTotal}>{formatLapTime(lapEntry.totalTime)}</span>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      ) : (
+        <div style={styles.emptyState}>Press Start, then Lap to record laps</div>
+      )}
     </div>
   );
 }

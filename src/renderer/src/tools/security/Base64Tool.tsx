@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Copy, Check, ArrowUpDown, Lock } from 'lucide-react'
+import { Copy, Check, ArrowUpDown, Lock, Zap } from 'lucide-react'
 import { useThemeColors } from '@/lib/theme'
 
 export function Base64Tool() {
@@ -39,24 +39,28 @@ export function Base64Tool() {
 
   return (
     <div style={{ color: colors.text }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-        <Lock size={24} color={colors.accent} />
-        <h1 style={{ fontSize: 24, fontWeight: 600, margin: 0 }}>Base64 Encoder/Decoder</h1>
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+          <Lock size={28} color={colors.accent} />
+          <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0 }}>Base64 Encoder/Decoder</h1>
+        </div>
+        <p style={{ fontSize: 15, color: colors.textSecondary, margin: 0, lineHeight: 1.5 }}>
+          Encode and decode Base64 strings for data transmission and storage.
+        </p>
       </div>
 
-      <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
+      <div style={{ display: 'flex', gap: 10, marginBottom: 24 }}>
         <button
           onClick={() => setMode('encode')}
           style={{
-            padding: '10px 16px',
-            borderRadius: 8,
+            padding: '10px 20px',
+            background: mode === 'encode' ? colors.accent : 'transparent',
+            color: mode === 'encode' ? '#fff' : colors.text,
             border: `1px solid ${mode === 'encode' ? colors.accent : colors.border}`,
-            backgroundColor: mode === 'encode' ? colors.accent : colors.card,
-            color: mode === 'encode' ? colors.text : colors.textSecondary,
+            borderRadius: 8,
             fontSize: 14,
-            fontWeight: 500,
             cursor: 'pointer',
-            transition: 'all 0.2s'
+            fontWeight: mode === 'encode' ? 600 : 400
           }}
         >
           Encode
@@ -64,15 +68,14 @@ export function Base64Tool() {
         <button
           onClick={() => setMode('decode')}
           style={{
-            padding: '10px 16px',
-            borderRadius: 8,
+            padding: '10px 20px',
+            background: mode === 'decode' ? colors.accent : 'transparent',
+            color: mode === 'decode' ? '#fff' : colors.text,
             border: `1px solid ${mode === 'decode' ? colors.accent : colors.border}`,
-            backgroundColor: mode === 'decode' ? colors.accent : colors.card,
-            color: mode === 'decode' ? colors.text : colors.textSecondary,
+            borderRadius: 8,
             fontSize: 14,
-            fontWeight: 500,
             cursor: 'pointer',
-            transition: 'all 0.2s'
+            fontWeight: mode === 'decode' ? 600 : 400
           }}
         >
           Decode
@@ -80,31 +83,32 @@ export function Base64Tool() {
       </div>
 
       <div style={{ marginBottom: 24 }}>
-        <label style={{ display: 'block', fontSize: 14, color: colors.textSecondary, marginBottom: 8 }}>
+        <label style={{ display: 'block', fontSize: 15, fontWeight: 500, color: colors.textSecondary, marginBottom: 10 }}>
           {mode === 'encode' ? 'Plain Text' : 'Base64'}
         </label>
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={mode === 'encode' ? 'Enter text to encode...' : 'Enter Base64 to decode...'}
-          rows={4}
           style={{
             width: '100%',
-            padding: 12,
-            borderRadius: 8,
+            minHeight: 160,
+            padding: 16,
+            borderRadius: 10,
             border: `1px solid ${colors.border}`,
-            backgroundColor: colors.bg,
+            backgroundColor: colors.input,
             color: colors.text,
-            fontSize: 14,
+            fontSize: 15,
             fontFamily: 'monospace',
             resize: 'vertical',
             outline: 'none',
-            boxSizing: 'border-box'
+            boxSizing: 'border-box',
+            lineHeight: 1.6
           }}
         />
       </div>
 
-      <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+      <div style={{ display: 'flex', gap: 12, marginBottom: 32 }}>
         <button
           onClick={process}
           disabled={!input}
@@ -112,18 +116,18 @@ export function Base64Tool() {
             display: 'flex',
             alignItems: 'center',
             gap: 8,
-            padding: '10px 16px',
-            borderRadius: 8,
+            padding: '14px 28px',
+            borderRadius: 10,
             border: 'none',
             backgroundColor: colors.accent,
-            color: colors.text,
-            fontSize: 14,
-            fontWeight: 500,
+            color: '#fff',
+            fontSize: 15,
+            fontWeight: 600,
             cursor: input ? 'pointer' : 'not-allowed',
-            opacity: input ? 1 : 0.5,
-            transition: 'opacity 0.2s'
+            opacity: input ? 1 : 0.5
           }}
         >
+          <Zap size={18} />
           {mode === 'encode' ? 'Encode' : 'Decode'}
         </button>
         <button
@@ -132,18 +136,17 @@ export function Base64Tool() {
             display: 'flex',
             alignItems: 'center',
             gap: 8,
-            padding: '10px 16px',
-            borderRadius: 8,
+            padding: '14px 28px',
+            borderRadius: 10,
             border: `1px solid ${colors.border}`,
-            backgroundColor: colors.card,
+            backgroundColor: 'transparent',
             color: colors.textSecondary,
-            fontSize: 14,
+            fontSize: 15,
             fontWeight: 500,
-            cursor: 'pointer',
-            transition: 'all 0.2s'
+            cursor: 'pointer'
           }}
         >
-          <ArrowUpDown size={14} />
+          <ArrowUpDown size={16} />
           Swap
         </button>
       </div>
@@ -151,11 +154,11 @@ export function Base64Tool() {
       {error && (
         <div style={{
           padding: '12px 16px',
-          borderRadius: 8,
+          borderRadius: 10,
           backgroundColor: '#7F1D1D',
           border: '1px solid #B91C1C',
           color: '#FCA5A5',
-          fontSize: 14,
+          fontSize: 15,
           marginBottom: 24
         }}>
           {error}
@@ -164,35 +167,34 @@ export function Base64Tool() {
 
       {output && (
         <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <label style={{ fontSize: 14, fontWeight: 500, color: colors.text }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+            <span style={{ fontSize: 15, fontWeight: 500, color: colors.textSecondary }}>
               {mode === 'encode' ? 'Base64 Output' : 'Decoded Text'}
-            </label>
+            </span>
             <button
               onClick={copyToClipboard}
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: 6,
-                padding: '6px 12px',
-                borderRadius: 6,
+                padding: '8px 16px',
+                borderRadius: 8,
                 border: `1px solid ${colors.border}`,
-                backgroundColor: colors.card,
-                color: copied ? '#10B981' : colors.textSecondary,
-                fontSize: 13,
-                cursor: 'pointer',
-                transition: 'color 0.2s'
+                backgroundColor: 'transparent',
+                color: copied ? '#22C55E' : colors.textSecondary,
+                fontSize: 14,
+                cursor: 'pointer'
               }}
             >
               {copied ? <Check size={14} /> : <Copy size={14} />}
-              {copied ? 'Copied!' : 'Copy'}
+              {copied ? 'Copied' : 'Copy'}
             </button>
           </div>
           <div style={{
             padding: 16,
-            background: colors.bg,
+            background: colors.input,
             border: `1px solid ${colors.border}`,
-            borderRadius: 8,
+            borderRadius: 10,
             fontFamily: 'monospace',
             fontSize: 14,
             wordBreak: 'break-all',
@@ -200,6 +202,13 @@ export function Base64Tool() {
             lineHeight: 1.6
           }}>
             {output}
+          </div>
+          <div style={{ marginTop: 12, fontSize: 13, color: colors.textSecondary, display: 'flex', gap: 16 }}>
+            <span>📊 Mode: {mode === 'encode' ? 'Encoding' : 'Decoding'}</span>
+            <span style={{ color: colors.border }}>|</span>
+            <span>📊 Input: {input.length} chars</span>
+            <span style={{ color: colors.border }}>|</span>
+            <span>📊 Output: {output.length} chars</span>
           </div>
         </div>
       )}

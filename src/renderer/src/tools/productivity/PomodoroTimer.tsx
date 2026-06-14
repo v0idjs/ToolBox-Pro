@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Play, Pause, RotateCcw, Coffee, Timer } from 'lucide-react';
+import { Play, Pause, RotateCcw, Coffee, Timer, Zap } from 'lucide-react';
 import { useThemeColors } from '@/lib/theme';
 
 const DEFAULTS = {
@@ -114,23 +114,26 @@ export function PomodoroTimer() {
       display: 'flex',
       alignItems: 'center',
       gap: '12px',
-      marginBottom: '24px',
+      marginBottom: '32px',
     } as React.CSSProperties,
     title: {
-      fontSize: '24px',
+      fontSize: '28px',
       fontWeight: 700,
       color: colors.text,
       margin: 0,
     } as React.CSSProperties,
+    subtitle: {
+      fontSize: '15px',
+      color: colors.textSecondary,
+      margin: 0,
+      marginTop: '4px',
+    } as React.CSSProperties,
     card: {
-      backgroundColor: colors.card,
-      border: `1px solid ${colors.border}`,
       borderRadius: '12px',
-      padding: '24px',
-      marginBottom: '16px',
+      marginBottom: '24px',
     } as React.CSSProperties,
     cardTitle: {
-      fontSize: '14px',
+      fontSize: '15px',
       fontWeight: 600,
       color: colors.textSecondary,
       textTransform: 'uppercase' as const,
@@ -178,7 +181,7 @@ export function PomodoroTimer() {
       justifyContent: 'center',
     } as React.CSSProperties,
     timeDisplay: {
-      fontSize: '56px',
+      fontSize: '64px',
       fontWeight: 700,
       color: colors.text,
       fontFamily: '"SF Mono", "Fira Code", Menlo, Consolas, monospace',
@@ -192,12 +195,12 @@ export function PomodoroTimer() {
         longBreak: '#A855F7',
       };
       return {
-        fontSize: '14px',
+        fontSize: '15px',
         fontWeight: 600,
         color: phaseColorMap[phase],
         textTransform: 'uppercase' as const,
         letterSpacing: '0.1em',
-        marginTop: '8px',
+        marginTop: '10px',
       };
     },
     progressBar: {
@@ -224,18 +227,18 @@ export function PomodoroTimer() {
     },
     controls: {
       display: 'flex',
-      gap: '12px',
+      gap: '16px',
       justifyContent: 'center',
       flexWrap: 'wrap' as const,
     } as React.CSSProperties,
     button: {
       display: 'inline-flex',
       alignItems: 'center',
-      gap: '8px',
-      padding: '12px 24px',
-      borderRadius: '8px',
+      gap: '10px',
+      padding: '14px 28px',
+      borderRadius: '10px',
       border: 'none',
-      fontSize: '14px',
+      fontSize: '15px',
       fontWeight: 600,
       cursor: 'pointer',
       transition: 'all 0.15s ease',
@@ -247,70 +250,68 @@ export function PomodoroTimer() {
     secondaryButton: {
       backgroundColor: colors.border,
       color: colors.text,
-      border: '1px solid #334155',
     } as React.CSSProperties,
     sessionInfo: {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      gap: '24px',
-      marginTop: '8px',
+      gap: '32px',
+      marginTop: '12px',
     } as React.CSSProperties,
     sessionStat: {
       display: 'flex',
       flexDirection: 'column' as const,
       alignItems: 'center',
-      gap: '4px',
+      gap: '6px',
     } as React.CSSProperties,
     sessionStatValue: {
-      fontSize: '24px',
+      fontSize: '28px',
       fontWeight: 700,
       color: colors.text,
     } as React.CSSProperties,
     sessionStatLabel: {
-      fontSize: '12px',
+      fontSize: '13px',
       color: colors.textSecondary,
       textTransform: 'uppercase' as const,
       letterSpacing: '0.05em',
     } as React.CSSProperties,
     dotsRow: {
       display: 'flex',
-      gap: '8px',
+      gap: '10px',
       justifyContent: 'center',
-      marginTop: '12px',
+      marginTop: '16px',
     } as React.CSSProperties,
     dot: (filled: boolean): React.CSSProperties => ({
-      width: '12px',
-      height: '12px',
+      width: '14px',
+      height: '14px',
       borderRadius: '50%',
       backgroundColor: filled ? colors.accent : colors.border,
-      border: filled ? '1px solid #3B82F6' : '1px solid #334155',
       transition: 'all 0.2s ease',
     }),
     configRow: {
       display: 'flex',
       alignItems: 'center',
-      gap: '12px',
-      marginBottom: '12px',
+      gap: '16px',
+      marginBottom: '16px',
     } as React.CSSProperties,
     configLabel: {
-      fontSize: '14px',
+      fontSize: '15px',
       color: colors.textSecondary,
-      minWidth: '120px',
+      minWidth: '140px',
     } as React.CSSProperties,
     configInput: {
-      backgroundColor: colors.bg,
+      backgroundColor: colors.input,
       border: `1px solid ${colors.border}`,
-      borderRadius: '8px',
-      padding: '8px 12px',
+      borderRadius: '10px',
+      padding: '10px 14px',
       color: colors.text,
-      fontSize: '14px',
+      fontSize: '15px',
       width: '80px',
       textAlign: 'center' as const,
       fontFamily: 'inherit',
     } as React.CSSProperties,
     configUnit: {
-      fontSize: '13px',
+      fontSize: '14px',
       color: colors.textSecondary,
     } as React.CSSProperties,
   };
@@ -318,8 +319,11 @@ export function PomodoroTimer() {
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <Timer size={24} color={colors.accent} />
-        <h1 style={styles.title}>Pomodoro Timer</h1>
+        <Timer size={28} color={colors.accent} />
+        <div>
+          <h1 style={styles.title}>Pomodoro Timer</h1>
+          <p style={styles.subtitle}>Stay focused with timed work and break sessions</p>
+        </div>
       </div>
 
       <div style={styles.card}>
@@ -365,7 +369,7 @@ export function PomodoroTimer() {
                 style={{ ...styles.button, ...styles.primaryButton }}
                 onClick={handleStart}
               >
-                <Play size={18} />
+                <Zap size={18} />
                 Start
               </button>
             ) : (

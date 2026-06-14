@@ -159,27 +159,31 @@ export function ColorConverter() {
     }
   }, []);
 
-  const cardStyle: React.CSSProperties = {
-    background: colors.card,
-    border: `1px solid ${colors.border}`,
-    borderRadius: '12px',
-    padding: '24px',
-    marginBottom: '16px',
+  const sectionHeaderStyle: React.CSSProperties = {
+    color: colors.textSecondary,
+    fontSize: 13,
+    fontWeight: 600,
+    letterSpacing: '0.05em',
+    textTransform: 'uppercase' as const,
+    marginBottom: 12,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 6,
   };
 
   const inputGroupStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: '12px',
+    gap: 12,
   };
 
   const inputStyle: React.CSSProperties = {
     background: colors.border,
     border: `1px solid ${colors.border}`,
-    borderRadius: '8px',
-    padding: '10px 12px',
+    borderRadius: 10,
+    padding: '14px 16px',
     color: colors.text,
-    fontSize: '14px',
+    fontSize: 15,
     fontFamily: 'monospace',
     outline: 'none',
     width: '100%',
@@ -188,17 +192,17 @@ export function ColorConverter() {
 
   const labelStyle: React.CSSProperties = {
     color: colors.textSecondary,
-    fontSize: '12px',
+    fontSize: 13,
     fontFamily: 'monospace',
-    minWidth: '20px',
+    minWidth: 20,
     textAlign: 'right' as const,
   };
 
   const copyButtonStyle: React.CSSProperties = {
     background: 'transparent',
     border: `1px solid ${colors.border}`,
-    borderRadius: '8px',
-    padding: '8px',
+    borderRadius: 8,
+    padding: 10,
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
@@ -207,10 +211,17 @@ export function ColorConverter() {
     transition: 'all 0.2s',
   };
 
+  const cardStyle: React.CSSProperties = {
+    border: `1px solid ${colors.border}`,
+    borderRadius: 12,
+    padding: 24,
+    marginBottom: 16,
+  };
+
   const previewStyle: React.CSSProperties = {
-    width: '80px',
-    height: '80px',
-    borderRadius: '12px',
+    width: 100,
+    height: 100,
+    borderRadius: 16,
     background: hex.length === 7 ? hex : colors.text,
     border: `2px solid ${colors.border}`,
     boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
@@ -220,63 +231,23 @@ export function ColorConverter() {
     transition: 'background 0.2s',
   };
 
-  const sectionHeaderStyle: React.CSSProperties = {
-    color: colors.textSecondary,
-    fontSize: '11px',
-    fontWeight: 600,
-    letterSpacing: '0.05em',
-    textTransform: 'uppercase' as const,
-    marginBottom: '10px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-  };
-
   return (
-    <div
-      style={{
-        fontFamily:
-          '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-      }}
-    >
-      <div
-        style={{
-          maxWidth: '480px',
-          margin: '0 auto',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            marginBottom: '24px',
-          }}
-        >
-          <Palette size={20} color={colors.accent} />
-          <h1
-            style={{
-              color: colors.text,
-              fontSize: '20px',
-              fontWeight: 600,
-              margin: 0,
-            }}
-          >
-            Color Converter
-          </h1>
+    <div style={{ color: colors.text }}>
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+          <Palette size={28} color={colors.accent} />
+          <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0 }}>Color Converter</h1>
         </div>
+        <p style={{ fontSize: 15, color: colors.textSecondary, margin: 0 }}>
+          Convert between HEX, RGB, and HSL color formats with live preview
+        </p>
+      </div>
 
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-            marginBottom: '16px',
-          }}
-        >
-          <div style={{ flex: 1, marginRight: '24px' }}>
+      <div style={{ maxWidth: 600, margin: '0 auto' }}>
+        <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
+          <div style={{ flex: 1 }}>
             {/* HEX Section */}
-            <div style={{ ...cardStyle, marginBottom: '12px' }}>
+            <div style={{ ...cardStyle, marginBottom: 16 }}>
               <div style={sectionHeaderStyle}>
                 <span>HEX</span>
               </div>
@@ -305,14 +276,14 @@ export function ColorConverter() {
             </div>
 
             {/* RGB Section */}
-            <div style={{ ...cardStyle, marginBottom: '12px' }}>
+            <div style={{ ...cardStyle, marginBottom: 16 }}>
               <div style={sectionHeaderStyle}>
                 <span>RGB</span>
               </div>
               <div
                 style={{
                   display: 'flex',
-                  gap: '8px',
+                  gap: 10,
                   alignItems: 'center',
                 }}
               >
@@ -334,7 +305,7 @@ export function ColorConverter() {
                       }
                       style={{
                         ...inputStyle,
-                        marginLeft: '6px',
+                        marginLeft: 6,
                         textAlign: 'center',
                       }}
                     />
@@ -372,7 +343,7 @@ export function ColorConverter() {
               <div
                 style={{
                   display: 'flex',
-                  gap: '8px',
+                  gap: 10,
                   alignItems: 'center',
                 }}
               >
@@ -394,7 +365,7 @@ export function ColorConverter() {
                       }
                       style={{
                         ...inputStyle,
-                        marginLeft: '6px',
+                        marginLeft: 6,
                         textAlign: 'center',
                       }}
                     />
@@ -426,11 +397,25 @@ export function ColorConverter() {
           </div>
 
           {/* Color Preview */}
-          <div style={{ paddingTop: '24px' }}>
+          <div style={{ paddingTop: 24 }}>
             <div style={previewStyle}>
               {hex.length < 7 && (
-                <Palette size={20} color={colors.textSecondary} />
+                <Palette size={24} color={colors.textSecondary} />
               )}
+            </div>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              marginTop: 16,
+              padding: '10px 0',
+              borderTop: `1px solid ${colors.border}`,
+              fontSize: 13,
+              color: colors.textSecondary,
+            }}>
+              <span>{hex}</span>
+              <span style={{ color: colors.border }}>|</span>
+              <span>rgb({rgb.r}, {rgb.g}, {rgb.b})</span>
             </div>
           </div>
         </div>

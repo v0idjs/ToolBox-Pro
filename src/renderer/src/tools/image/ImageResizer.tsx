@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { Upload, Download, Maximize2, Link, Unlink } from "lucide-react";
+import { Upload, Download, Maximize2, Link, Unlink, Zap } from "lucide-react";
 import { useThemeColors } from '@/lib/theme';
 
 const PRESETS = [25, 50, 75, 150, 200] as const;
@@ -24,6 +24,7 @@ export function ImageResizer() {
   const colors = {
     bg: themeColors.bg,
     card: themeColors.card,
+    input: themeColors.input,
     border: themeColors.border,
     text: themeColors.text,
     muted: themeColors.textSecondary,
@@ -161,22 +162,15 @@ export function ImageResizer() {
       }}
     >
       <div style={{ width: "100%", maxWidth: 640 }}>
-        <h1
-          style={{
-            fontSize: 24,
-            fontWeight: 700,
-            marginBottom: 8,
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-          }}
-        >
-          <Maximize2 size={24} color={colors.primary} />
-          Image Resizer
-        </h1>
-        <p style={{ color: colors.muted, marginBottom: 24 }}>
-          Resize images using the Canvas API with aspect ratio lock.
-        </p>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 32 }}>
+          <Maximize2 size={28} color={colors.primary} />
+          <div>
+            <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0 }}>Image Resizer</h1>
+            <p style={{ color: colors.muted, fontSize: 15, margin: 0, marginTop: 4 }}>
+              Resize images using the Canvas API with aspect ratio lock
+            </p>
+          </div>
+        </div>
 
         {/* Drop zone */}
         <div
@@ -187,20 +181,20 @@ export function ImageResizer() {
           style={{
             border: `2px dashed ${dragOver ? colors.primary : colors.border}`,
             borderRadius: 12,
-            padding: "48px 24px",
+            padding: "56px 24px",
             textAlign: "center",
             cursor: "pointer",
-            background: dragOver ? "#1a2744" : colors.card,
+            background: dragOver ? "#1a2744" : colors.input,
             transition: "border-color 0.2s, background 0.2s",
-            marginBottom: 24,
+            marginBottom: 32,
           }}
         >
           <Upload
-            size={40}
+            size={44}
             color={colors.muted}
-            style={{ marginBottom: 12 }}
+            style={{ marginBottom: 14 }}
           />
-          <p style={{ fontSize: 14, color: colors.muted, margin: 0 }}>
+          <p style={{ fontSize: 15, color: colors.muted, margin: 0 }}>
             Drag & drop an image here or click to browse
           </p>
           <input
@@ -219,41 +213,41 @@ export function ImageResizer() {
         {image && (
           <div
             style={{
-              background: colors.card,
+              background: colors.input,
               border: `1px solid ${colors.border}`,
               borderRadius: 12,
-              padding: 20,
-              marginBottom: 20,
+              padding: 24,
+              marginBottom: 24,
             }}
           >
             <div
               style={{
                 display: "flex",
-                gap: 16,
-                marginBottom: 16,
+                gap: 20,
+                marginBottom: 20,
                 flexWrap: "wrap",
               }}
             >
-              <div style={{ flex: "1 1 200px", minHeight: 120 }}>
+              <div style={{ flex: "1 1 200px", minHeight: 140 }}>
                 <img
                   src={previewUrl}
                   alt="Preview"
                   style={{
                     width: "100%",
                     height: "auto",
-                    maxHeight: 260,
+                    maxHeight: 280,
                     objectFit: "contain",
-                    borderRadius: 8,
+                    borderRadius: 10,
                     background: "#000",
                   }}
                 />
               </div>
               <div
-                style={{ flex: "1 1 180px", display: "flex", flexDirection: "column", gap: 8 }}
+                style={{ flex: "1 1 180px", display: "flex", flexDirection: "column", gap: 10 }}
               >
                 <p
                   style={{
-                    fontSize: 12,
+                    fontSize: 14,
                     color: colors.muted,
                     margin: 0,
                     wordBreak: "break-all",
@@ -261,19 +255,19 @@ export function ImageResizer() {
                 >
                   {fileName}
                 </p>
-                <div style={{ display: "flex", gap: 8 }}>
+                <div style={{ display: "flex", gap: 10 }}>
                   <div
                     style={{
                       flex: 1,
                       background: colors.inputBg,
-                      borderRadius: 8,
-                      padding: "8px 12px",
+                      borderRadius: 10,
+                      padding: "10px 14px",
                     }}
                   >
-                    <span style={{ fontSize: 11, color: colors.muted }}>
+                    <span style={{ fontSize: 12, color: colors.muted }}>
                       Original
                     </span>
-                    <div style={{ fontSize: 16, fontWeight: 600 }}>
+                    <div style={{ fontSize: 18, fontWeight: 600 }}>
                       {originalWidth} &times; {originalHeight}
                     </div>
                   </div>
@@ -282,16 +276,16 @@ export function ImageResizer() {
                       style={{
                         flex: 1,
                         background: colors.inputBg,
-                        borderRadius: 8,
-                        padding: "8px 12px",
+                        borderRadius: 10,
+                        padding: "10px 14px",
                       }}
                     >
-                      <span style={{ fontSize: 11, color: colors.muted }}>
+                      <span style={{ fontSize: 12, color: colors.muted }}>
                         New
                       </span>
                       <div
                         style={{
-                          fontSize: 16,
+                          fontSize: 18,
                           fontWeight: 600,
                           color: colors.primary,
                         }}
@@ -305,16 +299,16 @@ export function ImageResizer() {
                   <div
                     style={{
                       background: colors.inputBg,
-                      borderRadius: 8,
-                      padding: "8px 12px",
+                      borderRadius: 10,
+                      padding: "10px 14px",
                     }}
                   >
-                    <span style={{ fontSize: 11, color: colors.muted }}>
+                    <span style={{ fontSize: 12, color: colors.muted }}>
                       Estimated size
                     </span>
                     <div
                       style={{
-                        fontSize: 16,
+                        fontSize: 18,
                         fontWeight: 600,
                         color: "#34D399",
                       }}
@@ -331,8 +325,8 @@ export function ImageResizer() {
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: 12,
-                marginBottom: 16,
+                gap: 14,
+                marginBottom: 20,
                 flexWrap: "wrap",
               }}
             >
@@ -340,9 +334,10 @@ export function ImageResizer() {
                 <label
                   style={{
                     display: "block",
-                    fontSize: 12,
+                    fontSize: 15,
                     color: colors.muted,
-                    marginBottom: 4,
+                    marginBottom: 10,
+                    fontWeight: 500,
                   }}
                 >
                   Width (px)
@@ -354,12 +349,12 @@ export function ImageResizer() {
                   onChange={(e) => handleWidthChange(Number(e.target.value))}
                   style={{
                     width: "100%",
-                    padding: "10px 12px",
+                    padding: "14px",
                     background: colors.inputBg,
                     border: `1px solid ${colors.border}`,
-                    borderRadius: 8,
+                    borderRadius: 10,
                     color: colors.text,
-                    fontSize: 14,
+                    fontSize: 15,
                     outline: "none",
                     boxSizing: "border-box",
                   }}
@@ -370,11 +365,11 @@ export function ImageResizer() {
                 onClick={() => setAspectLocked(!aspectLocked)}
                 title={aspectLocked ? "Unlock aspect ratio" : "Lock aspect ratio"}
                 style={{
-                  marginTop: 18,
+                  marginTop: 22,
                   background: aspectLocked ? colors.primary : colors.inputBg,
                   border: `1px solid ${aspectLocked ? colors.primary : colors.border}`,
-                  borderRadius: 8,
-                  padding: 8,
+                  borderRadius: 10,
+                  padding: 10,
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
@@ -383,9 +378,9 @@ export function ImageResizer() {
                 }}
               >
                 {aspectLocked ? (
-                  <Link size={16} color={colors.text} />
+                  <Link size={18} color={colors.text} />
                 ) : (
-                  <Unlink size={16} color={colors.muted} />
+                  <Unlink size={18} color={colors.muted} />
                 )}
               </button>
 
@@ -393,9 +388,10 @@ export function ImageResizer() {
                 <label
                   style={{
                     display: "block",
-                    fontSize: 12,
+                    fontSize: 15,
                     color: colors.muted,
-                    marginBottom: 4,
+                    marginBottom: 10,
+                    fontWeight: 500,
                   }}
                 >
                   Height (px)
@@ -407,12 +403,12 @@ export function ImageResizer() {
                   onChange={(e) => handleHeightChange(Number(e.target.value))}
                   style={{
                     width: "100%",
-                    padding: "10px 12px",
+                    padding: "14px",
                     background: colors.inputBg,
                     border: `1px solid ${colors.border}`,
-                    borderRadius: 8,
+                    borderRadius: 10,
                     color: colors.text,
-                    fontSize: 14,
+                    fontSize: 15,
                     outline: "none",
                     boxSizing: "border-box",
                   }}
@@ -421,12 +417,13 @@ export function ImageResizer() {
             </div>
 
             {/* Presets */}
-            <div style={{ marginBottom: 20 }}>
+            <div style={{ marginBottom: 24 }}>
               <span
                 style={{
-                  fontSize: 12,
+                  fontSize: 15,
                   color: colors.muted,
-                  marginRight: 8,
+                  marginRight: 10,
+                  fontWeight: 500,
                 }}
               >
                 Presets:
@@ -438,13 +435,13 @@ export function ImageResizer() {
                   style={{
                     background: colors.inputBg,
                     border: `1px solid ${colors.border}`,
-                    borderRadius: 6,
-                    padding: "6px 12px",
+                    borderRadius: 8,
+                    padding: "8px 16px",
                     color: colors.text,
-                    fontSize: 12,
+                    fontSize: 14,
                     cursor: "pointer",
-                    marginRight: 6,
-                    marginBottom: 6,
+                    marginRight: 8,
+                    marginBottom: 8,
                   }}
                 >
                   {p}%
@@ -453,26 +450,26 @@ export function ImageResizer() {
             </div>
 
             {/* Actions */}
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
               <button
                 onClick={resizeImage}
                 style={{
                   flex: "1 1 160px",
-                  padding: "12px 20px",
+                  padding: "14px 28px",
                   background: colors.primary,
                   color: colors.text,
                   border: "none",
-                  borderRadius: 8,
-                  fontSize: 14,
+                  borderRadius: 10,
+                  fontSize: 15,
                   fontWeight: 600,
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  gap: 8,
+                  gap: 10,
                 }}
               >
-                <Maximize2 size={16} />
+                <Zap size={18} />
                 Resize
               </button>
 
@@ -481,21 +478,21 @@ export function ImageResizer() {
                   onClick={handleDownload}
                   style={{
                     flex: "1 1 160px",
-                    padding: "12px 20px",
+                    padding: "14px 28px",
                     background: "#059669",
                     color: colors.text,
                     border: "none",
-                    borderRadius: 8,
-                    fontSize: 14,
+                    borderRadius: 10,
+                    fontSize: 15,
                     fontWeight: 600,
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    gap: 8,
+                    gap: 10,
                   }}
                 >
-                  <Download size={16} />
+                  <Download size={18} />
                   Download
                 </button>
               )}

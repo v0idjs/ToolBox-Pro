@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Copy, Check, Code, Minimize2 } from 'lucide-react';
+import { Copy, Check, Code, Minimize2, Zap } from 'lucide-react';
 import { useThemeColors } from '@/lib/theme';
 
 export function XMLFormatter() {
@@ -79,50 +79,33 @@ export function XMLFormatter() {
 
   const textareaStyle: React.CSSProperties = {
     width: '100%',
-    minHeight: '200px',
-    background: colors.card,
+    minHeight: 160,
+    background: colors.input,
     border: `1px solid ${colors.border}`,
-    borderRadius: '8px',
+    borderRadius: 10,
     color: colors.text,
-    padding: '12px',
+    padding: 16,
     fontFamily: 'monospace',
-    fontSize: '14px',
+    fontSize: 15,
     resize: 'vertical',
     outline: 'none',
     boxSizing: 'border-box',
   };
 
-  const buttonBase: React.CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-    padding: '8px 16px',
-    borderRadius: '6px',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '13px',
-    fontWeight: 500,
-    transition: 'opacity 0.2s',
-  };
-
   return (
     <div style={{ color: colors.text }}>
-      <div
-        style={{
-          maxWidth: '900px',
-          margin: '0 auto',
-          background: colors.card,
-          border: `1px solid ${colors.border}`,
-          borderRadius: '12px',
-          padding: '24px',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-          <Code size={24} color={colors.accent} />
-          <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 600, color: colors.text }}>XML Formatter</h2>
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+          <Code size={28} color={colors.accent} />
+          <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0 }}>XML Formatter</h1>
         </div>
+        <p style={{ fontSize: 15, color: colors.textSecondary, margin: 0 }}>
+          Beautify, minify, and validate XML documents with syntax checking
+        </p>
+      </div>
 
-        <label style={{ display: 'block', marginBottom: '8px', color: colors.textSecondary, fontSize: '14px' }}>
+      <div style={{ maxWidth: 900, margin: '0 auto' }}>
+        <label style={{ display: 'block', fontSize: 15, fontWeight: 500, marginBottom: 10, color: colors.text }}>
           Raw XML Input
         </label>
         <textarea
@@ -132,19 +115,45 @@ export function XMLFormatter() {
           style={textareaStyle}
         />
 
-        <div style={{ display: 'flex', gap: '8px', margin: '16px 0', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 12, margin: '20px 0', flexWrap: 'wrap' }}>
           <button
             onClick={beautify}
-            style={{ ...buttonBase, background: colors.accent, color: colors.text }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '14px 28px',
+              borderRadius: 10,
+              border: 'none',
+              background: colors.accent,
+              color: colors.text,
+              fontSize: 15,
+              fontWeight: 500,
+              cursor: 'pointer',
+              transition: 'opacity 0.2s',
+            }}
             onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.85')}
             onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
           >
-            <Code size={16} />
+            <Zap size={16} />
             Beautify
           </button>
           <button
             onClick={minify}
-            style={{ ...buttonBase, background: colors.border, color: colors.text }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '10px 20px',
+              borderRadius: 8,
+              border: `1px solid ${colors.border}`,
+              background: colors.border,
+              color: colors.textSecondary,
+              fontSize: 15,
+              fontWeight: 500,
+              cursor: 'pointer',
+              transition: 'opacity 0.2s',
+            }}
             onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.85')}
             onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
           >
@@ -153,35 +162,34 @@ export function XMLFormatter() {
           </button>
           <button
             onClick={validate}
-            style={{ ...buttonBase, background: colors.border, color: colors.text }}
-            onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.85')}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
-          >
-            Validate
-          </button>
-          <button
-            onClick={copyToClipboard}
             style={{
-              ...buttonBase,
-              background: copied ? '#166534' : colors.border,
-              color: colors.text,
-              marginLeft: 'auto',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '10px 20px',
+              borderRadius: 8,
+              border: `1px solid ${colors.border}`,
+              background: colors.border,
+              color: colors.textSecondary,
+              fontSize: 15,
+              fontWeight: 500,
+              cursor: 'pointer',
+              transition: 'opacity 0.2s',
             }}
             onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.85')}
             onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
           >
-            {copied ? <Check size={16} /> : <Copy size={16} />}
-            {copied ? 'Copied' : 'Copy'}
+            Validate
           </button>
         </div>
 
         {validation && (
           <div
             style={{
-              padding: '10px 14px',
-              borderRadius: '6px',
-              marginBottom: '16px',
-              fontSize: '13px',
+              padding: '12px 16px',
+              borderRadius: 10,
+              marginBottom: 20,
+              fontSize: 15,
               background: validation.valid ? '#166534' : '#7F1D1D',
               color: colors.text,
             }}
@@ -191,19 +199,56 @@ export function XMLFormatter() {
         )}
 
         {output && (
-          <>
-            <label style={{ display: 'block', marginBottom: '8px', color: colors.textSecondary, fontSize: '14px' }}>
-              Output
-            </label>
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+              <label style={{ fontSize: 15, fontWeight: 500, color: colors.text }}>
+                Output
+              </label>
+              <button
+                onClick={copyToClipboard}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '6px 12px',
+                  borderRadius: 8,
+                  border: `1px solid ${colors.border}`,
+                  background: copied ? '#166534' : colors.border,
+                  color: copied ? '#22C55E' : colors.textSecondary,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                  transition: 'color 0.2s',
+                }}
+              >
+                {copied ? <Check size={14} /> : <Copy size={14} />}
+                {copied ? 'Copied!' : 'Copy'}
+              </button>
+            </div>
             <textarea
               readOnly
               value={output}
               style={{
                 ...textareaStyle,
-                minHeight: '250px',
+                minHeight: 200,
               }}
             />
-          </>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              marginTop: 12,
+              padding: '10px 0',
+              borderTop: `1px solid ${colors.border}`,
+              fontSize: 13,
+              color: colors.textSecondary,
+            }}>
+              <span>{validation?.valid ? 'Well-formed XML' : validation?.message || 'No validation'}</span>
+              <span style={{ color: colors.border }}>|</span>
+              <span>{output.split('\n').length} lines</span>
+              <span style={{ color: colors.border }}>|</span>
+              <span>{output.length} chars</span>
+            </div>
+          </div>
         )}
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Copy, Check, Clock, RefreshCw } from 'lucide-react';
+import { Copy, Check, Clock, RefreshCw, Zap } from 'lucide-react';
 import { useThemeColors } from '@/lib/theme';
 
 export function TimestampConverter() {
@@ -69,99 +69,100 @@ export function TimestampConverter() {
     setTimeout(() => setCopiedField(null), 2000);
   };
 
-  const styles: Record<string, React.CSSProperties> = {
-    container: {
-      color: colors.text,
-      fontFamily: 'system-ui, -apple-system, sans-serif'
-    },
-    title: {
-      fontSize: '24px',
-      fontWeight: 700,
-      marginBottom: '24px',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '12px'
-    },
-    card: {
-      background: colors.card,
-      border: `1px solid ${colors.border}`,
-      borderRadius: '12px',
-      padding: '20px',
-      marginBottom: '20px'
-    },
-    cardTitle: {
-      fontSize: '16px',
-      fontWeight: 600,
-      marginBottom: '16px',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px'
-    },
-    input: {
-      width: '100%',
-      padding: '12px',
-      background: colors.input,
-      border: `1px solid ${colors.border}`,
-      borderRadius: '8px',
-      color: colors.text,
-      fontSize: '14px',
-      marginBottom: '12px'
-    },
-    button: {
-      padding: '12px 24px',
-      background: colors.accent,
-      border: 'none',
-      borderRadius: '8px',
-      color: colors.text,
-      fontSize: '14px',
-      fontWeight: 600,
-      cursor: 'pointer',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px'
-    },
-    timestamp: {
-      fontSize: '18px',
-      fontWeight: 700,
-      fontFamily: 'monospace',
-      marginBottom: '8px'
-    },
-    copyButton: {
-      padding: '4px 8px',
-      background: 'transparent',
-      border: `1px solid ${colors.border}`,
-      borderRadius: '6px',
-      color: colors.textSecondary,
-      cursor: 'pointer',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '4px',
-      fontSize: '12px'
-    },
-    resultContainer: {
-      background: colors.input,
-      borderRadius: '8px',
-      padding: '16px',
-      marginTop: '16px'
-    },
-    label: {
-      color: colors.textSecondary,
-      fontSize: '12px',
-      marginBottom: '4px',
-      textTransform: 'uppercase' as const,
-      letterSpacing: '0.05em'
-    },
-    value: {
-      color: colors.text,
-      fontSize: '14px',
-      fontFamily: 'monospace',
-      wordBreak: 'break-all' as const
-    }
+  const cardStyle: React.CSSProperties = {
+    border: `1px solid ${colors.border}`,
+    borderRadius: 12,
+    padding: 24,
+    marginBottom: 24,
+  };
+
+  const cardTitle: React.CSSProperties = {
+    fontSize: 15,
+    fontWeight: 600,
+    marginBottom: 16,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+    color: colors.textSecondary,
+    textTransform: 'uppercase' as const,
+    letterSpacing: '0.05em',
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: 14,
+    background: colors.input,
+    border: `1px solid ${colors.border}`,
+    borderRadius: 10,
+    color: colors.text,
+    fontSize: 15,
+    marginBottom: 16,
+    boxSizing: 'border-box',
+  };
+
+  const buttonStyle: React.CSSProperties = {
+    padding: '14px 28px',
+    background: colors.accent,
+    border: 'none',
+    borderRadius: 10,
+    color: colors.text,
+    fontSize: 15,
+    fontWeight: 500,
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+  };
+
+  const timestampStyle: React.CSSProperties = {
+    fontSize: 20,
+    fontWeight: 700,
+    fontFamily: 'monospace',
+    marginBottom: 8,
+  };
+
+  const copyButtonStyle: React.CSSProperties = {
+    padding: '6px 12px',
+    background: 'transparent',
+    border: `1px solid ${colors.border}`,
+    borderRadius: 8,
+    color: colors.textSecondary,
+    cursor: 'pointer',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 4,
+    fontSize: 13,
+    marginLeft: 8,
+    verticalAlign: 'middle',
+  };
+
+  const resultContainer: React.CSSProperties = {
+    background: colors.bg,
+    borderRadius: 10,
+    padding: 16,
+    marginTop: 16,
+    border: `1px solid ${colors.border}`,
+  };
+
+  const label: React.CSSProperties = {
+    color: colors.textSecondary,
+    fontSize: 13,
+    marginBottom: 6,
+    textTransform: 'uppercase' as const,
+    letterSpacing: '0.05em',
+    fontWeight: 600,
+  };
+
+  const value: React.CSSProperties = {
+    color: colors.text,
+    fontSize: 15,
+    fontFamily: 'monospace',
+    wordBreak: 'break-all' as const,
   };
 
   const renderCopyButton = (value: string, field: string) => (
     <button
-      style={styles.copyButton}
+      style={copyButtonStyle}
       onClick={() => copyToClipboard(value, field)}
     >
       {copiedField === field ? <Check size={12} /> : <Copy size={12} />}
@@ -170,71 +171,116 @@ export function TimestampConverter() {
   );
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>
-        <Clock size={28} />
-        Timestamp Converter
-      </h1>
+    <div style={{ color: colors.text }}>
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+          <Clock size={28} color={colors.accent} />
+          <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0 }}>Timestamp Converter</h1>
+        </div>
+        <p style={{ fontSize: 15, color: colors.textSecondary, margin: 0 }}>
+          Convert between Unix timestamps and human-readable dates
+        </p>
+      </div>
 
-      <div style={styles.card}>
-        <h2 style={styles.cardTitle}>Current Timestamp</h2>
-        <div style={{ marginBottom: '12px' }}>
-          <div style={styles.label}>UNIX (SECONDS)</div>
-          <div style={styles.timestamp}>
+      <div style={cardStyle}>
+        <h2 style={cardTitle}>Current Timestamp</h2>
+        <div style={{ marginBottom: 16 }}>
+          <div style={label}>UNIX (SECONDS)</div>
+          <div style={timestampStyle}>
             {currentSeconds}
             {renderCopyButton(String(currentSeconds), 'currentSec')}
           </div>
         </div>
         <div>
-          <div style={styles.label}>UNIX (MILLISECONDS)</div>
-          <div style={styles.timestamp}>
+          <div style={label}>UNIX (MILLISECONDS)</div>
+          <div style={timestampStyle}>
             {currentMilliseconds}
             {renderCopyButton(String(currentMilliseconds), 'currentMs')}
           </div>
         </div>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          marginTop: 16,
+          paddingTop: 16,
+          borderTop: `1px solid ${colors.border}`,
+          fontSize: 13,
+          color: colors.textSecondary,
+        }}>
+          <span>Live updating</span>
+          <span style={{ color: colors.border }}>|</span>
+          <span>Auto-refresh every 1s</span>
+        </div>
       </div>
 
-      <div style={styles.card}>
-        <h2 style={styles.cardTitle}>
-          <RefreshCw size={18} />
+      <div style={cardStyle}>
+        <h2 style={cardTitle}>
+          <RefreshCw size={16} />
           Timestamp to Date
         </h2>
         <input
-          style={styles.input}
+          style={inputStyle}
           type="number"
           placeholder="Enter Unix timestamp (auto-detects seconds vs milliseconds)"
           value={timestampInput}
           onChange={(e) => setTimestampInput(e.target.value)}
         />
-        <button style={styles.button} onClick={handleConvertTimestamp}>
+        <button style={buttonStyle} onClick={handleConvertTimestamp}>
+          <Zap size={16} />
           Convert
         </button>
         {convertedDate && (
-          <div style={styles.resultContainer}>
-            <div style={styles.label}>RESULTS</div>
-            <pre style={{ ...styles.value, margin: 0, whiteSpace: 'pre-wrap' }}>
+          <div style={resultContainer}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+              <div style={label}>RESULTS</div>
+              <button
+                style={{
+                  ...copyButtonStyle,
+                  margin: 0,
+                }}
+                onClick={() => copyToClipboard(convertedDate, 'tsToDate')}
+              >
+                {copiedField === 'tsToDate' ? <Check size={12} /> : <Copy size={12} />}
+                {copiedField === 'tsToDate' ? 'Copied' : 'Copy'}
+              </button>
+            </div>
+            <pre style={{ ...value, margin: 0, whiteSpace: 'pre-wrap' }}>
               {convertedDate}
             </pre>
           </div>
         )}
       </div>
 
-      <div style={styles.card}>
-        <h2 style={styles.cardTitle}>Date to Timestamp</h2>
+      <div style={cardStyle}>
+        <h2 style={cardTitle}>Date to Timestamp</h2>
         <input
-          style={styles.input}
+          style={inputStyle}
           type="text"
           placeholder="e.g. 2024-01-15 12:00:00"
           value={dateInput}
           onChange={(e) => setDateInput(e.target.value)}
         />
-        <button style={styles.button} onClick={handleConvertDate}>
+        <button style={buttonStyle} onClick={handleConvertDate}>
+          <Zap size={16} />
           Convert
         </button>
         {convertedTimestamp && (
-          <div style={styles.resultContainer}>
-            <div style={styles.label}>RESULTS</div>
-            <pre style={{ ...styles.value, margin: 0, whiteSpace: 'pre-wrap' }}>
+          <div style={resultContainer}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+              <div style={label}>RESULTS</div>
+              <button
+                style={{
+                  ...copyButtonStyle,
+                  margin: 0,
+                }}
+                onClick={() => copyToClipboard(convertedTimestamp, 'dateToTs')}
+              >
+                {copiedField === 'dateToTs' ? <Check size={12} /> : <Copy size={12} />}
+                {copiedField === 'dateToTs' ? 'Copied' : 'Copy'}
+              </button>
+            </div>
+            <pre style={{ ...value, margin: 0, whiteSpace: 'pre-wrap' }}>
               {convertedTimestamp}
             </pre>
           </div>

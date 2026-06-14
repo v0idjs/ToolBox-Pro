@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { Upload, Download, Minimize2, Image } from 'lucide-react';
+import { Upload, Download, Minimize2, Image, Zap } from 'lucide-react';
 import { useThemeColors } from '@/lib/theme';
 
 function formatSize(bytes: number): string {
@@ -115,20 +115,20 @@ export function ImageCompressor() {
       : null;
 
   const cardStyle: React.CSSProperties = {
-    background: colors.card,
+    background: colors.input,
     border: `1px solid ${colors.border}`,
     borderRadius: '12px',
     padding: '24px',
-    marginBottom: '16px',
+    marginBottom: '32px',
   };
 
   const inputStyle: React.CSSProperties = {
     background: colors.border,
     border: `1px solid ${colors.border}`,
-    borderRadius: '8px',
-    padding: '10px 12px',
+    borderRadius: '10px',
+    padding: '14px',
     color: colors.text,
-    fontSize: '14px',
+    fontSize: '15px',
     fontFamily: 'monospace',
     outline: 'none',
     width: '100%',
@@ -138,23 +138,23 @@ export function ImageCompressor() {
   const buttonStyle: React.CSSProperties = {
     background: colors.accent,
     border: 'none',
-    borderRadius: '8px',
-    padding: '10px 20px',
+    borderRadius: '10px',
+    padding: '14px 28px',
     color: colors.text,
-    fontSize: '14px',
+    fontSize: '15px',
     fontWeight: 600,
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
+    gap: '10px',
     transition: 'background 0.2s',
   };
 
   const labelStyle: React.CSSProperties = {
     color: colors.textSecondary,
-    fontSize: '12px',
-    fontFamily: 'monospace',
-    marginBottom: '6px',
+    fontSize: '15px',
+    fontWeight: 500,
+    marginBottom: '10px',
     display: 'block',
   };
 
@@ -170,21 +170,26 @@ export function ImageCompressor() {
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '10px',
-            marginBottom: '24px',
+            gap: '12px',
+            marginBottom: '32px',
           }}
         >
-          <Minimize2 size={20} color={colors.accent} />
-          <h1
-            style={{
-              color: colors.text,
-              fontSize: '20px',
-              fontWeight: 600,
-              margin: 0,
-            }}
-          >
-            Image Compressor
-          </h1>
+          <Minimize2 size={28} color={colors.accent} />
+          <div>
+            <h1
+              style={{
+                color: colors.text,
+                fontSize: '28px',
+                fontWeight: 700,
+                margin: 0,
+              }}
+            >
+              Image Compressor
+            </h1>
+            <p style={{ color: colors.textSecondary, fontSize: '15px', margin: 0, marginTop: '4px' }}>
+              Reduce image file size while maintaining quality
+            </p>
+          </div>
         </div>
 
         {/* Drop Zone */}
@@ -200,10 +205,10 @@ export function ImageCompressor() {
               : `2px dashed ${colors.border}`,
             cursor: 'pointer',
             textAlign: 'center' as const,
-            padding: originalPreview ? '12px' : '48px 24px',
+            padding: originalPreview ? '16px' : '56px 24px',
             transition: 'border-color 0.2s',
             display: originalPreview ? 'flex' : 'block',
-            gap: '16px',
+            gap: '20px',
             alignItems: 'center',
           }}
         >
@@ -224,25 +229,25 @@ export function ImageCompressor() {
                 alt="Original"
                 style={{
                   maxWidth: '100%',
-                  maxHeight: '200px',
-                  borderRadius: '8px',
+                  maxHeight: '240px',
+                  borderRadius: '10px',
                   flex: 1,
                   objectFit: 'contain',
                 }}
               />
               <div style={{ flex: 1 }}>
-                <div style={{ color: colors.text, fontWeight: 600, fontSize: '14px', marginBottom: '4px' }}>
+                <div style={{ color: colors.text, fontWeight: 600, fontSize: '15px', marginBottom: '6px' }}>
                   {originalFile?.name}
                 </div>
-                <div style={{ color: colors.textSecondary, fontSize: '13px' }}>
+                <div style={{ color: colors.textSecondary, fontSize: '14px' }}>
                   {formatSize(originalSize)}
                 </div>
               </div>
             </>
           ) : (
             <>
-              <Upload size={32} color={colors.textSecondary} />
-              <div style={{ color: colors.textSecondary, fontSize: '14px', marginTop: '8px' }}>
+              <Upload size={36} color={colors.textSecondary} />
+              <div style={{ color: colors.textSecondary, fontSize: '15px', marginTop: '10px' }}>
                 Drop an image here or click to select
               </div>
             </>
@@ -251,7 +256,7 @@ export function ImageCompressor() {
 
         {/* Settings */}
         <div style={cardStyle}>
-          <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
+          <div style={{ display: 'flex', gap: '28px', alignItems: 'flex-start' }}>
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>Quality: {quality}%</label>
               <input
@@ -263,17 +268,17 @@ export function ImageCompressor() {
                 style={{
                   width: '100%',
                   accentColor: colors.accent,
-                  marginTop: '8px',
+                  marginTop: '10px',
                 }}
               />
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: colors.textSecondary, fontSize: '11px' }}>1</span>
-                <span style={{ color: colors.textSecondary, fontSize: '11px' }}>100</span>
+                <span style={{ color: colors.textSecondary, fontSize: '12px' }}>1</span>
+                <span style={{ color: colors.textSecondary, fontSize: '12px' }}>100</span>
               </div>
             </div>
             <div>
               <label style={labelStyle}>Output Format</label>
-              <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                 {(['jpeg', 'png'] as const).map((fmt) => (
                   <button
                     key={fmt}
@@ -281,7 +286,7 @@ export function ImageCompressor() {
                     style={{
                       ...inputStyle,
                       width: 'auto',
-                      padding: '8px 16px',
+                      padding: '10px 20px',
                       cursor: 'pointer',
                       textAlign: 'center' as const,
                       background: outputFormat === fmt ? colors.accent : colors.border,
@@ -310,8 +315,8 @@ export function ImageCompressor() {
             cursor: !originalFile || compressing ? 'not-allowed' : 'pointer',
           }}
         >
-          <Minimize2 size={16} />
-          {compressing ? 'Compressing...' : 'Compress'}
+          <Zap size={18} />
+          {compressing ? 'Compressing...' : 'Compress Image'}
         </button>
 
         {/* Results */}
@@ -321,19 +326,19 @@ export function ImageCompressor() {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px',
-                marginBottom: '16px',
+                gap: '10px',
+                marginBottom: '20px',
               }}
             >
-              <Image size={16} color={colors.textSecondary} />
-              <span style={{ color: colors.textSecondary, fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const }}>
+              <Image size={18} color={colors.textSecondary} />
+              <span style={{ color: colors.textSecondary, fontSize: '14px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const }}>
                 Before / After
               </span>
             </div>
 
-            <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
               <div style={{ flex: 1, textAlign: 'center' as const }}>
-                <div style={{ color: colors.textSecondary, fontSize: '11px', marginBottom: '6px', fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: '0.05em' }}>
+                <div style={{ color: colors.textSecondary, fontSize: '13px', marginBottom: '8px', fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: '0.05em' }}>
                   Original
                 </div>
                 <img
@@ -341,18 +346,18 @@ export function ImageCompressor() {
                   alt="Original"
                   style={{
                     width: '100%',
-                    maxHeight: '220px',
+                    maxHeight: '260px',
                     objectFit: 'contain',
-                    borderRadius: '8px',
+                    borderRadius: '10px',
                     background: colors.border,
                   }}
                 />
-                <div style={{ color: colors.textSecondary, fontSize: '12px', marginTop: '6px', fontFamily: 'monospace' }}>
+                <div style={{ color: colors.textSecondary, fontSize: '13px', marginTop: '8px', fontFamily: 'monospace' }}>
                   {formatSize(originalSize)}
                 </div>
               </div>
               <div style={{ flex: 1, textAlign: 'center' as const }}>
-                <div style={{ color: colors.textSecondary, fontSize: '11px', marginBottom: '6px', fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: '0.05em' }}>
+                <div style={{ color: colors.textSecondary, fontSize: '13px', marginBottom: '8px', fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: '0.05em' }}>
                   Compressed
                 </div>
                 <img
@@ -360,13 +365,13 @@ export function ImageCompressor() {
                   alt="Compressed"
                   style={{
                     width: '100%',
-                    maxHeight: '220px',
+                    maxHeight: '260px',
                     objectFit: 'contain',
-                    borderRadius: '8px',
+                    borderRadius: '10px',
                     background: colors.border,
                   }}
                 />
-                <div style={{ color: colors.textSecondary, fontSize: '12px', marginTop: '6px', fontFamily: 'monospace' }}>
+                <div style={{ color: colors.textSecondary, fontSize: '13px', marginTop: '8px', fontFamily: 'monospace' }}>
                   {formatSize(compressedSize)}
                 </div>
               </div>
@@ -376,23 +381,23 @@ export function ImageCompressor() {
               <div
                 style={{
                   textAlign: 'center' as const,
-                  marginBottom: '16px',
-                  padding: '12px',
+                  marginBottom: '20px',
+                  padding: '14px',
                   background: colors.bg,
-                  borderRadius: '8px',
+                  borderRadius: '10px',
                 }}
               >
                 <span
                   style={{
                     color: Number(ratio) > 0 ? '#22C55E' : '#EF4444',
-                    fontSize: '24px',
+                    fontSize: '28px',
                     fontWeight: 700,
                     fontFamily: 'monospace',
                   }}
                 >
                   {Number(ratio) > 0 ? '-' : '+'}{ratio}%
                 </span>
-                <div style={{ color: colors.textSecondary, fontSize: '12px', marginTop: '4px' }}>
+                <div style={{ color: colors.textSecondary, fontSize: '14px', marginTop: '6px' }}>
                   {Number(ratio) > 0
                     ? `Saved ${formatSize(originalSize - compressedSize)}`
                     : `Size increased by ${formatSize(compressedSize - originalSize)}`}
@@ -409,7 +414,7 @@ export function ImageCompressor() {
                 justifyContent: 'center',
               }}
             >
-              <Download size={16} />
+              <Download size={18} />
               Download Compressed Image
             </button>
           </div>

@@ -1,162 +1,6 @@
 import { useState } from 'react';
-import { Copy, Check, Hash, RefreshCw } from 'lucide-react';
+import { Copy, Check, Hash, RefreshCw, Zap } from 'lucide-react';
 import { useThemeColors } from '@/lib/theme';
-
-const getStyles = (c: { bg: string; card: string; border: string; text: string; textSecondary: string; accent: string }) => ({
-  container: {
-    minHeight: '100%',
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-  } as React.CSSProperties,
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    marginBottom: '24px',
-  } as React.CSSProperties,
-  title: {
-    fontSize: '24px',
-    fontWeight: 700,
-    color: c.text,
-    margin: 0,
-  } as React.CSSProperties,
-  card: {
-    backgroundColor: c.card,
-    border: `1px solid ${c.border}`,
-    borderRadius: '12px',
-    padding: '24px',
-    marginBottom: '16px',
-  } as React.CSSProperties,
-  cardTitle: {
-    fontSize: '14px',
-    fontWeight: 600,
-    color: c.textSecondary,
-    textTransform: 'uppercase' as const,
-    letterSpacing: '0.05em',
-    marginBottom: '16px',
-  } as React.CSSProperties,
-  uuidDisplay: {
-    fontSize: '18px',
-    fontFamily: '"SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace',
-    color: c.text,
-    backgroundColor: c.bg,
-    border: `1px solid ${c.border}`,
-    borderRadius: '8px',
-    padding: '16px',
-    wordBreak: 'break-all' as const,
-    marginBottom: '16px',
-  } as React.CSSProperties,
-  buttonRow: {
-    display: 'flex',
-    gap: '12px',
-    flexWrap: 'wrap' as const,
-    marginBottom: '16px',
-  } as React.CSSProperties,
-  button: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '8px',
-    padding: '10px 16px',
-    borderRadius: '8px',
-    border: 'none',
-    fontSize: '14px',
-    fontWeight: 600,
-    cursor: 'pointer',
-    transition: 'all 0.15s ease',
-  } as React.CSSProperties,
-  primaryButton: {
-    backgroundColor: c.accent,
-    color: c.text,
-  } as React.CSSProperties,
-  secondaryButton: {
-    backgroundColor: c.border,
-    color: c.text,
-    border: `1px solid ${c.border}`,
-  } as React.CSSProperties,
-  multiButton: (isActive: boolean): React.CSSProperties => ({
-    backgroundColor: isActive ? c.accent : c.border,
-    color: c.text,
-    border: isActive ? `1px solid ${c.accent}` : `1px solid ${c.border}`,
-    padding: '8px 14px',
-  }),
-  toggleRow: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    marginBottom: '16px',
-  } as React.CSSProperties,
-  toggleLabel: {
-    fontSize: '14px',
-    color: c.textSecondary,
-  } as React.CSSProperties,
-  toggle: (isOn: boolean): React.CSSProperties => ({
-    width: '44px',
-    height: '24px',
-    borderRadius: '12px',
-    backgroundColor: isOn ? c.accent : c.border,
-    position: 'relative' as const,
-    cursor: 'pointer',
-    transition: 'background-color 0.2s ease',
-    border: 'none',
-  }),
-  toggleDot: (isOn: boolean): React.CSSProperties => ({
-    width: '18px',
-    height: '18px',
-    borderRadius: '50%',
-    backgroundColor: c.text,
-    position: 'absolute' as const,
-    top: '3px',
-    left: isOn ? '23px' : '3px',
-    transition: 'left 0.2s ease',
-  }),
-  listContainer: {
-    maxHeight: '400px',
-    overflowY: 'auto' as const,
-  } as React.CSSProperties,
-  listItem: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '12px',
-    backgroundColor: c.bg,
-    border: `1px solid ${c.border}`,
-    borderRadius: '8px',
-    marginBottom: '8px',
-  } as React.CSSProperties,
-  uuidText: {
-    fontSize: '14px',
-    fontFamily: '"SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace',
-    color: c.text,
-    flex: 1,
-    marginRight: '12px',
-    wordBreak: 'break-all' as const,
-  } as React.CSSProperties,
-  copyButton: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '32px',
-    height: '32px',
-    borderRadius: '6px',
-    border: 'none',
-    backgroundColor: c.border,
-    color: c.textSecondary,
-    cursor: 'pointer',
-    flexShrink: 0,
-  } as React.CSSProperties,
-  countBadge: {
-    fontSize: '12px',
-    color: c.textSecondary,
-    marginLeft: 'auto',
-  } as React.CSSProperties,
-  copiedBadge: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '4px',
-    fontSize: '12px',
-    color: '#22C55E',
-    marginLeft: '8px',
-  } as React.CSSProperties,
-});
 
 const QUANTITIES = [5, 10, 20, 50] as const;
 
@@ -168,7 +12,6 @@ export function UUIDGenerator() {
   const [copiedAll, setCopiedAll] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const colors = useThemeColors();
-  const styles = getStyles(colors);
 
   const formatUuid = (uuid: string) => (uppercase ? uuid.toUpperCase() : uuid);
 
@@ -209,37 +52,163 @@ export function UUIDGenerator() {
     }
   };
 
+  const cardStyle: React.CSSProperties = {
+    border: `1px solid ${colors.border}`,
+    borderRadius: 12,
+    padding: 24,
+    marginBottom: 20,
+  };
+
+  const cardTitle: React.CSSProperties = {
+    fontSize: 15,
+    fontWeight: 600,
+    color: colors.textSecondary,
+    textTransform: 'uppercase' as const,
+    letterSpacing: '0.05em',
+    marginBottom: 16,
+  };
+
+  const buttonBase: React.CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 8,
+    padding: '14px 28px',
+    borderRadius: 10,
+    border: 'none',
+    fontSize: 15,
+    fontWeight: 500,
+    cursor: 'pointer',
+    transition: 'all 0.15s ease',
+  };
+
+  const toggleRow: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 16,
+  };
+
+  const toggleLabel: React.CSSProperties = {
+    fontSize: 15,
+    color: colors.textSecondary,
+  };
+
+  const toggle = (isOn: boolean): React.CSSProperties => ({
+    width: 44,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: isOn ? colors.accent : colors.border,
+    position: 'relative' as const,
+    cursor: 'pointer',
+    transition: 'background-color 0.2s ease',
+    border: 'none',
+  });
+
+  const toggleDot = (isOn: boolean): React.CSSProperties => ({
+    width: 18,
+    height: 18,
+    borderRadius: '50%',
+    backgroundColor: colors.text,
+    position: 'absolute' as const,
+    top: 3,
+    left: isOn ? 23 : 3,
+    transition: 'left 0.2s ease',
+  });
+
+  const uuidDisplay: React.CSSProperties = {
+    fontSize: 18,
+    fontFamily: '"SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace',
+    color: colors.text,
+    backgroundColor: colors.bg,
+    border: `1px solid ${colors.border}`,
+    borderRadius: 10,
+    padding: 16,
+    wordBreak: 'break-all' as const,
+    marginBottom: 16,
+  };
+
+  const listContainer: React.CSSProperties = {
+    maxHeight: 400,
+    overflowY: 'auto' as const,
+  };
+
+  const listItem: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 12,
+    backgroundColor: colors.bg,
+    border: `1px solid ${colors.border}`,
+    borderRadius: 10,
+    marginBottom: 8,
+  };
+
+  const uuidText: React.CSSProperties = {
+    fontSize: 15,
+    fontFamily: '"SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace',
+    color: colors.text,
+    flex: 1,
+    marginRight: 12,
+    wordBreak: 'break-all' as const,
+  };
+
+  const copyButton: React.CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 36,
+    height: 36,
+    borderRadius: 8,
+    border: 'none',
+    backgroundColor: colors.border,
+    color: colors.textSecondary,
+    cursor: 'pointer',
+    flexShrink: 0,
+  };
+
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <Hash size={24} color={colors.accent} />
-        <h1 style={styles.title}>UUID Generator</h1>
+    <div style={{ color: colors.text }}>
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+          <Hash size={28} color={colors.accent} />
+          <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0 }}>UUID Generator</h1>
+        </div>
+        <p style={{ fontSize: 15, color: colors.textSecondary, margin: 0 }}>
+          Generate v4 UUIDs in bulk with customizable format options
+        </p>
       </div>
 
-      <div style={styles.card}>
-        <div style={styles.cardTitle}>Controls</div>
-        <div style={styles.toggleRow}>
-          <span style={styles.toggleLabel}>Uppercase</span>
+      <div style={cardStyle}>
+        <div style={cardTitle}>Controls</div>
+        <div style={toggleRow}>
+          <span style={toggleLabel}>Uppercase</span>
           <button
-            style={styles.toggle(uppercase)}
+            style={toggle(uppercase)}
             onClick={() => setUppercase((prev) => !prev)}
           >
-            <span style={styles.toggleDot(uppercase)} />
+            <span style={toggleDot(uppercase)} />
           </button>
         </div>
 
-        <div style={styles.buttonRow}>
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
           <button
-            style={{ ...styles.button, ...styles.primaryButton }}
+            style={{ ...buttonBase, backgroundColor: colors.accent, color: colors.text }}
             onClick={generateSingle}
           >
-            <RefreshCw size={16} />
+            <Zap size={16} />
             Generate UUID
           </button>
           {QUANTITIES.map((q) => (
             <button
               key={q}
-              style={{ ...styles.button, ...styles.multiButton(quantity === q) }}
+              style={{
+                ...buttonBase,
+                padding: '10px 20px',
+                borderRadius: 8,
+                backgroundColor: quantity === q ? colors.accent : colors.border,
+                color: quantity === q ? colors.text : colors.textSecondary,
+                border: quantity === q ? `1px solid ${colors.accent}` : `1px solid ${colors.border}`,
+              }}
               onClick={() => generateMultiple(q)}
             >
               Generate {q}
@@ -249,12 +218,12 @@ export function UUIDGenerator() {
       </div>
 
       {currentUuid && (
-        <div style={styles.card}>
-          <div style={styles.cardTitle}>Generated UUID</div>
-          <div style={styles.uuidDisplay}>{formatUuid(currentUuid)}</div>
-          <div style={styles.buttonRow}>
+        <div style={cardStyle}>
+          <div style={cardTitle}>Generated UUID</div>
+          <div style={uuidDisplay}>{formatUuid(currentUuid)}</div>
+          <div style={{ display: 'flex', gap: 12 }}>
             <button
-              style={{ ...styles.button, ...styles.secondaryButton }}
+              style={{ ...buttonBase, padding: '10px 20px', borderRadius: 8, backgroundColor: colors.border, color: colors.text, border: `1px solid ${colors.border}` }}
               onClick={() => copyToClipboard(formatUuid(currentUuid))}
             >
               {copiedAll ? <Check size={16} color="#22C55E" /> : <Copy size={16} />}
@@ -265,17 +234,17 @@ export function UUIDGenerator() {
       )}
 
       {uuidList.length > 0 && (
-        <div style={styles.card}>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
-            <span style={styles.cardTitle}>Generated UUIDs</span>
-            <span style={styles.countBadge}>{uuidList.length} items</span>
+        <div style={cardStyle}>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: 16 }}>
+            <span style={cardTitle}>Generated UUIDs</span>
+            <span style={{ fontSize: 13, color: colors.textSecondary, marginLeft: 'auto' }}>{uuidList.length} items</span>
           </div>
-          <div style={styles.listContainer}>
+          <div style={listContainer}>
             {uuidList.map((uuid, index) => (
-              <div key={index} style={styles.listItem}>
-                <span style={styles.uuidText}>{formatUuid(uuid)}</span>
+              <div key={index} style={listItem}>
+                <span style={uuidText}>{formatUuid(uuid)}</span>
                 <button
-                  style={styles.copyButton}
+                  style={copyButton}
                   onClick={() => copyToClipboard(formatUuid(uuid), index)}
                 >
                   {copiedIndex === index ? (
@@ -287,14 +256,30 @@ export function UUIDGenerator() {
               </div>
             ))}
           </div>
-          <div style={{ marginTop: '12px', ...styles.buttonRow }}>
+          <div style={{ marginTop: 12, display: 'flex', gap: 12 }}>
             <button
-              style={{ ...styles.button, ...styles.secondaryButton }}
+              style={{ ...buttonBase, padding: '10px 20px', borderRadius: 8, backgroundColor: colors.border, color: colors.text, border: `1px solid ${colors.border}` }}
               onClick={copyAll}
             >
               {copiedAll ? <Check size={16} color="#22C55E" /> : <Copy size={16} />}
               {copiedAll ? 'All Copied!' : `Copy All (${uuidList.length})`}
             </button>
+          </div>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            marginTop: 16,
+            padding: '10px 0',
+            borderTop: `1px solid ${colors.border}`,
+            fontSize: 13,
+            color: colors.textSecondary,
+          }}>
+            <span>{uuidList.length} UUIDs generated</span>
+            <span style={{ color: colors.border }}>|</span>
+            <span>Format: v4</span>
+            <span style={{ color: colors.border }}>|</span>
+            <span>{uppercase ? 'Uppercase' : 'Lowercase'}</span>
           </div>
         </div>
       )}

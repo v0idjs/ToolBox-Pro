@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Copy, Check, Link, ArrowDownUp } from 'lucide-react';
+import { Copy, Check, Link, ArrowDownUp, Zap } from 'lucide-react';
 import { useThemeColors } from '@/lib/theme';
 
 export function URLEncoder() {
@@ -62,61 +62,32 @@ export function URLEncoder() {
 
   const textareaStyle: React.CSSProperties = {
     width: '100%',
-    minHeight: '120px',
-    background: colors.bg,
+    minHeight: 160,
+    background: colors.input,
     border: `1px solid ${colors.border}`,
-    borderRadius: '8px',
+    borderRadius: 10,
     color: colors.text,
-    padding: '12px',
-    fontSize: '14px',
+    padding: 16,
+    fontSize: 15,
     fontFamily: 'monospace',
     resize: 'vertical',
     outline: 'none',
     boxSizing: 'border-box',
   };
 
-  const buttonStyle: React.CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '6px',
-    padding: '8px 16px',
-    border: 'none',
-    borderRadius: '6px',
-    fontSize: '13px',
-    fontWeight: 500,
-    cursor: 'pointer',
-    transition: 'opacity 0.2s',
-  };
-
-  const primaryButtonStyle: React.CSSProperties = {
-    ...buttonStyle,
-    background: colors.accent,
-    color: colors.text,
-  };
-
-  const secondaryButtonStyle: React.CSSProperties = {
-    ...buttonStyle,
-    background: colors.border,
-    color: colors.textSecondary,
-  };
-
-  const copyButtonStyle: React.CSSProperties = {
-    ...buttonStyle,
-    background: copied ? '#16A34A' : colors.border,
-    color: colors.text,
-    position: 'absolute',
-    top: '12px',
-    right: '12px',
-  };
-
   return (
     <div style={{ color: colors.text }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-        <Link size={20} color={colors.accent} />
-        <h2 style={{ color: colors.text, fontSize: '18px', fontWeight: 600, margin: 0 }}>URL Encoder / Decoder</h2>
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+          <Link size={28} color={colors.accent} />
+          <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0 }}>URL Encoder/Decoder</h1>
+        </div>
+        <p style={{ fontSize: 15, color: colors.textSecondary, margin: 0 }}>
+          Encode and decode URLs and URI components with multiple modes
+        </p>
       </div>
 
-      <label style={{ color: colors.textSecondary, fontSize: '13px', fontWeight: 500, display: 'block', marginBottom: '8px' }}>
+      <label style={{ fontSize: 15, fontWeight: 500, display: 'block', marginBottom: 10, color: colors.text }}>
         Input
       </label>
       <textarea
@@ -127,71 +98,155 @@ export function URLEncoder() {
         spellCheck={false}
       />
 
-      <div style={{ display: 'flex', gap: '8px', margin: '16px 0', flexWrap: 'wrap', alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: 12, margin: '20px 0', flexWrap: 'wrap', alignItems: 'center' }}>
         <button
-          style={primaryButtonStyle}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '14px 28px',
+            border: 'none',
+            borderRadius: 10,
+            fontSize: 15,
+            fontWeight: 500,
+            cursor: 'pointer',
+            transition: 'opacity 0.2s',
+            background: colors.accent,
+            color: colors.text,
+          }}
           onClick={handleEncode}
           onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.85')}
           onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
         >
-          <ArrowDownUp size={14} />
+          <Zap size={16} />
           Encode
         </button>
         <button
-          style={secondaryButtonStyle}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '10px 20px',
+            border: `1px solid ${colors.border}`,
+            borderRadius: 8,
+            fontSize: 15,
+            fontWeight: 500,
+            cursor: 'pointer',
+            transition: 'opacity 0.2s',
+            background: colors.border,
+            color: colors.textSecondary,
+          }}
           onClick={handleDecode}
           onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.85')}
           onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
         >
-          <ArrowDownUp size={14} />
+          <ArrowDownUp size={16} />
           Decode
         </button>
         <button
-          style={primaryButtonStyle}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '14px 28px',
+            border: 'none',
+            borderRadius: 10,
+            fontSize: 15,
+            fontWeight: 500,
+            cursor: 'pointer',
+            transition: 'opacity 0.2s',
+            background: colors.accent,
+            color: colors.text,
+          }}
           onClick={handleEncodeAll}
           onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.85')}
           onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
         >
-          <ArrowDownUp size={14} />
+          <Zap size={16} />
           Encode All
         </button>
         <button
-          style={secondaryButtonStyle}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '10px 20px',
+            border: `1px solid ${colors.border}`,
+            borderRadius: 8,
+            fontSize: 15,
+            fontWeight: 500,
+            cursor: 'pointer',
+            transition: 'opacity 0.2s',
+            background: colors.border,
+            color: colors.textSecondary,
+          }}
           onClick={handleDecodeAll}
           onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.85')}
           onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
         >
-          <ArrowDownUp size={14} />
+          <ArrowDownUp size={16} />
           Decode All
         </button>
       </div>
 
       {error && (
-        <div style={{ color: '#EF4444', fontSize: '13px', marginBottom: '12px', padding: '8px 12px', background: 'rgba(239,68,68,0.1)', borderRadius: '6px', border: '1px solid rgba(239,68,68,0.2)' }}>
+        <div style={{ color: '#EF4444', fontSize: 15, marginBottom: 16, padding: '12px 16px', background: 'rgba(239,68,68,0.1)', borderRadius: 10, border: '1px solid rgba(239,68,68,0.2)' }}>
           {error}
         </div>
       )}
 
-      <div style={{ position: 'relative' }}>
-        <label style={{ color: colors.textSecondary, fontSize: '13px', fontWeight: 500, display: 'block', marginBottom: '8px' }}>
-          Output
-        </label>
-        <textarea
-          style={textareaStyle}
-          value={output}
-          readOnly
-          placeholder="Result will appear here..."
-        />
-        <button
-          style={copyButtonStyle}
-          onClick={handleCopy}
-          disabled={!output}
-          title="Copy to clipboard"
-        >
-          {copied ? <Check size={14} /> : <Copy size={14} />}
-          {copied ? 'Copied' : 'Copy'}
-        </button>
-      </div>
+      {output && (
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+            <label style={{ fontSize: 15, fontWeight: 500, color: colors.text }}>
+              Output
+            </label>
+            <button
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '6px 12px',
+                borderRadius: 8,
+                border: `1px solid ${colors.border}`,
+                background: copied ? '#16A34A' : colors.border,
+                color: copied ? '#22C55E' : colors.textSecondary,
+                fontSize: 13,
+                cursor: 'pointer',
+                transition: 'color 0.2s',
+              }}
+              onClick={handleCopy}
+              disabled={!output}
+              title="Copy to clipboard"
+            >
+              {copied ? <Check size={14} /> : <Copy size={14} />}
+              {copied ? 'Copied!' : 'Copy'}
+            </button>
+          </div>
+          <textarea
+            style={textareaStyle}
+            value={output}
+            readOnly
+            placeholder="Result will appear here..."
+          />
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            marginTop: 12,
+            padding: '10px 0',
+            borderTop: `1px solid ${colors.border}`,
+            fontSize: 13,
+            color: colors.textSecondary,
+          }}>
+            <span>{input.length} chars in</span>
+            <span style={{ color: colors.border }}>|</span>
+            <span>{output.length} chars out</span>
+            <span style={{ color: colors.border }}>|</span>
+            <span>{output.length > input.length ? '+' : ''}{output.length - input.length} diff</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
