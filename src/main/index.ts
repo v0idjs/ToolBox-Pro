@@ -104,22 +104,20 @@ ipcMain.handle('dialog:saveFile', async (_event, defaultName?: string, content?:
 })
 
 ipcMain.handle('fs:getFolderSize', async (_event, dirPath: string) => {
-  const results: { name: string; path: string; size: number; isDirectory: boolean }[] = []
+  const files: { path: string; size: number }[] = []
+  const dirs = new Set<string>()
 
   async function scanDir(dir: string) {
+    dirs.add(dir)
     const entries = await readdir(dir, { withFileTypes: true })
     for (const entry of entries) {
       const fullPath = join(dir, entry.name)
       try {
-        const s = await stat(fullPath)
-        results.push({
-          name: entry.name,
-          path: fullPath,
-          size: s.size,
-          isDirectory: entry.isDirectory()
-        })
         if (entry.isDirectory()) {
           await scanDir(fullPath)
+        } else {
+          const s = await stat(fullPath)
+          files.push({ path: fullPath, size: s.size })
         }
       } catch {
         // skip inaccessible files
@@ -128,6 +126,41 @@ ipcMain.handle('fs:getFolderSize', async (_event, dirPath: string) => {
   }
 
   await scanDir(dirPath)
+
+  const dirSizes = new Map<string, number>()
+  for (const dir of dirs) {
+    dirSizes.set(dir, 0)
+  }
+
+  for (const file of files) {
+    const dir = file.path.substring(0, file.path.lastIndexOf('\\') !== -1 ? file.path.lastIndexOf('\\') : file.path.lastIndexOf('/'))
+    const current = dirSizes.get(dir) || 0
+    dirSizes.set(dir, current + file.size)
+  }
+
+  const results: { name: string; path: string; size: number; isDirectory: boolean }[] = []
+
+  for (const dir of dirs) {
+    if (dir === dirPath) continue
+    const name = dir.substring(dir.lastIndexOf('\\') !== -1 ? dir.lastIndexOf('\\') + 1 : dir.lastIndexOf('/') + 1)
+    results.push({
+      name,
+      path: dir,
+      size: dirSizes.get(dir) || 0,
+      isDirectory: true
+    })
+  }
+
+  for (const file of files) {
+    const name = file.path.substring(file.path.lastIndexOf('\\') !== -1 ? file.path.lastIndexOf('\\') + 1 : file.path.lastIndexOf('/') + 1)
+    results.push({
+      name,
+      path: file.path,
+      size: file.size,
+      isDirectory: false
+    })
+  }
+
   return results
 })
 
