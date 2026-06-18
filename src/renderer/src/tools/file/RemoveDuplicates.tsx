@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FileText, Zap, Copy, Download } from 'lucide-react';
+import { FileText, Zap, Copy, Download, FolderOpen } from 'lucide-react';
 import { useThemeColors } from '@/lib/theme';
 
 export function RemoveDuplicates() {
@@ -9,6 +9,7 @@ export function RemoveDuplicates() {
   const [removeEmpty, setRemoveEmpty] = useState(false);
   const [stats, setStats] = useState<{ original: number; unique: number; removed: number } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [fileName, setFileName] = useState('');
   const colors = useThemeColors();
 
   const handleRemove = () => {
@@ -43,6 +44,20 @@ export function RemoveDuplicates() {
     await window.api.saveFile('no-duplicates.txt', output);
   };
 
+  const handleOpenFile = async () => {
+    try {
+      const result = await window.api.openFile();
+      if (result) {
+        setInput(result.content);
+        setFileName(result.name);
+        setOutput('');
+        setStats(null);
+      }
+    } catch (err) {
+      console.error('Failed to open file:', err);
+    }
+  };
+
   return (
     <div style={{ color: colors.text }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
@@ -55,7 +70,32 @@ export function RemoveDuplicates() {
 
       <div style={{ display: 'flex', gap: 24, marginBottom: 24 }}>
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <label style={{ fontSize: 15, fontWeight: 500, marginBottom: 10, color: colors.text }}>Input</label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+            <label style={{ fontSize: 15, fontWeight: 500, color: colors.text }}>Input</label>
+            <button
+              onClick={handleOpenFile}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                backgroundColor: 'transparent',
+                color: colors.textSecondary,
+                border: `1px solid ${colors.border}`,
+                borderRadius: 6,
+                padding: '4px 10px',
+                fontSize: 13,
+                cursor: 'pointer',
+              }}
+            >
+              <FolderOpen size={14} />
+              Open File
+            </button>
+            {fileName && (
+              <span style={{ fontSize: 13, color: colors.textSecondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {fileName}
+              </span>
+            )}
+          </div>
           <textarea
             style={{
               backgroundColor: colors.bg,
