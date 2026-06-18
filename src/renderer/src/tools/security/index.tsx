@@ -4,6 +4,8 @@ import { HashGenerator } from '@/tools/security/HashGenerator'
 import { HashChecker } from '@/tools/security/HashChecker'
 import { Base64Tool } from '@/tools/security/Base64Tool'
 import { JWTDecoder } from '@/tools/security/JWTDecoder'
+import { PasswordStrengthAnalyzer } from '@/tools/security/PasswordStrengthAnalyzer'
+import { SecretScanner } from '@/tools/security/SecretScanner'
 
 export function registerSecurityTools() {
   registerTools([
@@ -15,6 +17,24 @@ export function registerSecurityTools() {
       category: 'security',
       keywords: ['password', 'generate', 'random', 'secure', 'credential'],
       render: () => <PasswordGenerator />
+    },
+    {
+      id: 'password-strength',
+      name: 'Password Strength Analyzer',
+      description: 'Analyze password entropy, detect patterns, and estimate crack time',
+      icon: 'Shield',
+      category: 'security',
+      keywords: ['password', 'strength', 'entropy', 'crack', 'analyze', 'pattern'],
+      render: () => <PasswordStrengthAnalyzer />
+    },
+    {
+      id: 'secret-scanner',
+      name: 'Secret Scanner',
+      description: 'Detect leaked API keys, tokens, and credentials in code',
+      icon: 'ShieldAlert',
+      category: 'security',
+      keywords: ['secret', 'scan', 'api', 'key', 'token', 'credential', 'leak'],
+      render: () => <SecretScanner />
     },
     {
       id: 'hash-generator',
