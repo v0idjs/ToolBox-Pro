@@ -5,6 +5,7 @@ import { FileMerger } from '@/tools/file/FileMerger'
 import { FolderSizeAnalyzer } from '@/tools/file/FolderSizeAnalyzer'
 import { DuplicateFileFinder } from '@/tools/file/DuplicateFileFinder'
 import { BatchFileRename } from '@/tools/file/BatchFileRename'
+import { FileChecksumVerifier } from '@/tools/file/FileChecksumVerifier'
 
 export function registerFileTools() {
   registerTools([
@@ -43,6 +44,15 @@ export function registerFileTools() {
       category: 'file',
       keywords: ['rename', 'batch', 'regex', 'pattern', 'files', 'multiple'],
       render: () => <BatchFileRename />
+    },
+    {
+      id: 'file-checksum',
+      name: 'File Checksum Verifier',
+      description: 'Verify file integrity by comparing computed hash with expected checksum',
+      icon: 'Shield',
+      category: 'file',
+      keywords: ['checksum', 'hash', 'md5', 'sha1', 'sha256', 'verify', 'integrity'],
+      render: () => <FileChecksumVerifier />
     },
     {
       id: 'folder-size',

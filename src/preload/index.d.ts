@@ -5,6 +5,7 @@ export interface FileAPI {
   saveFile: (defaultName?: string, content?: string) => Promise<string | null>
   listFiles: (dirPath: string) => Promise<{ name: string; path: string; size: number }[]>
   batchRename: (renames: { from: string; to: string }[]) => Promise<{ success: number; failed: number; errors: string[] }>
+  computeFileHash: (filePath: string, algorithm: string) => Promise<{ hash: string; size: number }>
   getFolderSize: (dirPath: string) => Promise<
     { name: string; path: string; size: number; isDirectory: boolean }[]
   >

@@ -228,6 +228,13 @@ ipcMain.handle('fs:findDuplicates', async (_event, dirPath: string) => {
   return duplicates
 })
 
+ipcMain.handle('fs:computeFileHash', async (_event, filePath: string, algorithm: string) => {
+  const buffer = await readFile(filePath)
+  const hash = createHash(algorithm).update(buffer).digest('hex')
+  const fileStat = await stat(filePath)
+  return { hash, size: fileStat.size }
+})
+
 app.whenReady().then(() => {
   app.setAppUserModelId('com.toolbox.pro')
   createWindow()
