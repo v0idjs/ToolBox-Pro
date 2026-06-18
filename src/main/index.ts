@@ -164,6 +164,35 @@ ipcMain.handle('fs:getFolderSize', async (_event, dirPath: string) => {
   return results
 })
 
+ipcMain.handle('fs:listFiles', async (_event, dirPath: string) => {
+  const entries = await readdir(dirPath, { withFileTypes: true })
+  const files: { name: string; path: string; size: number }[] = []
+  for (const entry of entries) {
+    if (entry.isFile()) {
+      const fullPath = join(dirPath, entry.name)
+      const s = await stat(fullPath)
+      files.push({ name: entry.name, path: fullPath, size: s.size })
+    }
+  }
+  return files
+})
+
+ipcMain.handle('fs:batchRename', async (_event, renames: { from: string; to: string }[]) => {
+  let success = 0
+  let failed = 0
+  const errors: string[] = []
+  for (const { from, to } of renames) {
+    try {
+      await rename(from, to)
+      success++
+    } catch (err) {
+      failed++
+      errors.push(`${from} -> ${to}: ${(err as Error).message}`)
+    }
+  }
+  return { success, failed, errors }
+})
+
 ipcMain.handle('fs:findDuplicates', async (_event, dirPath: string) => {
   const filesByHash = new Map<string, string[]>()
 

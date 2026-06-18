@@ -4,6 +4,7 @@ import { FileSplitter } from '@/tools/file/FileSplitter'
 import { FileMerger } from '@/tools/file/FileMerger'
 import { FolderSizeAnalyzer } from '@/tools/file/FolderSizeAnalyzer'
 import { DuplicateFileFinder } from '@/tools/file/DuplicateFileFinder'
+import { BatchFileRename } from '@/tools/file/BatchFileRename'
 
 export function registerFileTools() {
   registerTools([
@@ -33,6 +34,15 @@ export function registerFileTools() {
       category: 'file',
       keywords: ['merge', 'combine', 'join', 'concatenate', 'files'],
       render: () => <FileMerger />
+    },
+    {
+      id: 'batch-rename',
+      name: 'Batch File Rename',
+      description: 'Rename multiple files with pattern matching, regex, numbering, and case changes',
+      icon: 'FilePen',
+      category: 'file',
+      keywords: ['rename', 'batch', 'regex', 'pattern', 'files', 'multiple'],
+      render: () => <BatchFileRename />
     },
     {
       id: 'folder-size',

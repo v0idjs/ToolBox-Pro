@@ -6,6 +6,8 @@ const api = {
   openFolder: () => ipcRenderer.invoke('dialog:openFolder'),
   saveFile: (defaultName?: string, content?: string) =>
     ipcRenderer.invoke('dialog:saveFile', defaultName, content),
+  listFiles: (dirPath: string) => ipcRenderer.invoke('fs:listFiles', dirPath),
+  batchRename: (renames: { from: string; to: string }[]) => ipcRenderer.invoke('fs:batchRename', renames),
   getFolderSize: (dirPath: string) => ipcRenderer.invoke('fs:getFolderSize', dirPath),
   findDuplicates: (dirPath: string) => ipcRenderer.invoke('fs:findDuplicates', dirPath)
 }
