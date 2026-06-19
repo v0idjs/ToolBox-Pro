@@ -7,6 +7,9 @@ import { URLEncoder } from '@/tools/developer/URLEncoder'
 import { UUIDGenerator } from '@/tools/developer/UUIDGenerator'
 import { TimestampConverter } from '@/tools/developer/TimestampConverter'
 import { ColorConverter } from '@/tools/developer/ColorConverter'
+import { JSONToCSVConverter } from '@/tools/developer/JSONToCSVConverter'
+import { NumberBaseConverter } from '@/tools/developer/NumberBaseConverter'
+import { CSSUnitConverter } from '@/tools/developer/CSSUnitConverter'
 
 export function registerDeveloperTools() {
   registerTools([
@@ -81,6 +84,33 @@ export function registerDeveloperTools() {
       category: 'developer',
       keywords: ['color', 'hex', 'rgb', 'hsl', 'convert', 'palette'],
       render: () => <ColorConverter />
+    },
+    {
+      id: 'json-csv-converter',
+      name: 'JSON ↔ CSV Converter',
+      description: 'Flatten nested JSON to CSV and parse CSV back to JSON',
+      icon: 'ArrowLeftRight',
+      category: 'developer',
+      keywords: ['json', 'csv', 'convert', 'flatten', 'parse', 'table', 'data'],
+      render: () => <JSONToCSVConverter />
+    },
+    {
+      id: 'number-base-converter',
+      name: 'Number Base Converter',
+      description: 'Convert between binary, octal, decimal, hex, and custom bases',
+      icon: 'ArrowUpDown',
+      category: 'developer',
+      keywords: ['number', 'base', 'binary', 'hex', 'decimal', 'octal', 'convert'],
+      render: () => <NumberBaseConverter />
+    },
+    {
+      id: 'css-unit-converter',
+      name: 'CSS Unit Converter',
+      description: 'Convert px, rem, em, vw with configurable base font size',
+      icon: 'Ruler',
+      category: 'developer',
+      keywords: ['css', 'px', 'rem', 'em', 'vw', 'unit', 'convert', 'responsive'],
+      render: () => <CSSUnitConverter />
     }
   ])
 }
