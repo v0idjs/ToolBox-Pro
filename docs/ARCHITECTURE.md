@@ -20,6 +20,25 @@ This document describes the architecture and design of ToolBox Pro.
 └──────────────────┴──────────────────┴───────────────────────┘
 ```
 
+## Security Model
+
+```
+┌─────────────────────────────────────────────────┐
+│  Main Process (Node.js)                        │
+│  sandbox: true | contextIsolation: true         │
+│  nodeIntegration: false                         │
+│  isPathSafe() validates file paths              │
+├─────────────────────────────────────────────────┤
+│  Preload (contextBridge)                        │
+│  Exposes only window.api methods                │
+│  No direct Node.js access from renderer         │
+├─────────────────────────────────────────────────┤
+│  Renderer (React)                               │
+│  Cannot require(), import fs, or access Node    │
+│  All native ops go through window.api           │
+└─────────────────────────────────────────────────┘
+```
+
 ## Directory Structure
 
 ```
@@ -34,22 +53,22 @@ src/
 └── renderer/                      # React Frontend
     ├── index.html                 # HTML entry point
     └── src/
-        ├── App.tsx                # Root component, routing
+        ├── App.tsx                # Root component, routing, tool registration
         ├── main.tsx               # React DOM mount
         │
         ├── assets/
-        │   └── index.css          # Global styles, Tailwind config
+        │   └── index.css          # Global styles
         │
         ├── components/
         │   ├── layout/
         │   │   ├── DashboardLayout.tsx
-        │   │   ├── Sidebar.tsx
-        │   │   └── TopNavbar.tsx
+        │   │   ├── Sidebar.tsx     # 280px sidebar, 7 categories
+        │   │   └── TopNavbar.tsx   # Search + theme toggle
         │   ├── SearchModal.tsx
         │   └── ui/               # Reusable UI components
         │
         ├── lib/
-        │   ├── theme.ts          # Theme system
+        │   ├── theme.ts          # useThemeColors() hook
         │   ├── tool-registry.ts  # Tool registration & discovery
         │   └── utils.ts          # Utility functions
         │
@@ -58,16 +77,16 @@ src/
         │   └── SettingsPage.tsx  # Application settings
         │
         ├── store/
-        │   ├── app-store.ts      # Global app state
-        │   └── settings-store.ts # User preferences
+        │   ├── app-store.ts      # Global app state (Zustand)
+        │   └── settings-store.ts # User preferences (Zustand)
         │
-        ├── tools/                 # Tool implementations
-        │   ├── security/
-        │   ├── developer/
-        │   ├── file/
-        │   ├── image/
-        │   ├── qr/
-        │   └── productivity/
+        ├── tools/                 # 37 tools across 6 categories
+        │   ├── security/         # 7 tools
+        │   ├── developer/        # 11 tools
+        │   ├── file/             # 7 tools
+        │   ├── image/            # 5 tools
+        │   ├── qr/               # 2 tools
+        │   └── productivity/     # 5 tools
         │
         └── types/
             └── tool.ts           # TypeScript interfaces
@@ -95,7 +114,7 @@ Benefits:
 - **Modularity**: Each tool is self-contained
 - **Discoverability**: Tools can be found via search
 - **Extensibility**: Easy to add new tools
-- **Isolation**: Tool failures don't affect others
+- **Isolation**: Tool failures don't affect others (App-level ErrorBoundary)
 
 ### State Management
 
@@ -105,10 +124,10 @@ Zustand stores manage application state:
    - Active tool selection
    - Search state
    - Favorites list
-   - Recent tools
+   - Recent tools (with 300ms debounce)
 
 2. **SettingsStore** (`settings-store.ts`)
-   - Theme preferences
+   - Theme preferences (dark/light/system)
    - Startup behavior
    - Accent color
 
@@ -120,98 +139,107 @@ The theme system supports:
 - System preference detection
 - Custom accent colors
 
-Colors are managed through:
-- CSS custom properties (Tailwind)
-- React hook (`useThemeColors()`)
+Colors are managed through the `useThemeColors()` hook:
+```typescript
+const colors = useThemeColors()
+// colors.bg, colors.card, colors.border, colors.text,
+// colors.textSecondary, colors.accent, colors.input,
+// colors.success, colors.warning, colors.error
+```
 
 ### IPC Communication
 
 Electron IPC handlers provide secure communication:
 
 ```
-Renderer Process → Preload → Main Process
-                              ↓
-                         Native APIs
-                              ↓
+Renderer Process → Preload (window.api) → Main Process
+                                              ↓
+                                         Native APIs
+                                              ↓
 Main Process → Preload → Renderer Process
 ```
 
 Available IPC channels:
-- `dialog:openFile` - Open file dialog
-- `dialog:openFiles` - Open multiple files
-- `dialog:openFolder` - Open folder dialog
-- `dialog:saveFile` - Save file dialog
-- `fs:readFile` - Read file content
-- `fs:writeFile` - Write file content
-- `fs:getFolderSize` - Analyze folder size
-- `fs:findDuplicates` - Find duplicate files
+
+| Channel | Description | Returns |
+|---------|-------------|---------|
+| `dialog:openFile` | Open single file dialog | `{ filePath, content, name, size }` |
+| `dialog:openFiles` | Open multi-file dialog | `{ filePath, content, name }[]` |
+| `dialog:openFolder` | Open folder picker | folder path string |
+| `dialog:saveFile` | Save dialog + optional write | saved file path |
+| `fs:getFolderSize` | Recursive directory scan | files + subdirs with sizes |
+| `fs:listFiles` | List files in directory | `{ name, path, size }[]` |
+| `fs:batchRename` | Batch rename files | `{ success, failed, errors }` |
+| `fs:findDuplicates` | Find duplicate files by MD5 | `string[][]` |
+| `fs:computeFileHash` | Compute file hash | `{ hash, size }` |
+
+### Tool Rendering
+
+App.tsx renders tools directly without a card wrapper:
+```tsx
+<div style={{ padding: '32px 40px' }}>
+  <button onClick={() => setActiveTool('home')}>Back to Dashboard</button>
+  <ErrorBoundary>
+    {tool.render()}
+  </ErrorBoundary>
+</div>
+```
+
+Each tool manages its own header (icon + h1 + subtitle), form elements, and result sections.
+
+## Tool Categories (37 total)
+
+### Security (7)
+- Password Generator, Password Strength Analyzer, Secret Scanner
+- Hash Generator, Hash Checker, Base64 Encoder/Decoder, JWT Decoder
+
+### Developer (11)
+- JSON Formatter, XML Formatter, YAML Formatter, Regex Tester
+- URL Encoder/Decoder, UUID Generator, Timestamp Converter, Color Converter
+- JSON ↔ CSV Converter, Number Base Converter, CSS Unit Converter
+
+### File (7)
+- Remove Duplicate Lines, File Splitter, File Merger
+- Batch File Rename, File Checksum Verifier
+- Folder Size Analyzer, Duplicate File Finder
+
+### Image (5)
+- Image Converter, Image Compressor, Image Resizer
+- Image Metadata Viewer, Color Picker
+
+### QR & Barcode (2)
+- QR Generator, Barcode Generator
+
+### Productivity (5)
+- Notes, To-Do Manager, Pomodoro Timer, Stopwatch, Countdown Timer
 
 ## Data Flow
 
 ```
 User Action
     ↓
-React Component
+React Component (tool)
     ↓
-Zustand Store (state update)
+Zustand Store (state update) or window.api call
     ↓
 UI Re-render
     ↓
-[Optional] IPC Call
-    ↓
-Main Process (file system / native API)
-    ↓
-Response → Renderer
+[If IPC] Main Process → Native API → Response → Renderer
 ```
-
-## Tool Categories
-
-### Security Tools
-- Password Generator
-- Hash Generator/Checker
-- Base64 Encoder/Decoder
-- JWT Decoder
-
-### Developer Tools
-- JSON/XML/YAML Formatters
-- Regex Tester
-- URL Encoder/Decoder
-- UUID Generator
-- Timestamp Converter
-- Color Converter
-
-### File Tools
-- Duplicate Line Remover
-- File Splitter/Merger
-- Folder Size Analyzer
-- Duplicate File Finder
-
-### Image Tools
-- Image Converter/Compressor/Resizer
-- Image Metadata Viewer
-- Color Picker
-
-### QR & Barcode Tools
-- QR Generator
-- Barcode Generator
-
-### Productivity Tools
-- Notes
-- Todo Manager
-- Timers (Pomodoro, Stopwatch, Countdown)
 
 ## Performance Considerations
 
-- **Lazy Loading**: Tools are loaded on-demand
-- **Virtual Lists**: Large lists use virtualization
+- **Eager Loading**: All tools loaded at startup (lazy loading planned)
 - **Debounced Search**: Search input is debounced
-- **Memoization**: React components are memoized where beneficial
-- **Memory Management**: Large file operations stream data
+- **Debounced Persistence**: TodoManager uses 300ms debounce on localStorage writes
+- **requestAnimationFrame**: Stopwatch uses rAF for smooth 60fps updates
+- **Error Boundaries**: App-level ErrorBoundary catches tool crashes
 
 ## Security Considerations
 
-- **Context Isolation**: Renderer process is isolated
-- **Node Integration**: Disabled in renderer
-- **Sandbox**: Enabled where possible
-- **Input Validation**: All IPC inputs are validated
-- **Local Storage**: No external network requests
+- **Context Isolation**: Renderer process is isolated from Node.js
+- **Sandbox**: Renderer runs in sandboxed environment
+- **Node Integration**: Disabled — no `require()` in renderer
+- **Path Validation**: `isPathSafe()` blocks access to system directories
+- **No External Requests**: All data processed locally
+- **Secure Preload**: Only explicit `window.api` methods exposed

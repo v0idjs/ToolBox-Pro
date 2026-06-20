@@ -4,7 +4,7 @@
 
 ### What is ToolBox Pro?
 
-ToolBox Pro is a desktop application that combines multiple utility tools in one place. It's designed for developers, power users, and anyone who needs quick access to common tools like password generators, formatters, converters, and more.
+ToolBox Pro is a desktop application that combines 37 utility tools in one place. It's designed for developers, power users, and anyone who needs quick access to common tools like password generators, formatters, converters, and more.
 
 ### Is ToolBox Pro free?
 
@@ -20,6 +20,16 @@ ToolBox Pro currently supports:
 ### Does ToolBox Pro require internet?
 
 No, ToolBox Pro works completely offline. All tools process data locally on your machine.
+
+### How many tools are included?
+
+37 tools across 6 categories:
+- **Security** (7): Password Generator, Password Strength Analyzer, Secret Scanner, Hash Generator, Hash Checker, Base64, JWT Decoder
+- **Developer** (11): JSON/XML/YAML Formatters, Regex Tester, URL Encoder, UUID Generator, Timestamp Converter, Color Converter, JSON↔CSV, Number Base, CSS Unit
+- **File** (7): Remove Duplicates, File Splitter, File Merger, Batch Rename, Checksum Verifier, Folder Size, Duplicate Finder
+- **Image** (5): Image Converter, Compressor, Resizer, Metadata Viewer, Color Picker
+- **QR & Barcode** (2): QR Generator, Barcode Generator
+- **Productivity** (5): Notes, To-Do Manager, Pomodoro Timer, Stopwatch, Countdown Timer
 
 ## Installation
 
@@ -66,7 +76,11 @@ Settings are stored locally:
 
 ### Are my passwords secure?
 
-ToolBox Pro processes all data locally. No passwords or sensitive data are sent anywhere. The app doesn't have internet access by default.
+ToolBox Pro processes all data locally. No passwords or sensitive data are sent anywhere. The app runs with sandbox enabled and node integration disabled for maximum security.
+
+### What's the Secret Scanner?
+
+The Secret Scanner detects 50+ types of leaked API keys, tokens, and credentials in code. It covers AWS, GitHub, OpenAI, Stripe, Slack, and many more services across 14 categories with severity classification (HIGH/MEDIUM/LOW).
 
 ## Development
 
@@ -76,12 +90,13 @@ See the [Contributing Guide](CONTRIBUTING.md) for detailed instructions.
 
 ### What tech stack is used?
 
-- Electron - Desktop framework
-- React - UI library
-- TypeScript - Language
-- Tailwind CSS - Styling
-- Zustand - State management
-- electron-vite - Build tool
+- **Electron 35** - Desktop framework
+- **React 19** - UI library
+- **TypeScript 5** - Language
+- **Zustand** - State management
+- **electron-vite** - Build tool
+- **Lucide React** - Icons
+- **qrcode** - QR code generation
 
 ### How do I add a new tool?
 

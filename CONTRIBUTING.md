@@ -130,10 +130,12 @@ export function MyComponent({ title, onSubmit }: MyComponentProps) {
 
 ### Styling
 
-- Use Tailwind CSS utility classes
-- Use the `cn()` utility for conditional classes
-- Follow the existing color theme (dark mode primary)
-- Keep inline styles minimal - prefer Tailwind
+- Use inline styles with `useThemeColors()` for all colors
+- Avoid hardcoded color values — use `colors.accent`, `colors.text`, etc.
+- Follow the existing design conventions (fontSize 28/700 for titles, 15 for subtitles)
+- Form elements: padding 14-16, borderRadius 10, `colors.input` background
+- Primary buttons: 14px 28px, borderRadius 10, `colors.accent` background
+- Result sections: Copy button + metadata rows
 
 ### File Organization
 

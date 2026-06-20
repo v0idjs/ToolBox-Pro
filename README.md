@@ -4,13 +4,12 @@
 
 **Universal Local Productivity Toolkit**
 
-A modern desktop application containing multiple useful local tools in a single application. Works completely offline with a premium dark dashboard UI.
+A modern desktop application containing 37 utility tools in a single application. Works completely offline with a premium dashboard UI.
 
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Electron](https://img.shields.io/badge/Electron-35.x-purple.svg)](https://www.electronjs.org/)
 [![React](https://img.shields.io/badge/React-19.x-61DAFB.svg)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6.svg)](https://www.typescriptlang.org/)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/toolbox-pro/toolbox-pro/ci.yml?branch=main)](https://github.com/v0idjs/toolbox-pro/actions)
 
 </div>
 
@@ -18,14 +17,16 @@ A modern desktop application containing multiple useful local tools in a single 
 
 ## Features
 
-### Security Tools
+### Security Tools (7)
 - **Password Generator** - Generate secure passwords with customizable length, character types, and strength meter
-- **Hash Generator** - Create MD5, SHA-1, SHA-256, and SHA-512 hashes
+- **Password Strength Analyzer** - Analyze entropy, detect patterns, and estimate crack time across 4 attack scenarios
+- **Secret Scanner** - Detect 50+ types of leaked API keys, tokens, and credentials in code (AWS, GitHub, OpenAI, Stripe, etc.)
+- **Hash Generator** - Create SHA-1, SHA-256, and SHA-512 hashes
 - **Hash Checker** - Compare and verify hash values
 - **Base64 Encoder/Decoder** - Encode and decode Base64 strings
 - **JWT Decoder** - Inspect JSON Web Token payloads
 
-### Developer Tools
+### Developer Tools (11)
 - **JSON Formatter** - Beautify, minify, and validate JSON
 - **XML Formatter** - Format and validate XML documents
 - **YAML Formatter** - Format and validate YAML files
@@ -34,31 +35,38 @@ A modern desktop application containing multiple useful local tools in a single 
 - **UUID Generator** - Generate UUID v4 identifiers
 - **Timestamp Converter** - Convert between Unix timestamps and human-readable dates
 - **Color Converter** - Convert between HEX, RGB, and HSL color formats
+- **JSON ↔ CSV Converter** - Flatten nested JSON to CSV and parse CSV back to JSON with dot-notation keys
+- **Number Base Converter** - Convert between binary, octal, decimal, hex, and custom bases in real time
+- **CSS Unit Converter** - Convert px, rem, em, vw with configurable base font size and viewport width
 
-### File Tools
-- **Remove Duplicate Lines** - Deduplicate text content
-- **File Splitter** - Split large files into smaller parts
+### File Tools (7)
+- **Remove Duplicate Lines** - Deduplicate text content with file upload support
+- **File Splitter** - Split large files into smaller parts (Windows line-ending aware)
 - **File Merger** - Combine multiple files into one
-- **Folder Size Analyzer** - Analyze disk usage by folder
+- **Batch File Rename** - Rename multiple files with find/replace, regex, prefix/suffix, numbering, and case changes
+- **File Checksum Verifier** - Verify file integrity with MD5, SHA-1, or SHA-256 via drag & drop
+- **Folder Size Analyzer** - Analyze disk usage with recursive folder size calculation
 - **Duplicate File Finder** - Find duplicate files by content hash
 
-### Image Tools
+### Image Tools (5)
 - **Image Converter** - Convert between PNG, JPG, WEBP, and BMP formats
-- **Image Compressor** - Reduce image file sizes
+- **Image Compressor** - Reduce image file sizes with adjustable quality
 - **Image Resizer** - Resize images to custom dimensions
 - **Image Metadata Viewer** - View EXIF and other image metadata
-- **Color Picker** - Pick colors from images or the screen
+- **Color Picker** - Pick colors from images
 
-### QR & Barcode Tools
-- **QR Generator** - Create QR codes for text, URLs, and WiFi configs
-- **Barcode Generator** - Generate various barcode formats
+### QR & Barcode Tools (2)
+- **QR Generator** - Create QR codes for text, URLs, and WiFi configs (powered by `qrcode` library)
+- **Barcode Generator** - Generate CODE128 barcodes
 
-### Productivity Tools
+### Productivity Tools (5)
 - **Notes** - Local note-taking with storage
 - **To-Do Manager** - Task management with priorities
 - **Pomodoro Timer** - Focus timer with work/break intervals
-- **Stopwatch** - Precision timing
+- **Stopwatch** - Precision timing with requestAnimationFrame
 - **Countdown Timer** - Custom countdown with alerts
+
+**Total: 37 tools across 6 categories**
 
 ## Screenshots
 
@@ -135,17 +143,16 @@ toolbox-pro/
 │           ├── pages/           # Dashboard and settings pages
 │           ├── store/           # Zustand state management
 │           ├── tools/           # Tool implementations
-│           │   ├── security/    # Security tools
-│           │   ├── developer/   # Developer tools
-│           │   ├── file/        # File manipulation tools
-│           │   ├── image/       # Image processing tools
-│           │   ├── qr/          # QR and barcode tools
-│           │   └── productivity/# Productivity tools
+│           │   ├── security/    # Security tools (7)
+│           │   ├── developer/   # Developer tools (11)
+│           │   ├── file/        # File tools (7)
+│           │   ├── image/       # Image tools (5)
+│           │   ├── qr/          # QR & barcode tools (2)
+│           │   └── productivity/# Productivity tools (5)
 │           └── types/           # TypeScript type definitions
 ├── build/                       # Build resources (icons)
 ├── resources/                   # App resources
 ├── docs/                        # Documentation
-├── .github/                     # GitHub community files
 ├── package.json
 ├── tsconfig.json
 ├── electron.vite.config.ts
@@ -156,15 +163,30 @@ toolbox-pro/
 
 | Category | Technology |
 |----------|------------|
-| Framework | [Electron](https://www.electronjs.org/) |
+| Framework | [Electron 35](https://www.electronjs.org/) |
 | UI Library | [React 19](https://react.dev/) |
-| Language | [TypeScript](https://www.typescriptlang.org/) |
+| Language | [TypeScript 5](https://www.typescriptlang.org/) |
 | Build Tool | [electron-vite](https://electron-vite.org/) |
-| Styling | [Tailwind CSS 4](https://tailwindcss.com/) |
 | State Management | [Zustand](https://github.com/pmndrs/zustand) |
-| Animations | [Framer Motion](https://www.framer.com/motion/) |
 | Icons | [Lucide React](https://lucide.dev/) |
+| QR Library | [qrcode](https://www.npmjs.com/package/qrcode) |
 | Packaging | [electron-builder](https://www.electron.build/) |
+
+## IPC API
+
+ToolBox Pro exposes a secure `window.api` bridge for native operations:
+
+| Method | Description |
+|--------|-------------|
+| `window.api.openFile()` | Open single file dialog → `{ filePath, content, name, size }` |
+| `window.api.openFiles()` | Open multi-file dialog → `{ filePath, content, name }[]` |
+| `window.api.openFolder()` | Open folder picker → folder path string |
+| `window.api.saveFile(name, content)` | Save dialog, optionally writes content |
+| `window.api.getFolderSize(dirPath)` | Recursively scan directory → files + subdirs with sizes |
+| `window.api.listFiles(dirPath)` | List files in a directory |
+| `window.api.batchRename(renames)` | Batch rename files → `{ success, failed, errors }` |
+| `window.api.findDuplicates(dirPath)` | Find duplicate files by MD5 hash |
+| `window.api.computeFileHash(path, algo)` | Compute file hash → `{ hash, size }` |
 
 ## Development
 
@@ -219,17 +241,19 @@ ToolBox Pro works out of the box with no configuration required. All data is sto
 | `Ctrl+K` | Open search modal |
 | `Esc` | Close modal / Go back |
 
-## Contributing
-
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details on:
-
-- Setting up the development environment
-- Coding standards
-- Pull request process
-
 ## Security
 
-For reporting security vulnerabilities, please see our [Security Policy](SECURITY.md).
+- **Context Isolation** enabled — renderer cannot access Node.js APIs directly
+- **Sandbox** enabled — renderer runs in a sandboxed environment
+- **Node Integration** disabled — no `require()` in renderer process
+- **Path Validation** — file system access validated against blocked paths
+- **Local-First** — all data processed locally, no external network requests
+
+For reporting security vulnerabilities, see [SECURITY.md](SECURITY.md).
+
+## Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## Changelog
 
@@ -242,4 +266,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Acknowledgments
 
 - Inspired by [Microsoft PowerToys](https://github.com/microsoft/PowerToys), [DevToys](https://github.com/veler/devtoys), and [Raycast](https://raycast.com/)
-- Built with Electron, React, and Tailwind CSS
+- Built with Electron, React, and Zustand

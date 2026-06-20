@@ -40,14 +40,25 @@ This starts the app with hot-reload. Changes to source files will automatically 
 ```
 src/
 ├── main/          # Electron main process (Node.js)
+│   └── index.ts   # IPC handlers, window creation
 ├── preload/       # Bridge between main and renderer
+│   ├── index.ts   # window.api methods
+│   └── index.d.ts # Type definitions
 └── renderer/      # React frontend
     └── src/
-        ├── components/  # Shared UI components
-        ├── tools/       # Tool implementations
-        ├── store/       # State management
-        ├── lib/         # Utilities
-        └── pages/       # Page components
+        ├── App.tsx              # Root component, tool registration
+        ├── components/layout/   # Sidebar, TopNavbar, DashboardLayout
+        ├── lib/                 # theme.ts, tool-registry.ts, utils.ts
+        ├── pages/               # DashboardHome, SettingsPage
+        ├── store/               # Zustand stores (app-store, settings-store)
+        ├── tools/               # 37 tools across 6 categories
+        │   ├── security/        # 7 tools
+        │   ├── developer/       # 11 tools
+        │   ├── file/            # 7 tools
+        │   ├── image/           # 5 tools
+        │   ├── qr/              # 2 tools
+        │   └── productivity/    # 5 tools
+        └── types/tool.ts        # ToolModule interface
 ```
 
 ### Adding a New Tool
@@ -56,53 +67,96 @@ src/
 
 ```tsx
 // src/renderer/src/tools/<category>/MyTool.tsx
-import { useState } from 'react'
-import type { ToolModule } from '@/types/tool'
+import { useState, useCallback } from 'react'
+import { Wrench, Copy, Check } from 'lucide-react'
+import { useThemeColors } from '@/lib/theme'
 
-function MyToolComponent() {
+export function MyToolComponent() {
   const [input, setInput] = useState('')
-  
+  const [output, setOutput] = useState('')
+  const [copied, setCopied] = useState(false)
+  const colors = useThemeColors()
+
+  const handleConvert = useCallback(() => {
+    // Process input
+    setOutput(result)
+  }, [input])
+
+  const handleCopy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(output)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    } catch {}
+  }, [output])
+
   return (
-    <div>
-      <input
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        placeholder="Enter something..."
-      />
-      {/* Tool UI */}
+    <div style={{ color: colors.text }}>
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+          <Wrench size={28} color={colors.accent} />
+          <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0 }}>My Tool</h1>
+        </div>
+        <p style={{ fontSize: 15, color: colors.textSecondary, margin: 0 }}>
+          Description of what this tool does
+        </p>
+      </div>
+      {/* Tool body */}
     </div>
   )
 }
-
-export const myTool: ToolModule = {
-  id: 'my-tool',
-  name: 'My Tool',
-  description: 'Does something useful',
-  icon: 'Wrench',
-  category: 'developer',
-  keywords: ['tool', 'utility'],
-  render: () => <MyToolComponent />
-}
 ```
 
-2. **Register the tool**:
+2. **Register the tool** in the category's `index.tsx`:
 
 ```tsx
 // src/renderer/src/tools/<category>/index.tsx
 import { registerTools } from '@/lib/tool-registry'
-import { myTool } from './MyTool'
+import { MyToolComponent } from './MyTool'
 
 export function registerMyTools() {
-  registerTools([myTool])
+  registerTools([
+    {
+      id: 'my-tool',
+      name: 'My Tool',
+      description: 'What this tool does',
+      icon: 'Wrench',
+      category: 'developer',
+      keywords: ['tool', 'utility'],
+      render: () => <MyToolComponent />
+    }
+  ])
 }
 ```
 
-3. **Import in App.tsx**:
+3. **Import in App.tsx** (if new category):
 
 ```tsx
 import { registerMyTools } from './tools/my-category'
-
 registerMyTools()
+```
+
+### Design Conventions
+
+All tools follow this consistent layout:
+
+```tsx
+<div style={{ color: colors.text }}>
+  {/* Header: icon + h1 + subtitle */}
+  <div style={{ marginBottom: 32 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+      <Icon size={28} color={colors.accent} />
+      <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0 }}>Tool Name</h1>
+    </div>
+    <p style={{ fontSize: 15, color: colors.textSecondary, margin: 0 }}>
+      Description
+    </p>
+  </div>
+
+  {/* Form elements use: padding 14-16, borderRadius 10, colors.input background */}
+  {/* Primary buttons: 14px 28px, borderRadius 10, colors.accent background */}
+  {/* Result sections: Copy button + metadata rows */}
+</div>
 ```
 
 ### Working with State
@@ -114,7 +168,7 @@ import { useAppStore } from '@/store/app-store'
 
 function MyComponent() {
   const { favorites, toggleFavorite } = useAppStore()
-  
+
   return (
     <button onClick={() => toggleFavorite('tool-id')}>
       {favorites.includes('tool-id') ? 'Unfavorite' : 'Favorite'}
@@ -132,7 +186,10 @@ import { useThemeColors } from '@/lib/theme'
 
 function MyComponent() {
   const colors = useThemeColors()
-  
+  // colors.bg, colors.card, colors.border, colors.text,
+  // colors.textSecondary, colors.accent, colors.input,
+  // colors.success, colors.warning, colors.error
+
   return (
     <div style={{ backgroundColor: colors.card, color: colors.text }}>
       Themed content
@@ -143,19 +200,42 @@ function MyComponent() {
 
 ### File Operations
 
-Use the preload API for file operations:
+Use the preload API for file operations (all go through native dialogs):
 
 ```tsx
 const api = window.api
 
-// Open a file
+// Open a single file (shows native dialog)
 const file = await api.openFile()
+// Returns: { filePath, content, name, size } or null
 
-// Save a file
-await api.saveFile('output.txt', content)
+// Open multiple files
+const files = await api.openFiles()
+// Returns: { filePath, content, name }[]
 
-// Read a file
-const content = await api.readFile('/path/to/file')
+// Open a folder
+const folder = await api.openFolder()
+// Returns: folder path string or null
+
+// Save a file (shows save dialog)
+const savedPath = await api.saveFile('output.txt', content)
+// Returns: saved file path or null
+
+// List files in a directory
+const files = await api.listFiles('/path/to/dir')
+// Returns: { name, path, size }[]
+
+// Batch rename files
+const result = await api.batchRename([{ from: 'old.txt', to: 'new.txt' }])
+// Returns: { success, failed, errors }
+
+// Find duplicate files
+const duplicates = await api.findDuplicates('/path/to/dir')
+// Returns: string[][] (groups of duplicate file paths)
+
+// Compute file hash
+const { hash, size } = await api.computeFileHash('/path/to/file', 'sha256')
+// Returns: { hash: string, size: number }
 ```
 
 ## Available Scripts
@@ -188,10 +268,9 @@ const content = await api.readFile('/path/to/file')
 
 ### Styling
 
-- Use Tailwind CSS utilities
-- Use the `cn()` helper for conditional classes
-- Follow the existing color theme
-- Keep inline styles minimal
+- Use inline styles with `useThemeColors()` for all colors
+- Avoid hardcoded color values (use `colors.accent`, `colors.text`, etc.)
+- Follow the design conventions (fontSize 28/700 for titles, 15 for subtitles, etc.)
 
 ### Naming
 
@@ -232,10 +311,7 @@ Ensure the build completes without errors.
 
 ### Electron DevTools
 
-In development mode, DevTools open automatically. You can also:
-
-- Press `F12` to toggle DevTools
-- Use `Ctrl+Shift+I` (Windows/Linux) or `Cmd+Option+I` (macOS)
+In development mode, press `F12` to toggle DevTools.
 
 ### Main Process Debugging
 
@@ -266,10 +342,11 @@ Then connect with Chrome DevTools at `chrome://inspect`.
 1. Create a feature branch from `main`
 2. Make your changes
 3. Run type checks: `npm run typecheck`
-4. Test your changes
-5. Commit with conventional commits
-6. Push and create a PR
-7. Fill out the PR template
-8. Wait for review
+4. Build: `npm run build`
+5. Test your changes
+6. Commit with conventional commits
+7. Push and create a PR
+8. Fill out the PR template
+9. Wait for review
 
 See [CONTRIBUTING.md](../CONTRIBUTING.md) for detailed guidelines.
