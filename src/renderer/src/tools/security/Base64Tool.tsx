@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Copy, Check, ArrowUpDown, Lock, Zap } from 'lucide-react'
 import { useThemeColors } from '@/lib/theme'
+import { ToolHeader, Button, SectionLabel } from '@/components/ui'
 
 export function Base64Tool() {
   const [input, setInput] = useState('')
@@ -38,180 +39,119 @@ export function Base64Tool() {
   }
 
   return (
-    <div style={{ color: colors.text }}>
-      <div style={{ marginBottom: 32 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-          <Lock size={28} color={colors.accent} />
-          <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0 }}>Base64 Encoder/Decoder</h1>
+    <div>
+      <ToolHeader
+        name="Base64 Encoder/Decoder"
+        description="Encode and decode Base64 strings for data transmission and storage."
+        category="security"
+        icon={Lock}
+        serial="base64"
+      />
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div className="tb-panel" style={{ padding: 20 }}>
+          <SectionLabel hint={`${input.length} chars`}>
+            {mode === 'encode' ? 'Plain Text' : 'Base64'}
+          </SectionLabel>
+          <textarea
+            className="tb-field tb-mono"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder={mode === 'encode' ? 'Enter text to encode...' : 'Enter Base64 to decode...'}
+            spellCheck={false}
+            style={{ width: '100%', minHeight: 150, resize: 'vertical', fontSize: 13.5 }}
+          />
+          <div style={{ display: 'flex', gap: 10, marginTop: 14 }}>
+            {(['encode', 'decode'] as const).map((m) => (
+              <button
+                key={m}
+                onClick={() => setMode(m)}
+                style={{
+                  padding: '7px 18px',
+                  background: mode === m ? colors.accent : 'transparent',
+                  color: mode === m ? colors.onAccent : colors.textSecondary,
+                  border: `1px solid ${mode === m ? colors.accent : colors.border}`,
+                  borderRadius: 'var(--tb-radius-ctl)',
+                  fontSize: 13,
+                  fontWeight: mode === m ? 600 : 500,
+                  cursor: 'pointer',
+                  transition: 'background-color var(--tb-speed-fast) ease, border-color var(--tb-speed-fast) ease, color var(--tb-speed-fast) ease'
+                }}
+              >
+                {m === 'encode' ? 'Encode' : 'Decode'}
+              </button>
+            ))}
+          </div>
         </div>
-        <p style={{ fontSize: 15, color: colors.textSecondary, margin: 0, lineHeight: 1.5 }}>
-          Encode and decode Base64 strings for data transmission and storage.
-        </p>
-      </div>
 
-      <div style={{ display: 'flex', gap: 10, marginBottom: 24 }}>
-        <button
-          onClick={() => setMode('encode')}
-          style={{
-            padding: '10px 20px',
-            background: mode === 'encode' ? colors.accent : 'transparent',
-            color: mode === 'encode' ? '#fff' : colors.text,
-            border: `1px solid ${mode === 'encode' ? colors.accent : colors.border}`,
-            borderRadius: 8,
-            fontSize: 14,
-            cursor: 'pointer',
-            fontWeight: mode === 'encode' ? 600 : 400
-          }}
-        >
-          Encode
-        </button>
-        <button
-          onClick={() => setMode('decode')}
-          style={{
-            padding: '10px 20px',
-            background: mode === 'decode' ? colors.accent : 'transparent',
-            color: mode === 'decode' ? '#fff' : colors.text,
-            border: `1px solid ${mode === 'decode' ? colors.accent : colors.border}`,
-            borderRadius: 8,
-            fontSize: 14,
-            cursor: 'pointer',
-            fontWeight: mode === 'decode' ? 600 : 400
-          }}
-        >
-          Decode
-        </button>
-      </div>
-
-      <div style={{ marginBottom: 24 }}>
-        <label style={{ display: 'block', fontSize: 15, fontWeight: 500, color: colors.textSecondary, marginBottom: 10 }}>
-          {mode === 'encode' ? 'Plain Text' : 'Base64'}
-        </label>
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder={mode === 'encode' ? 'Enter text to encode...' : 'Enter Base64 to decode...'}
-          style={{
-            width: '100%',
-            minHeight: 160,
-            padding: 16,
-            borderRadius: 10,
-            border: `1px solid ${colors.border}`,
-            backgroundColor: colors.input,
-            color: colors.text,
-            fontSize: 15,
-            fontFamily: 'monospace',
-            resize: 'vertical',
-            outline: 'none',
-            boxSizing: 'border-box',
-            lineHeight: 1.6
-          }}
-        />
-      </div>
-
-      <div style={{ display: 'flex', gap: 12, marginBottom: 32 }}>
-        <button
-          onClick={process}
-          disabled={!input}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '14px 28px',
-            borderRadius: 10,
-            border: 'none',
-            backgroundColor: colors.accent,
-            color: '#fff',
-            fontSize: 15,
-            fontWeight: 600,
-            cursor: input ? 'pointer' : 'not-allowed',
-            opacity: input ? 1 : 0.5
-          }}
-        >
-          <Zap size={18} />
-          {mode === 'encode' ? 'Encode' : 'Decode'}
-        </button>
-        <button
-          onClick={swap}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '14px 28px',
-            borderRadius: 10,
-            border: `1px solid ${colors.border}`,
-            backgroundColor: 'transparent',
-            color: colors.textSecondary,
-            fontSize: 15,
-            fontWeight: 500,
-            cursor: 'pointer'
-          }}
-        >
-          <ArrowUpDown size={16} />
-          Swap
-        </button>
-      </div>
-
-      {error && (
-        <div style={{
-          padding: '12px 16px',
-          borderRadius: 10,
-          backgroundColor: '#7F1D1D',
-          border: '1px solid #B91C1C',
-          color: '#FCA5A5',
-          fontSize: 15,
-          marginBottom: 24
-        }}>
-          {error}
+        <div style={{ display: 'flex', gap: 10 }}>
+          <Button variant="primary" size="lg" icon={Zap} onClick={process} disabled={!input}>
+            {mode === 'encode' ? 'Encode' : 'Decode'}
+          </Button>
+          <Button variant="secondary" size="lg" icon={ArrowUpDown} onClick={swap}>
+            Swap
+          </Button>
         </div>
-      )}
 
-      {output && (
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-            <span style={{ fontSize: 15, fontWeight: 500, color: colors.textSecondary }}>
+        {error && (
+          <div
+            style={{
+              padding: '12px 16px',
+              background: `${colors.error}15`,
+              border: `1px solid ${colors.error}40`,
+              borderRadius: 'var(--tb-radius-ctl)',
+              color: colors.error,
+              fontSize: 14
+            }}
+          >
+            {error}
+          </div>
+        )}
+
+        {output && (
+          <div className="tb-panel" style={{ padding: 20 }}>
+            <SectionLabel hint={`${output.length} chars`}>
               {mode === 'encode' ? 'Base64 Output' : 'Decoded Text'}
-            </span>
-            <button
-              onClick={copyToClipboard}
+            </SectionLabel>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 10 }}>
+              <Button
+                variant="secondary"
+                size="sm"
+                icon={copied ? Check : Copy}
+                onClick={copyToClipboard}
+                style={
+                  copied
+                    ? { color: colors.success, borderColor: colors.success }
+                    : undefined
+                }
+              >
+                {copied ? 'Copied' : 'Copy'}
+              </Button>
+            </div>
+            <div
+              className="tb-mono"
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '8px 16px',
-                borderRadius: 8,
+                padding: 14,
+                background: colors.bgDeep,
                 border: `1px solid ${colors.border}`,
-                backgroundColor: 'transparent',
-                color: copied ? '#22C55E' : colors.textSecondary,
-                fontSize: 14,
-                cursor: 'pointer'
+                borderRadius: 'var(--tb-radius-ctl)',
+                fontSize: 13.5,
+                wordBreak: 'break-all',
+                color: colors.text,
+                lineHeight: 1.6
               }}
             >
-              {copied ? <Check size={14} /> : <Copy size={14} />}
-              {copied ? 'Copied' : 'Copy'}
-            </button>
+              {output}
+            </div>
+            <p
+              className="tb-mono"
+              style={{ marginTop: 12, fontSize: 11, letterSpacing: '0.04em', color: colors.textFaint }}
+            >
+              Mode: {mode === 'encode' ? 'Encoding' : 'Decoding'} · Input: {input.length} chars · Output: {output.length} chars
+            </p>
           </div>
-          <div style={{
-            padding: 16,
-            background: colors.input,
-            border: `1px solid ${colors.border}`,
-            borderRadius: 10,
-            fontFamily: 'monospace',
-            fontSize: 14,
-            wordBreak: 'break-all',
-            color: colors.text,
-            lineHeight: 1.6
-          }}>
-            {output}
-          </div>
-          <div style={{ marginTop: 12, fontSize: 13, color: colors.textSecondary, display: 'flex', gap: 16 }}>
-            <span>📊 Mode: {mode === 'encode' ? 'Encoding' : 'Decoding'}</span>
-            <span style={{ color: colors.border }}>|</span>
-            <span>📊 Input: {input.length} chars</span>
-            <span style={{ color: colors.border }}>|</span>
-            <span>📊 Output: {output.length} chars</span>
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }

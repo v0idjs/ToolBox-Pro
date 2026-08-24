@@ -1,6 +1,7 @@
-import React, { useState, useRef } from 'react';
-import { BarChart3, Download, Zap } from 'lucide-react';
-import { useThemeColors } from '@/lib/theme';
+import { useState, useRef } from 'react'
+import { BarChart3, Download, Zap } from 'lucide-react'
+import { useThemeColors } from '@/lib/theme'
+import { ToolHeader, Button, Input, Select, SectionLabel } from '@/components/ui'
 
 const CODE128B_ENCODING: Record<string, string> = {
   ' ': '11011001100',
@@ -99,10 +100,10 @@ const CODE128B_ENCODING: Record<string, string> = {
   '}': '10001000110',
   '~': '10111010000',
   '\x7F': '10111000100',
-};
+}
 
-const START_B = '104';
-const STOP = '106';
+const START_B = '104'
+const STOP = '106'
 
 const BAR_WIDTHS: Record<number, number> = {
   0: 2, 1: 2, 2: 2, 3: 2, 4: 2, 5: 2, 6: 2, 7: 2,
@@ -121,7 +122,7 @@ const BAR_WIDTHS: Record<number, number> = {
   92: 2, 93: 2, 94: 2, 95: 2, 96: 2, 97: 2, 98: 2,
   99: 2, 100: 2, 101: 2, 102: 2, 103: 2, 104: 3, 105: 3,
   106: 4,
-};
+}
 
 function getChecksum(text: string): number {
   let sum = 104;
@@ -296,188 +297,105 @@ function drawBarcode(canvas: HTMLCanvasElement, text: string, multiplier: number
 }
 
 export function BarcodeGenerator() {
-  const [content, setContent] = useState('');
-  const [format, setFormat] = useState('CODE128');
-  const [multiplier, setMultiplier] = useState(2);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const c = useThemeColors();
+  const [content, setContent] = useState('')
+  const [format, setFormat] = useState('CODE128')
+  const [multiplier, setMultiplier] = useState(2)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const colors = useThemeColors()
 
   const handleGenerate = () => {
-    if (!content || !canvasRef.current) return;
-    drawBarcode(canvasRef.current, content, multiplier);
-  };
+    if (!content || !canvasRef.current) return
+    drawBarcode(canvasRef.current, content, multiplier)
+  }
 
   const handleDownload = () => {
-    if (!canvasRef.current) return;
-    const link = document.createElement('a');
-    link.download = `barcode-${content}.png`;
-    link.href = canvasRef.current.toDataURL('image/png');
-    link.click();
-  };
-
-  const labelStyle: React.CSSProperties = {
-    color: c.textSecondary,
-    fontSize: '15px',
-    fontWeight: '500',
-    display: 'block',
-    marginBottom: '10px',
-  };
-
-  const inputStyle: React.CSSProperties = {
-    width: '100%',
-    padding: '14px',
-    backgroundColor: c.input,
-    border: `1px solid ${c.border}`,
-    borderRadius: '10px',
-    color: c.text,
-    fontSize: '15px',
-    outline: 'none',
-    boxSizing: 'border-box',
-  };
+    if (!canvasRef.current) return
+    const link = document.createElement('a')
+    link.download = `barcode-${content}.png`
+    link.href = canvasRef.current.toDataURL('image/png')
+    link.click()
+  }
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      fontFamily: 'system-ui, -apple-system, sans-serif',
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
-        <BarChart3 size={28} color={c.accent} />
-        <div>
-          <h1 style={{ color: c.text, fontSize: '28px', fontWeight: '700', margin: 0 }}>
-            Barcode Generator
-          </h1>
-          <p style={{ color: c.textSecondary, fontSize: '15px', margin: 0, marginTop: '4px' }}>
-            Generate barcodes in various formats
-          </p>
+    <div>
+      <ToolHeader
+        name="Barcode Generator"
+        description="Generate CODE128, CODE39, and EAN-13 barcodes."
+        category="qr"
+        icon={BarChart3}
+        serial="barcode-generator"
+      />
+
+      <div className="tb-panel" style={{ padding: 20, marginBottom: 16 }}>
+        <SectionLabel>Content</SectionLabel>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <Input
+            type="text"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder="Enter text or numbers"
+          />
+          <Select value={format} onChange={(e) => setFormat(e.target.value)}>
+            <option value="CODE128">CODE128</option>
+            <option value="CODE39">CODE39</option>
+            <option value="EAN-13">EAN-13</option>
+          </Select>
         </div>
       </div>
 
-      <div style={{ marginBottom: '24px' }}>
-        <label style={labelStyle}>
-          Content
-        </label>
-        <input
-          type="text"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="Enter text or numbers"
-          style={inputStyle}
-        />
-      </div>
-
-      <div style={{ marginBottom: '24px' }}>
-        <label style={labelStyle}>
-          Format
-        </label>
-        <select
-          value={format}
-          onChange={(e) => setFormat(e.target.value)}
-          style={{
-            ...inputStyle,
-            cursor: 'pointer',
-          }}
-        >
-          <option value="CODE128">CODE128</option>
-          <option value="CODE39">CODE39</option>
-          <option value="EAN-13">EAN-13</option>
-        </select>
-      </div>
-
-      <div style={{ marginBottom: '28px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-          <label style={{ ...labelStyle, marginBottom: 0 }}>
-            Size Multiplier
-          </label>
-          <span style={{ color: c.text, fontSize: '14px', fontFamily: 'monospace' }}>
-            {multiplier}x
-          </span>
-        </div>
+      <div className="tb-panel" style={{ padding: 20, marginBottom: 16 }}>
+        <SectionLabel hint={`${multiplier}x`}>Size multiplier</SectionLabel>
         <input
           type="range"
-          min="1"
-          max="4"
-          step="1"
+          min={1}
+          max={4}
+          step={1}
           value={multiplier}
           onChange={(e) => setMultiplier(Number(e.target.value))}
-          style={{
-            width: '100%',
-            accentColor: c.accent,
-            height: '4px',
-          }}
+          style={{ width: '100%' }}
         />
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px' }}>
-          <span style={{ color: c.textSecondary, fontSize: '13px' }}>1x</span>
-          <span style={{ color: c.textSecondary, fontSize: '13px' }}>4x</span>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            fontFamily: 'var(--tb-font-mono)',
+            fontSize: 11,
+            color: colors.textFaint,
+            marginTop: 6
+          }}
+        >
+          <span>1x</span>
+          <span>4x</span>
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '16px', marginBottom: '28px' }}>
-        <button
-          onClick={handleGenerate}
-          style={{
-            flex: 1,
-            padding: '14px 28px',
-            backgroundColor: c.accent,
-            color: c.text,
-            border: 'none',
-            borderRadius: '10px',
-            fontSize: '15px',
-            fontWeight: '600',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '10px',
-            transition: 'opacity 0.2s',
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.9')}
-          onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
-        >
-          <Zap size={18} />
+      <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
+        <Button variant="primary" size="lg" icon={Zap} onClick={handleGenerate} style={{ flex: 1 }}>
           Generate
-        </button>
-        <button
-          onClick={handleDownload}
+        </Button>
+        <Button
+          variant="secondary"
+          size="lg"
+          icon={Download}
           disabled={!content}
-          style={{
-            padding: '14px 28px',
-            backgroundColor: 'transparent',
-            color: content ? c.text : c.textSecondary,
-            border: `1px solid ${c.border}`,
-            borderRadius: '10px',
-            fontSize: '15px',
-            fontWeight: '600',
-            cursor: content ? 'pointer' : 'not-allowed',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            transition: 'opacity 0.2s',
-          }}
+          onClick={handleDownload}
         >
-          <Download size={18} />
           Download
-        </button>
+        </Button>
       </div>
 
-      <div style={{
-        backgroundColor: c.input,
-        border: `1px solid ${c.border}`,
-        borderRadius: '12px',
-        padding: '24px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '180px',
-      }}>
-        <canvas
-          ref={canvasRef}
-          style={{
-            maxWidth: '100%',
-            height: 'auto',
-          }}
-        />
+      <div
+        className="tb-panel"
+        style={{
+          padding: 24,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: 180
+        }}
+      >
+        <canvas ref={canvasRef} style={{ maxWidth: '100%', height: 'auto' }} />
       </div>
     </div>
-  );
+  )
 }

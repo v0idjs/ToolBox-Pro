@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
-import { ShieldAlert, AlertTriangle, Check, Copy } from 'lucide-react';
+import { ShieldAlert, Check, Copy } from 'lucide-react';
 import { useThemeColors } from '@/lib/theme';
+import { ToolHeader, Button, SectionLabel } from '@/components/ui';
 
 interface SecretPattern {
   id: string;
@@ -21,11 +22,7 @@ interface Finding {
 }
 
 const SECRET_PATTERNS: SecretPattern[] = [
-  // ============================================================
-  // HIGH — Direct account access (API keys, tokens, secrets)
-  // ============================================================
 
-  // Cloud Providers
   {
     id: 'aws-access-key',
     name: 'AWS Access Key ID',
@@ -99,7 +96,6 @@ const SECRET_PATTERNS: SecretPattern[] = [
     description: 'Azure shared access signature token',
   },
 
-  // Source Control
   {
     id: 'github-token',
     name: 'GitHub Personal Access Token',
@@ -182,7 +178,6 @@ const SECRET_PATTERNS: SecretPattern[] = [
     description: 'Bitbucket OAuth2 access token',
   },
 
-  // AI / ML Platforms
   {
     id: 'openai-key',
     name: 'OpenAI API Key',
@@ -265,7 +260,6 @@ const SECRET_PATTERNS: SecretPattern[] = [
     description: 'Weaviate vector database API key',
   },
 
-  // Platform Tokens
   {
     id: 'github-token',
     name: 'GitHub Token',
@@ -375,7 +369,6 @@ const SECRET_PATTERNS: SecretPattern[] = [
     description: 'DockerHub personal access token',
   },
 
-  // Communication / Messaging
   {
     id: 'telegram-bot',
     name: 'Telegram Bot Token',
@@ -404,7 +397,6 @@ const SECRET_PATTERNS: SecretPattern[] = [
     description: 'Discord user token (against ToS, high risk)',
   },
 
-  // CI/CD
   {
     id: 'circleci-token',
     name: 'CircleCI Token',
@@ -442,7 +434,6 @@ const SECRET_PATTERNS: SecretPattern[] = [
     description: 'GitHub Actions secret reference (informational)',
   },
 
-  // Hosting / Deployment
   {
     id: 'vercel-token',
     name: 'Vercel Access Token',
@@ -498,7 +489,6 @@ const SECRET_PATTERNS: SecretPattern[] = [
     description: 'Fly.io deployment token',
   },
 
-  // DevOps / Monitoring
   {
     id: 'datadog-api-key',
     name: 'Datadog API Key',
@@ -599,7 +589,6 @@ const SECRET_PATTERNS: SecretPattern[] = [
     description: 'Sentry organization auth token',
   },
 
-  // Kubernetes / Infrastructure
   {
     id: 'k8s-service-account',
     name: 'Kubernetes Service Account Token',
@@ -628,7 +617,6 @@ const SECRET_PATTERNS: SecretPattern[] = [
     description: 'Docker config.json with registry credentials',
   },
 
-  // Communication
   {
     id: 'telegram-bot-token',
     name: 'Telegram Bot Token',
@@ -720,7 +708,6 @@ const SECRET_PATTERNS: SecretPattern[] = [
     description: 'SparkPost API key',
   },
 
-  // Databases
   {
     id: 'mysql-connection',
     name: 'MySQL Connection String',
@@ -776,7 +763,6 @@ const SECRET_PATTERNS: SecretPattern[] = [
     description: 'Elasticsearch connection with embedded credentials',
   },
 
-  // Cryptography
   {
     id: 'private-key-pem',
     name: 'Private Key (PEM)',
@@ -832,7 +818,6 @@ const SECRET_PATTERNS: SecretPattern[] = [
     description: 'Hardcoded password in source code',
   },
 
-  // Secrets Management
   {
     id: 'doppler-token',
     name: 'Doppler Token',
@@ -861,9 +846,6 @@ const SECRET_PATTERNS: SecretPattern[] = [
     description: '1Password service account token',
   },
 
-  // ============================================================
-  // MEDIUM — Contextually sensitive
-  // ============================================================
 
   {
     id: 'slack-webhook',
@@ -938,9 +920,6 @@ const SECRET_PATTERNS: SecretPattern[] = [
     description: 'Email address (may indicate account owner)',
   },
 
-  // ============================================================
-  // LOW — Informational
-  // ============================================================
 
   {
     id: 'aws-account-id',
@@ -1032,7 +1011,6 @@ export function SecretScanner() {
             });
           }
         } catch {
-          // skip invalid patterns
         }
       }
     }
@@ -1074,273 +1052,256 @@ export function SecretScanner() {
 
   const severityColor = (sev: string) => {
     switch (sev) {
-      case 'high': return '#EF4444';
-      case 'medium': return '#F59E0B';
-      case 'low': return '#3B82F6';
+      case 'high': return colors.error;
+      case 'medium': return colors.warning;
+      case 'low': return colors.textSecondary;
       default: return colors.textSecondary;
     }
   };
 
   return (
-    <div style={{ color: colors.text }}>
-      <div style={{ marginBottom: 32 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-          <ShieldAlert size={28} color={colors.accent} />
-          <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0 }}>Secret Scanner</h1>
+    <div>
+      <ToolHeader
+        name="Secret Scanner"
+        description="Detect leaked API keys, tokens, credentials, and private keys in code and config files."
+        category="security"
+        icon={ShieldAlert}
+        serial="secret-scanner"
+      />
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div className="tb-panel" style={{ padding: 20 }}>
+          <SectionLabel hint={input ? `${input.split('\n').length} lines · ${formatBytes(new Blob([input]).size)}` : undefined}>
+            Paste Code or Config
+          </SectionLabel>
+          <textarea
+            className="tb-field tb-mono"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Paste your code, config file, or any text to scan for secrets..."
+            spellCheck={false}
+            style={{ width: '100%', minHeight: 200, resize: 'vertical', fontSize: 13 }}
+          />
         </div>
-        <p style={{ fontSize: 15, color: colors.textSecondary, margin: 0, lineHeight: 1.5 }}>
-          Detect leaked API keys, tokens, credentials, and private keys in code and config files.
-        </p>
-      </div>
 
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-          <label style={{ fontSize: 15, fontWeight: 500, color: colors.text }}>Paste Code or Config</label>
-          {input && (
-            <span style={{ fontSize: 13, color: colors.textSecondary }}>
-              {input.split('\n').length} lines | {formatBytes(new Blob([input]).size)}
-            </span>
-          )}
-        </div>
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Paste your code, config file, or any text to scan for secrets..."
-          style={{
-            width: '100%',
-            minHeight: 200,
-            padding: 16,
-            backgroundColor: colors.input,
-            color: colors.text,
-            border: `1px solid ${colors.border}`,
-            borderRadius: 10,
-            fontSize: 15,
-            fontFamily: 'ui-monospace, monospace',
-            resize: 'vertical',
-            outline: 'none',
-            boxSizing: 'border-box',
-            lineHeight: 1.5,
-          }}
-          spellCheck={false}
-        />
-      </div>
-
-      {input && findings.length === 0 && (
-        <div
-          style={{
-            background: 'rgba(34,197,94,0.1)',
-            border: `1px solid rgba(34,197,94,0.3)`,
-            borderRadius: 10,
-            padding: 20,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-          }}
-        >
-          <Check size={20} color="#22C55E" />
-          <span style={{ fontWeight: 500, fontSize: 15 }}>No secrets detected</span>
-        </div>
-      )}
-
-      {findings.length > 0 && (
-        <>
-          <div style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
-            <button
-              onClick={() => setFilterSeverity('all')}
-              style={{
-                padding: '8px 16px',
-                background: filterSeverity === 'all' ? colors.accent : colors.input,
-                color: filterSeverity === 'all' ? colors.text : colors.textSecondary,
-                border: `1px solid ${filterSeverity === 'all' ? colors.accent : colors.border}`,
-                borderRadius: 8,
-                fontSize: 13,
-                cursor: 'pointer',
-                fontWeight: filterSeverity === 'all' ? 500 : 400,
-              }}
-            >
-              All ({stats.total})
-            </button>
-            {(['high', 'medium', 'low'] as const).map((sev) => (
-              <button
-                key={sev}
-                onClick={() => setFilterSeverity(sev)}
-                style={{
-                  padding: '8px 16px',
-                  background: filterSeverity === sev ? `${severityColor(sev)}20` : colors.input,
-                  color: filterSeverity === sev ? severityColor(sev) : colors.textSecondary,
-                  border: `1px solid ${filterSeverity === sev ? severityColor(sev) : colors.border}`,
-                  borderRadius: 8,
-                  fontSize: 13,
-                  cursor: 'pointer',
-                  fontWeight: filterSeverity === sev ? 500 : 400,
-                }}
-              >
-                {sev.charAt(0).toUpperCase() + sev.slice(1)} ({stats[sev]})
-              </button>
-            ))}
-          </div>
-
-          <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
-            <div
-              style={{
-                flex: 1,
-                padding: 16,
-                backgroundColor: colors.input,
-                border: `1px solid ${colors.border}`,
-                borderRadius: 10,
-                textAlign: 'center',
-              }}
-            >
-              <div style={{ fontSize: 28, fontWeight: 700, color: '#EF4444' }}>{stats.high}</div>
-              <div style={{ fontSize: 13, color: colors.textSecondary, marginTop: 4, textTransform: 'uppercase' }}>High</div>
-            </div>
-            <div
-              style={{
-                flex: 1,
-                padding: 16,
-                backgroundColor: colors.input,
-                border: `1px solid ${colors.border}`,
-                borderRadius: 10,
-                textAlign: 'center',
-              }}
-            >
-              <div style={{ fontSize: 28, fontWeight: 700, color: '#F59E0B' }}>{stats.medium}</div>
-              <div style={{ fontSize: 13, color: colors.textSecondary, marginTop: 4, textTransform: 'uppercase' }}>Medium</div>
-            </div>
-            <div
-              style={{
-                flex: 1,
-                padding: 16,
-                backgroundColor: colors.input,
-                border: `1px solid ${colors.border}`,
-                borderRadius: 10,
-                textAlign: 'center',
-              }}
-            >
-              <div style={{ fontSize: 28, fontWeight: 700, color: '#3B82F6' }}>{stats.low}</div>
-              <div style={{ fontSize: 13, color: colors.textSecondary, marginTop: 4, textTransform: 'uppercase' }}>Low</div>
-            </div>
-          </div>
-
-          {categories.length > 0 && (
-            <div style={{ marginBottom: 24 }}>
-              <label style={{ display: 'block', fontSize: 15, fontWeight: 500, marginBottom: 10 }}>By Category</label>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                {categories.map(([cat, count]) => (
-                  <span
-                    key={cat}
-                    style={{
-                      padding: '4px 10px',
-                      backgroundColor: colors.input,
-                      border: `1px solid ${colors.border}`,
-                      borderRadius: 6,
-                      fontSize: 13,
-                      color: colors.textSecondary,
-                    }}
-                  >
-                    {cat}: {count}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-            <label style={{ fontSize: 15, fontWeight: 500 }}>
-              Findings ({filteredFindings.length} secret{filteredFindings.length !== 1 ? 's' : ''})
-            </label>
-            <button
-              onClick={handleCopy}
-              disabled={filteredFindings.length === 0}
-              style={{
-                padding: '8px 16px',
-                background: copied ? '#22C55E' : 'transparent',
-                color: copied ? '#fff' : colors.textSecondary,
-                border: `1px solid ${copied ? '#22C55E' : colors.border}`,
-                borderRadius: 8,
-                fontSize: 13,
-                cursor: filteredFindings.length > 0 ? 'pointer' : 'not-allowed',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                opacity: filteredFindings.length > 0 ? 1 : 0.5,
-              }}
-            >
-              {copied ? <Check size={14} /> : <Copy size={14} />}
-              {copied ? 'Copied' : 'Copy Report'}
-            </button>
-          </div>
-
+        {input && findings.length === 0 && (
           <div
+            className="tb-panel"
             style={{
-              backgroundColor: colors.input,
-              border: `1px solid ${colors.border}`,
-              borderRadius: 10,
-              overflow: 'hidden',
-              maxHeight: 600,
-              overflowY: 'auto',
+              padding: 20,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              background: `${colors.success}15`,
+              border: `1px solid ${colors.success}40`,
             }}
           >
-            {filteredFindings.map((f, i) => (
-              <div
-                key={`${f.line}-${f.column}-${i}`}
+            <Check size={18} color={colors.success} />
+            <span style={{ fontWeight: 500, fontSize: 14.5 }}>No secrets detected</span>
+          </div>
+        )}
+
+        {findings.length > 0 && (
+          <>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+              <button
+                onClick={() => setFilterSeverity('all')}
                 style={{
-                  padding: '16px 20px',
-                  borderBottom: i < filteredFindings.length - 1 ? `1px solid ${colors.border}` : 'none',
+                  padding: '7px 14px',
+                  background: filterSeverity === 'all' ? colors.accentTint : colors.raised,
+                  color: filterSeverity === 'all' ? colors.accent : colors.textSecondary,
+                  border: `1px solid ${filterSeverity === 'all' ? colors.accent : colors.border}`,
+                  borderRadius: 'var(--tb-radius-ctl)',
+                  fontSize: 12.5,
+                  cursor: 'pointer',
+                  fontWeight: filterSeverity === 'all' ? 600 : 500,
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, flexWrap: 'wrap' }}>
-                  <span
-                    style={{
-                      padding: '2px 8px',
-                      borderRadius: 4,
-                      fontSize: 12,
-                      fontWeight: 600,
-                      textTransform: 'uppercase',
-                      background: `${severityColor(f.pattern.severity)}20`,
-                      color: severityColor(f.pattern.severity),
-                    }}
-                  >
-                    {f.pattern.severity}
-                  </span>
-                  <span style={{ fontWeight: 500, fontSize: 15 }}>{f.pattern.name}</span>
-                  <span
-                    style={{
-                      padding: '2px 6px',
-                      borderRadius: 4,
-                      fontSize: 11,
-                      background: `${colors.accent}20`,
-                      color: colors.accent,
-                    }}
-                  >
-                    {f.pattern.category}
-                  </span>
-                  <span style={{ fontSize: 13, color: colors.textSecondary, marginLeft: 'auto' }}>
-                    Line {f.line}, Col {f.column}
-                  </span>
-                </div>
-                <div
+                All ({stats.total})
+              </button>
+              {(['high', 'medium', 'low'] as const).map((sev) => (
+                <button
+                  key={sev}
+                  onClick={() => setFilterSeverity(sev)}
                   style={{
-                    fontFamily: 'ui-monospace, monospace',
-                    fontSize: 13,
-                    padding: 10,
-                    backgroundColor: colors.bg,
-                    borderRadius: 6,
-                    wordBreak: 'break-all',
-                    color: colors.textSecondary,
-                    lineHeight: 1.5,
+                    padding: '7px 14px',
+                    background: filterSeverity === sev ? `${severityColor(sev)}15` : colors.raised,
+                    color: filterSeverity === sev ? severityColor(sev) : colors.textSecondary,
+                    border: `1px solid ${filterSeverity === sev ? severityColor(sev) : colors.border}`,
+                    borderRadius: 'var(--tb-radius-ctl)',
+                    fontSize: 12.5,
+                    cursor: 'pointer',
+                    fontWeight: filterSeverity === sev ? 600 : 500,
                   }}
                 >
-                  {f.context}
+                  {sev.charAt(0).toUpperCase() + sev.slice(1)} ({stats[sev]})
+                </button>
+              ))}
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10 }}>
+              {([
+                { label: 'High', value: stats.high, color: colors.error },
+                { label: 'Medium', value: stats.medium, color: colors.warning },
+                { label: 'Low', value: stats.low, color: colors.textSecondary },
+              ]).map((s) => (
+                <div
+                  key={s.label}
+                  style={{
+                    padding: 16,
+                    backgroundColor: colors.raised,
+                    border: `1px solid ${colors.border}`,
+                    borderRadius: 'var(--tb-radius-ctl)',
+                    textAlign: 'center',
+                  }}
+                >
+                  <div style={{ fontSize: 26, fontWeight: 700, color: s.color, fontVariantNumeric: 'tabular-nums' }}>{s.value}</div>
+                  <div
+                    className="tb-mono"
+                    style={{
+                      fontSize: 10,
+                      color: colors.textFaint,
+                      marginTop: 4,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.1em',
+                      fontWeight: 600,
+                    }}
+                  >
+                    {s.label}
+                  </div>
                 </div>
-                <div style={{ fontSize: 13, color: colors.textSecondary, marginTop: 6 }}>
-                  {f.pattern.description}
+              ))}
+            </div>
+
+            {categories.length > 0 && (
+              <div className="tb-panel" style={{ padding: 20 }}>
+                <SectionLabel>By Category</SectionLabel>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  {categories.map(([cat, count]) => (
+                    <span
+                      key={cat}
+                      className="tb-mono"
+                      style={{
+                        padding: '3px 9px',
+                        backgroundColor: colors.raised,
+                        border: `1px solid ${colors.border}`,
+                        borderRadius: 999,
+                        fontSize: 11,
+                        letterSpacing: '0.03em',
+                        color: colors.textSecondary,
+                      }}
+                    >
+                      {cat} · {count}
+                    </span>
+                  ))}
                 </div>
               </div>
-            ))}
-          </div>
-        </>
-      )}
+            )}
+
+            <div className="tb-panel" style={{ padding: 20 }}>
+              <SectionLabel
+                hint={`${filteredFindings.length} secret${filteredFindings.length !== 1 ? 's' : ''}`}
+              >
+                Findings
+              </SectionLabel>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 10 }}>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  icon={copied ? Check : Copy}
+                  onClick={handleCopy}
+                  disabled={filteredFindings.length === 0}
+                  style={
+                    copied
+                      ? { color: colors.success, borderColor: colors.success }
+                      : undefined
+                  }
+                >
+                  {copied ? 'Copied' : 'Copy Report'}
+                </Button>
+              </div>
+              <div
+                style={{
+                  backgroundColor: colors.bgDeep,
+                  border: `1px solid ${colors.border}`,
+                  borderRadius: 'var(--tb-radius-ctl)',
+                  overflow: 'auto',
+                  maxHeight: 600,
+                }}
+              >
+                {filteredFindings.map((f, i) => {
+                  const sevColor = severityColor(f.pattern.severity)
+                  return (
+                    <div
+                      key={`${f.line}-${f.column}-${i}`}
+                      style={{
+                        padding: '14px 16px',
+                        borderBottom: i < filteredFindings.length - 1 ? `1px solid ${colors.border}` : 'none',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
+                        <span
+                          className="tb-mono"
+                          style={{
+                            padding: '2px 6px',
+                            borderRadius: 3,
+                            fontSize: 10,
+                            fontWeight: 600,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.08em',
+                            background: `${sevColor}15`,
+                            border: `1px solid ${sevColor}40`,
+                            color: sevColor,
+                          }}
+                        >
+                          {f.pattern.severity}
+                        </span>
+                        <span style={{ fontWeight: 600, fontSize: 13.5, color: colors.text }}>{f.pattern.name}</span>
+                        <span
+                          className="tb-mono"
+                          style={{
+                            padding: '2px 6px',
+                            borderRadius: 3,
+                            fontSize: 10,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.08em',
+                            background: `${colors.accent}15`,
+                            border: `1px solid ${colors.accent}40`,
+                            color: colors.accent,
+                          }}
+                        >
+                          {f.pattern.category}
+                        </span>
+                        <span className="tb-mono" style={{ fontSize: 11, color: colors.textFaint, marginLeft: 'auto' }}>
+                          Line {f.line} · Col {f.column}
+                        </span>
+                      </div>
+                      <div
+                        className="tb-mono"
+                        style={{
+                          fontSize: 12.5,
+                          padding: 10,
+                          backgroundColor: colors.bg,
+                          border: `1px solid ${colors.border}`,
+                          borderRadius: 'var(--tb-radius-ctl)',
+                          wordBreak: 'break-all',
+                          color: colors.textSecondary,
+                          lineHeight: 1.5,
+                        }}
+                      >
+                        {f.context}
+                      </div>
+                      <div style={{ fontSize: 12.5, color: colors.textSecondary, marginTop: 8 }}>
+                        {f.pattern.description}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }

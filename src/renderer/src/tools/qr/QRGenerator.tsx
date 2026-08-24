@@ -1,7 +1,8 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback, useEffect, type CSSProperties } from 'react'
 import { QrCode, Download, Wifi, Type, Zap } from 'lucide-react'
 import QRCode from 'qrcode'
 import { useThemeColors } from '@/lib/theme'
+import { ToolHeader, Button, Input, SectionLabel } from '@/components/ui'
 
 export function QRGenerator() {
   const colors = useThemeColors()
@@ -59,231 +60,90 @@ export function QRGenerator() {
     link.click()
   }
 
-  const styles = {
-    container: {
-      display: 'flex',
-      flexDirection: 'column' as const,
-      fontFamily: 'system-ui, -apple-system, sans-serif',
-    },
-    header: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '12px',
-      marginBottom: '32px',
-    },
-    title: {
-      color: colors.text,
-      fontSize: '28px',
-      fontWeight: '700',
-    },
-    subtitle: {
-      color: colors.textSecondary,
-      fontSize: '15px',
-      marginTop: '4px',
-    },
-    typeSelector: {
-      display: 'flex',
-      gap: '10px',
-      marginBottom: '24px',
-    },
-    typeBtn: (active: boolean) => ({
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px',
-      padding: '10px 20px',
-      borderRadius: '8px',
-      border: `1px solid ${active ? colors.accent : colors.border}`,
-      backgroundColor: active ? colors.accent + '20' : 'transparent',
-      color: active ? colors.text : colors.textSecondary,
-      cursor: 'pointer',
-      fontSize: '14px',
-      fontWeight: '500',
-      transition: 'all 0.15s',
-    }),
-    label: {
-      color: colors.textSecondary,
-      fontSize: '15px',
-      fontWeight: '500',
-      marginBottom: '10px',
-      display: 'block',
-    },
-    input: {
-      width: '100%',
-      padding: '14px',
-      borderRadius: '10px',
-      border: `1px solid ${colors.border}`,
-      backgroundColor: colors.input,
-      color: colors.text,
-      fontSize: '15px',
-      outline: 'none',
-      marginBottom: '20px',
-      boxSizing: 'border-box' as const,
-    },
-    row: {
-      display: 'flex',
-      gap: '16px',
-      marginBottom: '20px',
-    },
-    colorGroup: {
-      flex: 1,
-    },
-    colorRow: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '10px',
-    },
-    colorInput: {
-      width: '40px',
-      height: '40px',
-      border: `1px solid ${colors.border}`,
-      borderRadius: '8px',
-      cursor: 'pointer',
-      backgroundColor: 'transparent',
-      padding: 0,
-    },
-    colorHex: {
-      color: colors.text,
-      fontSize: '14px',
-      fontFamily: 'monospace',
-    },
-    sliderContainer: {
-      marginBottom: '24px',
-    },
-    sliderRow: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: '8px',
-    },
-    sliderValue: {
-      color: colors.text,
-      fontSize: '14px',
-      fontFamily: 'monospace',
-    },
-    slider: {
-      width: '100%',
-      accentColor: colors.accent,
-      height: '4px',
-    },
-    btnPrimary: {
-      width: '100%',
-      padding: '14px 28px',
-      borderRadius: '10px',
-      border: 'none',
-      backgroundColor: colors.accent,
-      color: colors.text,
-      fontSize: '15px',
-      fontWeight: '600',
-      cursor: 'pointer',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: '10px',
-      marginBottom: '16px',
-      transition: 'opacity 0.15s',
-    },
-    btnDownload: {
-      width: '100%',
-      padding: '12px',
-      borderRadius: '10px',
-      border: `1px solid ${colors.border}`,
-      backgroundColor: 'transparent',
-      color: colors.textSecondary,
-      fontSize: '14px',
-      fontWeight: '500',
-      cursor: 'pointer',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: '8px',
-      transition: 'all 0.15s',
-      marginBottom: '24px',
-    },
-    canvasContainer: {
-      display: 'flex',
-      justifyContent: 'center',
-      padding: '24px',
-      backgroundColor: colors.input,
-      borderRadius: '12px',
-      border: `1px solid ${colors.border}`,
-      minHeight: generated ? 'auto' : '80px',
-    },
-    placeholder: {
-      color: colors.textSecondary,
-      fontSize: '14px',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px',
-    },
-    error: {
-      color: '#EF4444',
-      fontSize: '14px',
-      marginBottom: '16px',
-    },
+  const typeBtnStyle = (active: boolean): CSSProperties => ({
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+    padding: '8px 16px',
+    borderRadius: 'var(--tb-radius-ctl)',
+    border: `1px solid ${active ? colors.accent : colors.borderStrong}`,
+    backgroundColor: active ? colors.accentTint : colors.raised,
+    color: active ? colors.accent : colors.textSecondary,
+    cursor: 'pointer',
+    fontSize: 13,
+    fontWeight: active ? 600 : 500,
+    transition:
+      'background-color var(--tb-speed-fast) ease, border-color var(--tb-speed-fast) ease, color var(--tb-speed-fast) ease',
+    fontFamily: 'inherit'
+  })
+
+  const colorInputStyle: CSSProperties = {
+    width: 40,
+    height: 40,
+    border: `1px solid ${colors.borderStrong}`,
+    borderRadius: 'var(--tb-radius-ctl)',
+    cursor: 'pointer',
+    backgroundColor: colors.raised,
+    padding: 0
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <QrCode size={28} color={colors.accent} />
-        <div>
-          <h1 style={styles.title}>QR Code Generator</h1>
-          <p style={styles.subtitle}>Generate QR codes for text, URLs, or WiFi networks</p>
+    <div>
+      <ToolHeader
+        name="QR Generator"
+        description="Generate QR codes for text, URLs, and WiFi credentials."
+        category="qr"
+        icon={QrCode}
+        serial="qr-generator"
+      />
+
+      <div className="tb-panel" style={{ padding: 20, marginBottom: 16 }}>
+        <SectionLabel>Content type</SectionLabel>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
+          <button style={typeBtnStyle(qrType === 'text')} onClick={() => setQrType('text')}>
+            <Type size={15} />
+            Text
+          </button>
+          <button style={typeBtnStyle(qrType === 'url')} onClick={() => setQrType('url')}>
+            <QrCode size={15} />
+            URL
+          </button>
+          <button style={typeBtnStyle(qrType === 'wifi')} onClick={() => setQrType('wifi')}>
+            <Wifi size={15} />
+            WiFi
+          </button>
         </div>
-      </div>
 
-      <div style={styles.typeSelector}>
-        <button style={styles.typeBtn(qrType === 'text')} onClick={() => setQrType('text')}>
-          <Type size={16} />
-          Text
-        </button>
-        <button style={styles.typeBtn(qrType === 'url')} onClick={() => setQrType('url')}>
-          <QrCode size={16} />
-          URL
-        </button>
-        <button style={styles.typeBtn(qrType === 'wifi')} onClick={() => setQrType('wifi')}>
-          <Wifi size={16} />
-          WiFi
-        </button>
-      </div>
-
-      {qrType === 'wifi' ? (
-        <>
-          <label style={styles.label}>SSID (Network Name)</label>
-          <input
-            style={styles.input}
-            type="text"
-            placeholder="Enter network name"
-            value={ssid}
-            onChange={(e) => setSsid(e.target.value)}
-          />
-          <label style={styles.label}>Password</label>
-          <input
-            style={styles.input}
-            type="password"
-            placeholder="Enter password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </>
-      ) : (
-        <>
-          <label style={styles.label}>{qrType === 'url' ? 'URL' : 'Text Content'}</label>
-          <input
-            style={styles.input}
+        {qrType === 'wifi' ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <Input
+              label="SSID (Network Name)"
+              type="text"
+              placeholder="Enter network name"
+              value={ssid}
+              onChange={(e) => setSsid(e.target.value)}
+            />
+            <Input
+              label="Password"
+              type="password"
+              placeholder="Enter password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+        ) : (
+          <Input
+            label={qrType === 'url' ? 'URL' : 'Text Content'}
             type="text"
             placeholder={qrType === 'url' ? 'https://example.com' : 'Enter text...'}
             value={input}
             onChange={(e) => setInput(e.target.value)}
           />
-        </>
-      )}
+        )}
+      </div>
 
-      <div style={styles.sliderContainer}>
-        <div style={styles.sliderRow}>
-          <span style={styles.label}>Size</span>
-          <span style={styles.sliderValue}>{size}px</span>
-        </div>
+      <div className="tb-panel" style={{ padding: 20, marginBottom: 16 }}>
+        <SectionLabel hint={`${size}px`}>Size</SectionLabel>
         <input
           type="range"
           min={200}
@@ -291,64 +151,121 @@ export function QRGenerator() {
           step={10}
           value={size}
           onChange={(e) => setSize(Number(e.target.value))}
-          style={styles.slider}
+          style={{ width: '100%' }}
         />
-      </div>
 
-      <div style={styles.row}>
-        <div style={styles.colorGroup}>
-          <label style={styles.label}>Foreground</label>
-          <div style={styles.colorRow}>
-            <input
-              type="color"
-              value={fgColor}
-              onChange={(e) => setFgColor(e.target.value)}
-              style={styles.colorInput}
-            />
-            <span style={styles.colorHex}>{fgColor}</span>
+        <div style={{ height: 16 }} />
+
+        <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+          <div>
+            <span
+              style={{
+                display: 'block',
+                fontFamily: 'var(--tb-font-mono)',
+                fontSize: 10.5,
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                color: colors.textFaint,
+                marginBottom: 8
+              }}
+            >
+              Foreground
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <input
+                type="color"
+                value={fgColor}
+                onChange={(e) => setFgColor(e.target.value)}
+                style={colorInputStyle}
+              />
+              <span className="tb-mono" style={{ fontSize: 12.5, color: colors.text }}>
+                {fgColor}
+              </span>
+            </div>
+          </div>
+          <div>
+            <span
+              style={{
+                display: 'block',
+                fontFamily: 'var(--tb-font-mono)',
+                fontSize: 10.5,
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                color: colors.textFaint,
+                marginBottom: 8
+              }}
+            >
+              Background
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <input
+                type="color"
+                value={bgColor}
+                onChange={(e) => setBgColor(e.target.value)}
+                style={colorInputStyle}
+              />
+              <span className="tb-mono" style={{ fontSize: 12.5, color: colors.text }}>
+                {bgColor}
+              </span>
+            </div>
           </div>
         </div>
-        <div style={styles.colorGroup}>
-          <label style={styles.label}>Background</label>
-          <div style={styles.colorRow}>
-            <input
-              type="color"
-              value={bgColor}
-              onChange={(e) => setBgColor(e.target.value)}
-              style={styles.colorInput}
-            />
-            <span style={styles.colorHex}>{bgColor}</span>
-          </div>
-        </div>
       </div>
 
-      {error && <div style={styles.error}>{error}</div>}
+      {error && (
+        <p
+          className="tb-mono"
+          role="alert"
+          style={{ color: colors.error, fontSize: 12.5, margin: '0 0 12px' }}
+        >
+          {error}
+        </p>
+      )}
 
-      <button style={styles.btnPrimary} onClick={generateQR}>
-        <Zap size={18} />
-        Generate QR Code
-      </button>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
+        <Button variant="primary" size="lg" icon={Zap} onClick={generateQR} style={{ width: '100%' }}>
+          Generate QR Code
+        </Button>
+        <Button
+          variant="secondary"
+          icon={Download}
+          disabled={!generated}
+          onClick={downloadPNG}
+          style={{ width: '100%' }}
+        >
+          Download as PNG
+        </Button>
+      </div>
 
-      <button
+      <div
+        className="tb-panel"
         style={{
-          ...styles.btnDownload,
-          opacity: generated ? 1 : 0.4,
-          pointerEvents: generated ? 'auto' : 'none',
+          padding: 24,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: generated ? undefined : 96
         }}
-        onClick={downloadPNG}
       >
-        <Download size={18} />
-        Download as PNG
-      </button>
-
-      <div style={styles.canvasContainer}>
         <canvas
           ref={canvasRef}
-          style={{ borderRadius: '8px', display: generated ? 'block' : 'none' }}
+          style={{ borderRadius: 'var(--tb-radius-ctl)', display: generated ? 'block' : 'none' }}
         />
         {!generated && (
-          <div style={styles.placeholder}>
-            <QrCode size={18} />
+          <div
+            style={{
+              color: colors.textFaint,
+              fontSize: 13,
+              fontFamily: 'var(--tb-font-mono)',
+              letterSpacing: '0.04em',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8
+            }}
+          >
+            <QrCode size={16} />
             QR code will appear here
           </div>
         )}

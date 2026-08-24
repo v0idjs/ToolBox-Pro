@@ -1,13 +1,14 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { Hash, ArrowUpDown } from 'lucide-react';
-import { useThemeColors } from '@/lib/theme';
+import { useState, useCallback, useEffect } from 'react'
+import { Binary } from 'lucide-react'
+import { useThemeColors } from '@/lib/theme'
+import { ToolHeader, Card, SectionLabel, Input, StatStrip } from '@/components/ui'
 
 const PRESET_BASES = [
   { label: 'Binary', base: 2, prefix: '0b' },
   { label: 'Octal', base: 8, prefix: '0o' },
   { label: 'Decimal', base: 10, prefix: '' },
   { label: 'Hexadecimal', base: 16, prefix: '0x' },
-];
+]
 
 function parseInputValue(value: string, base: number): number | null {
   const cleaned = value.trim().replace(/^(0[bBoOxX])/, '');
@@ -29,6 +30,15 @@ function digitName(digit: string, base: number): string {
   if (val < 10) return `digit ${val}`;
   const names: Record<string, string> = { a: 'ten', b: 'eleven', c: 'twelve', d: 'thirteen', e: 'fourteen', f: 'fifteen' };
   return names[digit.toLowerCase()] || '';
+}
+
+function statItems(num: number): { value: string; label: string }[] {
+  const bits = num === 0 ? 1 : Math.floor(Math.log2(Math.abs(num))) + 1;
+  return [
+    { value: String(bits), label: 'bits' },
+    { value: String(Math.ceil(bits / 8)), label: 'bytes' },
+    { value: String(num.toString().length), label: 'digits' },
+  ];
 }
 
 export function NumberBaseConverter() {
@@ -80,156 +90,173 @@ export function NumberBaseConverter() {
 
   const currentNum = parseInputValue(inputs[activeBase], activeBase);
 
-  const inputStyle: React.CSSProperties = {
-    background: colors.input,
-    border: `1px solid ${colors.border}`,
-    borderRadius: 10,
-    padding: '14px 16px',
-    color: colors.text,
-    fontSize: 15,
-    fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace',
-    outline: 'none',
-    width: '100%',
-    transition: 'border-color 0.2s',
-  };
-
-  const labelStyle: React.CSSProperties = {
-    fontSize: 13,
-    fontWeight: 600,
-    color: colors.textSecondary,
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em',
-    marginBottom: 8,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  };
-
-  const formatInfoStyle: React.CSSProperties = {
-    fontSize: 12,
-    color: colors.textSecondary,
-    marginTop: 6,
-    fontFamily: 'ui-monospace, SFMono-Regular, monospace',
-    display: 'flex',
-    justifyContent: 'space-between',
-  };
-
   return (
-    <div style={{ color: colors.text }}>
-      <div style={{ marginBottom: 32 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-          <Hash size={28} color={colors.accent} />
-          <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0 }}>Number Base Converter</h1>
-        </div>
-        <p style={{ fontSize: 15, color: colors.textSecondary, margin: 0 }}>
-          Convert between binary, octal, decimal, hex, and custom bases in real time
-        </p>
-      </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <ToolHeader
+        name="Number Base Converter"
+        description="Convert between binary, octal, decimal, hex, and custom bases in real time"
+        category="developer"
+        icon={Binary}
+        serial="number-base-converter"
+      />
 
       {error && (
-        <div style={{
-          background: '#DC262615', border: '1px solid #DC262640',
-          borderRadius: 10, padding: '12px 16px', marginBottom: 20,
-          color: '#EF4444', fontSize: 14, fontWeight: 500,
-        }}>
+        <div
+          role="alert"
+          style={{
+            backgroundColor: `${colors.error}15`,
+            border: `1px solid ${colors.error}40`,
+            borderRadius: 'var(--tb-radius-ctl)',
+            padding: '12px 16px',
+            color: colors.error,
+            fontSize: 14,
+            fontWeight: 500
+          }}
+        >
           {error}
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
-        {PRESET_BASES.map((preset) => (
-          <div key={preset.base}>
-            <div style={labelStyle}>
-              <span>{preset.label}</span>
-              <span style={{ fontFamily: 'monospace', fontSize: 12, color: colors.accent }}>
-                Base {preset.base}{preset.prefix ? ` (${preset.prefix})` : ''}
-              </span>
-            </div>
-            <input
-              type="text"
-              value={inputs[preset.base]}
-              onChange={(e) => handlePresetChange(preset.base, e.target.value)}
-              style={{
-                ...inputStyle,
-                background: activeBase === preset.base ? colors.input : colors.input,
-                borderColor: activeBase === preset.base ? colors.accent : colors.border,
-              }}
-              placeholder={preset.base === 10 ? '0' : preset.base === 16 ? 'FF' : preset.base === 8 ? '77' : '1010'}
-            />
-            <div style={formatInfoStyle}>
-              <span>{inputs[preset.base] ? `${inputs[preset.base].length} chars` : ''}</span>
-              {currentNum !== null && inputs[preset.base] && (
-                <span>{currentNum.toLocaleString()}</span>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
+      <Card style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <SectionLabel>Preset Bases</SectionLabel>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {PRESET_BASES.map((preset) => {
+            const active = activeBase === preset.base
+            return (
+              <div
+                key={preset.base}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  padding: '9px 12px',
+                  borderRadius: 'var(--tb-radius-ctl)',
+                  border: `1px solid ${active ? colors.accent : colors.border}`,
+                  backgroundColor: active ? colors.accentTint : 'transparent',
+                  transition: 'background-color var(--tb-speed-fast) ease, border-color var(--tb-speed-fast) ease'
+                }}
+              >
+                <span
+                  style={{
+                    width: 96,
+                    flexShrink: 0,
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: colors.text
+                  }}
+                >
+                  {preset.label}
+                </span>
+                <span
+                  style={{
+                    width: 68,
+                    flexShrink: 0,
+                    fontFamily: 'var(--tb-font-mono)',
+                    fontSize: 11,
+                    letterSpacing: '0.06em',
+                    color: active ? colors.accent : colors.textFaint
+                  }}
+                >
+                  base {preset.base}
+                  {preset.prefix ? ` · ${preset.prefix}` : ''}
+                </span>
+                <input
+                  type="text"
+                  className="tb-field tb-mono"
+                  value={inputs[preset.base]}
+                  onChange={(e) => handlePresetChange(preset.base, e.target.value)}
+                  spellCheck={false}
+                  style={{
+                    flex: 1,
+                    minWidth: 0,
+                    fontVariantNumeric: 'tabular-nums'
+                  }}
+                  placeholder={
+                    preset.base === 10 ? '0' : preset.base === 16 ? 'FF' : preset.base === 8 ? '77' : '1010'
+                  }
+                />
+                <span
+                  style={{
+                    flexShrink: 0,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-end',
+                    fontFamily: 'var(--tb-font-mono)',
+                    fontSize: 11,
+                    letterSpacing: '0.04em',
+                    color: colors.textFaint,
+                    lineHeight: 1.5
+                  }}
+                >
+                  {inputs[preset.base] ? `${inputs[preset.base].length} chars` : ''}
+                  {currentNum !== null && inputs[preset.base] && (
+                    <span style={{ color: colors.textSecondary }}>{currentNum.toLocaleString()}</span>
+                  )}
+                </span>
+              </div>
+            )
+          })}
+        </div>
+      </Card>
 
       {currentNum !== null && (
-        <div style={{
-          background: colors.input, border: `1px solid ${colors.border}`,
-          borderRadius: 12, padding: 20, marginBottom: 24,
-        }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: colors.textSecondary, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Parsed Value
-          </div>
-          <div style={{ fontSize: 24, fontWeight: 700, color: colors.accent, fontFamily: 'monospace' }}>
+        <Card style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <SectionLabel>Parsed Value</SectionLabel>
+          <div
+            style={{
+              fontFamily: 'var(--tb-font-mono)',
+              fontSize: 24,
+              fontWeight: 700,
+              letterSpacing: '0.02em',
+              fontVariantNumeric: 'tabular-nums',
+              color: colors.accent,
+              wordBreak: 'break-all'
+            }}
+          >
             {currentNum.toLocaleString()}
           </div>
-          <div style={{ marginTop: 12, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, fontSize: 13, color: colors.textSecondary }}>
-            <div>Bits: {currentNum === 0 ? 1 : Math.floor(Math.log2(Math.abs(currentNum))) + 1}</div>
-            <div>Bytes: {Math.ceil((currentNum === 0 ? 1 : Math.floor(Math.log2(Math.abs(currentNum))) + 1) / 8)}</div>
-            <div>Digits: {currentNum.toString().length}</div>
-          </div>
-        </div>
+          <StatStrip items={statItems(currentNum)} />
+        </Card>
       )}
 
-      <div style={{
-        background: colors.input, border: `1px solid ${colors.border}`,
-        borderRadius: 12, padding: 20,
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-          <ArrowUpDown size={18} color={colors.accent} />
-          <span style={{ fontSize: 15, fontWeight: 600 }}>Custom Base</span>
+      <Card style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <SectionLabel>Custom Base</SectionLabel>
+        <div style={{ display: 'grid', gridTemplateColumns: '110px 1fr 1fr', gap: 12 }}>
+          <Input
+            label="Base (2-36)"
+            type="number"
+            min={2}
+            max={36}
+            value={customBase}
+            onChange={(e) => {
+              const v = parseInt(e.target.value);
+              if (!isNaN(v) && v >= 2 && v <= 36) setCustomBase(v);
+            }}
+            className="tb-field tb-mono"
+            style={{ textAlign: 'center', fontVariantNumeric: 'tabular-nums' }}
+            spellCheck={false}
+          />
+          <Input
+            label={`Value (base ${customBase})`}
+            type="text"
+            value={customValue}
+            onChange={(e) => setCustomValue(e.target.value)}
+            className="tb-field tb-mono"
+            style={{ fontVariantNumeric: 'tabular-nums' }}
+            placeholder={`Enter value in base ${customBase}`}
+            spellCheck={false}
+          />
+          <Input
+            label="Decimal equivalent"
+            type="text"
+            value={customResult}
+            readOnly
+            className="tb-field tb-mono"
+            style={{ fontVariantNumeric: 'tabular-nums', opacity: customResult ? 1 : 0.6 }}
+            placeholder="Result in base 10"
+          />
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr 1fr', gap: 12, alignItems: 'center' }}>
-          <div>
-            <div style={{ fontSize: 12, color: colors.textSecondary, marginBottom: 4 }}>Base (2-36)</div>
-            <input
-              type="number"
-              min={2}
-              max={36}
-              value={customBase}
-              onChange={(e) => {
-                const v = parseInt(e.target.value);
-                if (!isNaN(v) && v >= 2 && v <= 36) setCustomBase(v);
-              }}
-              style={{ ...inputStyle, textAlign: 'center' }}
-            />
-          </div>
-          <div>
-            <div style={{ fontSize: 12, color: colors.textSecondary, marginBottom: 4 }}>Value (base {customBase})</div>
-            <input
-              type="text"
-              value={customValue}
-              onChange={(e) => setCustomValue(e.target.value)}
-              style={inputStyle}
-              placeholder={`Enter value in base ${customBase}`}
-            />
-          </div>
-          <div>
-            <div style={{ fontSize: 12, color: colors.textSecondary, marginBottom: 4 }}>Decimal equivalent</div>
-            <input
-              type="text"
-              value={customResult}
-              readOnly
-              style={{ ...inputStyle, opacity: customResult ? 1 : 0.6 }}
-              placeholder="Result in base 10"
-            />
-          </div>
-        </div>
-      </div>
+      </Card>
     </div>
-  );
+  )
 }

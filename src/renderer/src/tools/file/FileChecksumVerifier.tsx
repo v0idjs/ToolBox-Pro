@@ -1,8 +1,9 @@
-import { useState, useRef, useCallback } from 'react';
-import { FileText, Zap, Check, X, Shield, FolderOpen } from 'lucide-react';
-import { useThemeColors } from '@/lib/theme';
+import { useState, useCallback } from 'react'
+import { Zap, Check, X, ShieldCheck, FolderOpen } from 'lucide-react'
+import { useThemeColors } from '@/lib/theme'
+import { ToolHeader, Button, Card, SectionLabel, Input } from '@/components/ui'
 
-type Algorithm = 'md5' | 'sha1' | 'sha256';
+type Algorithm = 'md5' | 'sha1' | 'sha256'
 
 function formatBytes(bytes: number): string {
   if (bytes === 0) return '0 B';
@@ -12,17 +13,16 @@ function formatBytes(bytes: number): string {
 }
 
 export function FileChecksumVerifier() {
-  const [filePath, setFilePath] = useState('');
-  const [fileName, setFileName] = useState('');
-  const [fileSize, setFileSize] = useState(0);
-  const [algorithm, setAlgorithm] = useState<Algorithm>('sha256');
-  const [expectedHash, setExpectedHash] = useState('');
-  const [computedHash, setComputedHash] = useState('');
-  const [verifying, setVerifying] = useState(false);
-  const [result, setResult] = useState<'match' | 'mismatch' | null>(null);
-  const [dragging, setDragging] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const colors = useThemeColors();
+  const [filePath, setFilePath] = useState('')
+  const [fileName, setFileName] = useState('')
+  const [fileSize, setFileSize] = useState(0)
+  const [algorithm, setAlgorithm] = useState<Algorithm>('sha256')
+  const [expectedHash, setExpectedHash] = useState('')
+  const [computedHash, setComputedHash] = useState('')
+  const [verifying, setVerifying] = useState(false)
+  const [result, setResult] = useState<'match' | 'mismatch' | null>(null)
+  const [dragging, setDragging] = useState(false)
+  const colors = useThemeColors()
 
   const handleFile = async (path: string, name: string) => {
     setFilePath(path);
@@ -93,14 +93,14 @@ export function FileChecksumVerifier() {
   ];
 
   return (
-    <div style={{ color: colors.text }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-        <Shield size={28} color={colors.accent} />
-        <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0 }}>File Checksum Verifier</h1>
-      </div>
-      <p style={{ fontSize: 15, color: colors.textSecondary, margin: 0, marginBottom: 32 }}>
-        Verify file integrity by comparing computed hash with expected checksum
-      </p>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <ToolHeader
+        name="File Checksum Verifier"
+        description="Verify file integrity by comparing computed hash with expected checksum"
+        category="file"
+        icon={ShieldCheck}
+        serial="file-checksum"
+      />
 
       <div
         onDrop={handleDrop}
@@ -108,162 +108,126 @@ export function FileChecksumVerifier() {
         onDragLeave={handleDragLeave}
         onClick={handleOpenFile}
         style={{
-          border: `2px dashed ${dragging ? colors.accent : colors.border}`,
-          borderRadius: 10,
-          padding: 48,
+          border: `1px dashed ${dragging ? colors.accent : colors.borderStrong}`,
+          borderRadius: 'var(--tb-radius-panel)',
+          background: dragging ? colors.accentTint : colors.raised,
+          padding: '48px 24px',
           textAlign: 'center',
           cursor: 'pointer',
-          backgroundColor: dragging ? `${colors.accent}10` : colors.input,
-          transition: 'all 0.2s',
-          marginBottom: 24,
+          transition: 'border-color var(--tb-speed-fast) ease, background-color var(--tb-speed-fast) ease',
         }}
       >
         <FolderOpen size={40} color={dragging ? colors.accent : colors.textSecondary} style={{ marginBottom: 12 }} />
-        <div style={{ fontSize: 15, color: colors.text, fontWeight: 500, marginBottom: 4 }}>
+        <div style={{ fontSize: 14.5, color: colors.text, fontWeight: 600, marginBottom: 4 }}>
           {fileName || 'Drop a file here or click to browse'}
         </div>
-        <div style={{ fontSize: 13, color: colors.textSecondary }}>
+        <div className="tb-mono" style={{ fontSize: 12, color: colors.textSecondary }}>
           {fileName ? formatBytes(fileSize) : 'Any file type supported'}
         </div>
-        <input
-          ref={fileInputRef}
-          type="file"
-          style={{ display: 'none' }}
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) {
-              const path = (file as unknown as { path?: string }).path || '';
-              if (path) handleFile(path, file.name);
-            }
-          }}
-        />
       </div>
 
-      <div style={{ marginBottom: 24 }}>
-        <label style={{ display: 'block', fontSize: 15, fontWeight: 500, marginBottom: 10 }}>Algorithm</label>
-        <div style={{ display: 'flex', gap: 8 }}>
+      <Card>
+        <SectionLabel>Algorithm</SectionLabel>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           {algorithms.map((a) => (
-            <button
+            <Button
               key={a.id}
+              variant="secondary"
               onClick={() => setAlgorithm(a.id)}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: algorithm === a.id ? colors.accent : colors.input,
-                color: algorithm === a.id ? colors.text : colors.textSecondary,
-                border: `1px solid ${algorithm === a.id ? colors.accent : colors.border}`,
-                borderRadius: 8,
-                fontSize: 15,
-                cursor: 'pointer',
-                fontWeight: algorithm === a.id ? 500 : 400,
-              }}
+              style={
+                algorithm === a.id
+                  ? { backgroundColor: colors.accentTint, borderColor: colors.accent }
+                  : undefined
+              }
             >
               {a.label}
-              <span style={{ fontSize: 12, marginLeft: 6, opacity: 0.7 }}>{a.bits}</span>
-            </button>
+              <span style={{ fontFamily: 'var(--tb-font-mono)', fontSize: 11, opacity: 0.7 }}>{a.bits}</span>
+            </Button>
           ))}
         </div>
-      </div>
+        <div style={{ marginTop: 16 }}>
+          <Input
+            type="text"
+            value={expectedHash}
+            onChange={(e) => {
+              setExpectedHash(e.target.value);
+              setResult(null);
+            }}
+            placeholder="Paste expected hash here to verify..."
+            label="Expected hash (optional)"
+            className="tb-field tb-mono"
+            style={{ width: '100%', fontSize: 12.5 }}
+          />
+        </div>
+      </Card>
 
-      <div style={{ marginBottom: 24 }}>
-        <label style={{ display: 'block', fontSize: 15, fontWeight: 500, marginBottom: 10 }}>Expected Hash (optional)</label>
-        <input
-          type="text"
-          value={expectedHash}
-          onChange={(e) => {
-            setExpectedHash(e.target.value);
-            setResult(null);
-          }}
-          placeholder="Paste expected hash here to verify..."
-          style={{
-            width: '100%',
-            padding: 14,
-            backgroundColor: colors.input,
-            color: colors.text,
-            border: `1px solid ${colors.border}`,
-            borderRadius: 10,
-            fontSize: 15,
-            fontFamily: 'ui-monospace, monospace',
-            outline: 'none',
-            boxSizing: 'border-box',
-          }}
-        />
+      <div>
+        <Button
+          variant="primary"
+          size="lg"
+          icon={Zap}
+          onClick={handleVerify}
+          disabled={!filePath || verifying}
+          isLoading={verifying}
+        >
+          {verifying ? 'Computing...' : 'Compute Hash'}
+        </Button>
       </div>
-
-      <button
-        onClick={handleVerify}
-        disabled={!filePath || verifying}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          padding: '14px 28px',
-          backgroundColor: filePath && !verifying ? colors.accent : colors.input,
-          color: filePath && !verifying ? colors.text : colors.textSecondary,
-          border: 'none',
-          borderRadius: 10,
-          fontSize: 15,
-          fontWeight: 500,
-          cursor: filePath && !verifying ? 'pointer' : 'not-allowed',
-          marginBottom: 32,
-        }}
-      >
-        <Zap size={16} />
-        {verifying ? 'Computing...' : 'Compute Hash'}
-      </button>
 
       {computedHash && (
-        <div>
-          <label style={{ display: 'block', fontSize: 15, fontWeight: 500, marginBottom: 10 }}>Computed Hash</label>
+        <Card>
+          <SectionLabel hint={`${algorithms.find((a) => a.id === algorithm)?.label} · ${formatBytes(fileSize)}`}>
+            Computed hash
+          </SectionLabel>
           <div
+            className="tb-mono"
             style={{
-              padding: 16,
-              backgroundColor: colors.input,
+              backgroundColor: colors.bgDeep,
               border: `1px solid ${colors.border}`,
-              borderRadius: 10,
-              fontFamily: 'ui-monospace, monospace',
-              fontSize: 14,
+              borderRadius: 'var(--tb-radius-ctl)',
+              padding: 14,
+              fontSize: 12.5,
+              lineHeight: 1.6,
               wordBreak: 'break-all',
               color: colors.text,
-              marginBottom: 16,
+              marginBottom: 12,
             }}
           >
             {computedHash}
           </div>
-
-          <div style={{ display: 'flex', gap: 12, fontSize: 13, color: colors.textSecondary }}>
-            <span>Algorithm: {algorithms.find((a) => a.id === algorithm)?.label}</span>
-            <span>|</span>
-            <span>File: {fileName}</span>
-            <span>|</span>
-            <span>{formatBytes(fileSize)}</span>
-          </div>
-        </div>
+          <p
+            className="tb-mono"
+            style={{
+              margin: 0,
+              fontSize: 11,
+              letterSpacing: '0.04em',
+              color: colors.textFaint,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            File: {fileName}
+          </p>
+        </Card>
       )}
 
       {result && (
-        <div
-          style={{
-            background: result === 'match' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
-            border: `1px solid ${result === 'match' ? '#22C55E' : '#EF4444'}`,
-            borderRadius: 10,
-            padding: 20,
-            marginTop: 16,
-          }}
-        >
+        <Card style={{ borderColor: result === 'match' ? colors.success : colors.error }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             {result === 'match' ? (
-              <Check size={20} color="#22C55E" />
+              <Check size={18} color={colors.success} />
             ) : (
-              <X size={20} color="#EF4444" />
+              <X size={18} color={colors.error} />
             )}
-            <span style={{ fontWeight: 500, fontSize: 15 }}>
+            <span style={{ fontWeight: 600, fontSize: 14, color: colors.text }}>
               {result === 'match'
                 ? 'Checksum verified — file is intact'
                 : 'Checksum mismatch — file may be corrupted or modified'}
             </span>
           </div>
-        </div>
+        </Card>
       )}
     </div>
-  );
+  )
 }

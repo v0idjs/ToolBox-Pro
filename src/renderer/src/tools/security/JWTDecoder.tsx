@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { Copy, Check, Key, Zap } from 'lucide-react'
+import { Copy, Check, Key, Zap, ShieldAlert } from 'lucide-react'
 import { useThemeColors } from '@/lib/theme'
+import { ToolHeader, Button, SectionLabel } from '@/components/ui'
 
 interface JWTHeader {
   alg?: string
@@ -61,229 +62,210 @@ export function JWTDecoder() {
   }
 
   return (
-    <div style={{ color: colors.text }}>
-      <div style={{ marginBottom: 32 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-          <Key size={28} color={colors.accent} />
-          <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0 }}>JWT Decoder</h1>
+    <div>
+      <ToolHeader
+        name="JWT Decoder"
+        description="Decode and inspect JSON Web Tokens to view headers, payloads, and claims."
+        category="security"
+        icon={Key}
+        serial="jwt-decoder"
+      />
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div className="tb-panel" style={{ padding: 20 }}>
+          <SectionLabel hint={`${token.length} chars`}>JWT Token</SectionLabel>
+          <textarea
+            className="tb-field tb-mono"
+            value={token}
+            onChange={(e) => setToken(e.target.value)}
+            placeholder="Paste your JWT token here..."
+            spellCheck={false}
+            style={{ width: '100%', minHeight: 140, resize: 'vertical', fontSize: 13 }}
+          />
         </div>
-        <p style={{ fontSize: 15, color: colors.textSecondary, margin: 0, lineHeight: 1.5 }}>
-          Decode and inspect JSON Web Tokens to view headers, payloads, and claims.
-        </p>
-      </div>
 
-      <div style={{ marginBottom: 24 }}>
-        <label style={{ display: 'block', fontSize: 15, fontWeight: 500, color: colors.textSecondary, marginBottom: 10 }}>
-          JWT Token
-        </label>
-        <textarea
-          value={token}
-          onChange={(e) => setToken(e.target.value)}
-          placeholder="Paste your JWT token here..."
-          style={{
-            width: '100%',
-            minHeight: 160,
-            padding: 16,
-            borderRadius: 10,
-            border: `1px solid ${colors.border}`,
-            backgroundColor: colors.input,
-            color: colors.text,
-            fontSize: 15,
-            fontFamily: 'monospace',
-            resize: 'vertical',
-            outline: 'none',
-            boxSizing: 'border-box',
-            lineHeight: 1.6
-          }}
-        />
-      </div>
+        <Button variant="primary" size="lg" icon={Zap} onClick={decode} disabled={!token}>
+          Decode
+        </Button>
 
-      <button
-        onClick={decode}
-        disabled={!token}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          padding: '14px 28px',
-          borderRadius: 10,
-          border: 'none',
-          backgroundColor: colors.accent,
-          color: '#fff',
-          fontSize: 15,
-          fontWeight: 600,
-          cursor: token ? 'pointer' : 'not-allowed',
-          opacity: token ? 1 : 0.5,
-          marginBottom: 32
-        }}
-      >
-        <Zap size={18} />
-        Decode
-      </button>
+        {parsed && (
+          <>
+            {parsed.error && (
+              <div
+                style={{
+                  padding: '12px 16px',
+                  background: `${colors.error}15`,
+                  border: `1px solid ${colors.error}40`,
+                  borderRadius: 'var(--tb-radius-ctl)',
+                  color: colors.error,
+                  fontSize: 14
+                }}
+              >
+                {parsed.error}
+              </div>
+            )}
 
-      {parsed && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {parsed.error && (
-            <div style={{
-              padding: '12px 16px',
-              borderRadius: 10,
-              backgroundColor: '#7F1D1D',
-              border: '1px solid #B91C1C',
-              color: '#FCA5A5',
-              fontSize: 15
-            }}>
-              {parsed.error}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <SectionLabel>Decoded Token</SectionLabel>
+              <Button
+                variant="secondary"
+                size="sm"
+                icon={copied === 'all' ? Check : Copy}
+                onClick={() => copyToClipboard(JSON.stringify(parsed, null, 2), 'all')}
+                style={
+                  copied === 'all'
+                    ? { color: colors.success, borderColor: colors.success }
+                    : undefined
+                }
+              >
+                {copied === 'all' ? 'Copied' : 'Copy All'}
+              </Button>
             </div>
-          )}
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-            <span style={{ fontSize: 15, fontWeight: 500, color: colors.textSecondary }}>Decoded Token</span>
-            <button
-              onClick={() => copyToClipboard(JSON.stringify(parsed, null, 2), 'all')}
-              style={{
-                padding: '8px 16px',
-                background: 'transparent',
-                color: colors.textSecondary,
-                border: `1px solid ${colors.border}`,
-                borderRadius: 8,
-                fontSize: 14,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6
-              }}
-            >
-              {copied === 'all' ? <Check size={14} /> : <Copy size={14} />}
-              {copied === 'all' ? 'Copied' : 'Copy'}
-            </button>
-          </div>
-
-          <div style={{
-            padding: 16,
-            borderRadius: 10,
-            border: `1px solid ${colors.border}`,
-            backgroundColor: colors.input
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-              <h3 style={{ fontSize: 15, fontWeight: 600, margin: 0, color: colors.text }}>
+            <div className="tb-panel" style={{ padding: 20 }}>
+              <SectionLabel
+                hint={
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    icon={copied === 'header' ? Check : Copy}
+                    onClick={() => copyToClipboard(JSON.stringify(parsed.header, null, 2), 'header')}
+                    style={
+                      copied === 'header'
+                        ? { color: colors.success }
+                        : undefined
+                    }
+                  >
+                    {copied === 'header' ? 'Copied' : 'Copy'}
+                  </Button>
+                }
+              >
                 Header
-              </h3>
-              <button
-                onClick={() => copyToClipboard(JSON.stringify(parsed.header, null, 2), 'header')}
+              </SectionLabel>
+              <pre
+                className="tb-mono"
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  padding: '8px 16px',
-                  borderRadius: 8,
+                  margin: 0,
+                  padding: 14,
+                  background: colors.bgDeep,
                   border: `1px solid ${colors.border}`,
-                  backgroundColor: 'transparent',
-                  color: copied === 'header' ? '#22C55E' : colors.textSecondary,
-                  fontSize: 14,
-                  cursor: 'pointer'
+                  borderRadius: 'var(--tb-radius-ctl)',
+                  fontSize: 13,
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word',
+                  color: colors.text,
+                  lineHeight: 1.6
                 }}
               >
-                {copied === 'header' ? <Check size={14} /> : <Copy size={14} />}
-                {copied === 'header' ? 'Copied' : 'Copy'}
-              </button>
+                {JSON.stringify(parsed.header, null, 2)}
+              </pre>
             </div>
-            <pre style={{
-              fontFamily: 'monospace',
-              fontSize: 14,
-              whiteSpace: 'pre-wrap',
-              color: colors.text,
-              margin: 0,
-              lineHeight: 1.6
-            }}>
-              {JSON.stringify(parsed.header, null, 2)}
-            </pre>
-          </div>
 
-          <div style={{
-            padding: 16,
-            borderRadius: 10,
-            border: `1px solid ${colors.border}`,
-            backgroundColor: colors.input
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-              <h3 style={{ fontSize: 15, fontWeight: 600, margin: 0, color: colors.text }}>
+            <div className="tb-panel" style={{ padding: 20 }}>
+              <SectionLabel
+                hint={
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    icon={copied === 'payload' ? Check : Copy}
+                    onClick={() => copyToClipboard(JSON.stringify(parsed.payload, null, 2), 'payload')}
+                    style={
+                      copied === 'payload'
+                        ? { color: colors.success }
+                        : undefined
+                    }
+                  >
+                    {copied === 'payload' ? 'Copied' : 'Copy'}
+                  </Button>
+                }
+              >
                 Payload
-              </h3>
-              <button
-                onClick={() => copyToClipboard(JSON.stringify(parsed.payload, null, 2), 'payload')}
+              </SectionLabel>
+              <pre
+                className="tb-mono"
+                style={{
+                  margin: 0,
+                  padding: 14,
+                  background: colors.bgDeep,
+                  border: `1px solid ${colors.border}`,
+                  borderRadius: 'var(--tb-radius-ctl)',
+                  fontSize: 13,
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word',
+                  color: colors.text,
+                  lineHeight: 1.6
+                }}
+              >
+                {JSON.stringify(parsed.payload, null, 2)}
+              </pre>
+            </div>
+
+            <div className="tb-panel" style={{ padding: 20 }}>
+              <SectionLabel hint="Unverified">
+                Signature
+              </SectionLabel>
+              <div
+                className="tb-mono"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 6,
-                  padding: '8px 16px',
-                  borderRadius: 8,
-                  border: `1px solid ${colors.border}`,
-                  backgroundColor: 'transparent',
-                  color: copied === 'payload' ? '#22C55E' : colors.textSecondary,
-                  fontSize: 14,
-                  cursor: 'pointer'
+                  gap: 10,
+                  padding: 14,
+                  background: `${colors.warning}15`,
+                  border: `1px solid ${colors.warning}40`,
+                  borderRadius: 'var(--tb-radius-ctl)',
+                  fontSize: 12.5,
+                  wordBreak: 'break-all',
+                  color: colors.warning,
+                  lineHeight: 1.6
                 }}
               >
-                {copied === 'payload' ? <Check size={14} /> : <Copy size={14} />}
-                {copied === 'payload' ? 'Copied' : 'Copy'}
-              </button>
+                <ShieldAlert size={15} style={{ flexShrink: 0 }} />
+                <span>{parsed.signature || '—'}</span>
+              </div>
             </div>
-            <pre style={{
-              fontFamily: 'monospace',
-              fontSize: 14,
-              whiteSpace: 'pre-wrap',
-              color: colors.text,
-              margin: 0,
-              lineHeight: 1.6
-            }}>
-              {JSON.stringify(parsed.payload, null, 2)}
-            </pre>
-          </div>
 
-          <div style={{
-            padding: 16,
-            borderRadius: 10,
-            border: `1px solid ${colors.border}`,
-            backgroundColor: colors.input
-          }}>
-            <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: 12, marginTop: 0, color: colors.text }}>
-              Claims
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              {parsed.payload.exp && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                  <span style={{ color: colors.textSecondary }}>Expires:</span>
-                  <span style={{ color: colors.text }}>
-                    {formatDate(parsed.payload.exp)}
-                  </span>
+            {(parsed.payload.exp || parsed.payload.iat || parsed.payload.sub) && (
+              <div className="tb-panel" style={{ padding: 20 }}>
+                <SectionLabel>Claims</SectionLabel>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {parsed.payload.exp && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, fontSize: 13.5 }}>
+                      <span style={{ color: colors.textSecondary }}>Expires</span>
+                      <span className="tb-mono" style={{ color: colors.text, fontVariantNumeric: 'tabular-nums' }}>
+                        {formatDate(parsed.payload.exp)}
+                      </span>
+                    </div>
+                  )}
+                  {parsed.payload.iat && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, fontSize: 13.5 }}>
+                      <span style={{ color: colors.textSecondary }}>Issued</span>
+                      <span className="tb-mono" style={{ color: colors.text, fontVariantNumeric: 'tabular-nums' }}>
+                        {formatDate(parsed.payload.iat)}
+                      </span>
+                    </div>
+                  )}
+                  {parsed.payload.sub && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, fontSize: 13.5 }}>
+                      <span style={{ color: colors.textSecondary }}>Subject</span>
+                      <span className="tb-mono" style={{ color: colors.text, wordBreak: 'break-all' }}>
+                        {parsed.payload.sub}
+                      </span>
+                    </div>
+                  )}
                 </div>
-              )}
-              {parsed.payload.iat && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                  <span style={{ color: colors.textSecondary }}>Issued:</span>
-                  <span style={{ color: colors.text }}>
-                    {formatDate(parsed.payload.iat)}
-                  </span>
-                </div>
-              )}
-              {parsed.payload.sub && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                  <span style={{ color: colors.textSecondary }}>Subject:</span>
-                  <span style={{ color: colors.text }}>{parsed.payload.sub}</span>
-                </div>
-              )}
-            </div>
-          </div>
+              </div>
+            )}
 
-          <div style={{ marginTop: 4, fontSize: 13, color: colors.textSecondary, display: 'flex', gap: 16 }}>
-            <span>📊 Algorithm: {parsed.header.alg || 'N/A'}</span>
-            <span style={{ color: colors.border }}>|</span>
-            <span>📊 Type: {parsed.header.typ || 'N/A'}</span>
-            <span style={{ color: colors.border }}>|</span>
-            <span>📊 Signature: {parsed.signature.substring(0, 20)}...</span>
-          </div>
-        </div>
-      )}
+            <p
+              className="tb-mono"
+              style={{ margin: 0, fontSize: 11, letterSpacing: '0.04em', color: colors.textFaint }}
+            >
+              Algorithm: {parsed.header.alg || 'N/A'} · Type: {parsed.header.typ || 'N/A'} · Signature unverified — do not trust without validation
+            </p>
+          </>
+        )}
+      </div>
     </div>
   )
 }

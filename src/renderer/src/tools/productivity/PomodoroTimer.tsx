@@ -1,349 +1,150 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { Play, Pause, RotateCcw, Coffee, Timer, Zap } from 'lucide-react';
-import { useThemeColors } from '@/lib/theme';
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { Pause, RotateCcw, Timer, Zap } from 'lucide-react'
+import { useThemeColors } from '@/lib/theme'
+import { ToolHeader, Button, Card, SectionLabel, Input } from '@/components/ui'
 
 const DEFAULTS = {
   work: 25 * 60,
   shortBreak: 5 * 60,
   longBreak: 15 * 60,
-  longBreakInterval: 4,
-};
+  longBreakInterval: 4
+}
 
-type Phase = 'work' | 'shortBreak' | 'longBreak';
+type Phase = 'work' | 'shortBreak' | 'longBreak'
 
 function playBeep() {
   try {
-    const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
-    const oscillator = ctx.createOscillator();
-    const gainNode = ctx.createGain();
-    oscillator.connect(gainNode);
-    gainNode.connect(ctx.destination);
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(880, ctx.currentTime);
-    gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
-    oscillator.start(ctx.currentTime);
-    oscillator.stop(ctx.currentTime + 0.5);
-  } catch {
-    // Audio not available
-  }
+    const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
+    const oscillator = ctx.createOscillator()
+    const gainNode = ctx.createGain()
+    oscillator.connect(gainNode)
+    gainNode.connect(ctx.destination)
+    oscillator.type = 'sine'
+    oscillator.frequency.setValueAtTime(880, ctx.currentTime)
+    gainNode.gain.setValueAtTime(0.3, ctx.currentTime)
+    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5)
+    oscillator.start(ctx.currentTime)
+    oscillator.stop(ctx.currentTime + 0.5)
+  } catch {}
 }
 
 function formatTime(seconds: number): string {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  const m = Math.floor(seconds / 60)
+  const s = seconds % 60
+  return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
 }
 
 export function PomodoroTimer() {
-  const colors = useThemeColors();
-  const [workDuration, setWorkDuration] = useState(DEFAULTS.work);
-  const [shortBreakDuration, setShortBreakDuration] = useState(DEFAULTS.shortBreak);
-  const [longBreakDuration, setLongBreakDuration] = useState(DEFAULTS.longBreak);
+  const colors = useThemeColors()
+  const [workDuration, setWorkDuration] = useState(DEFAULTS.work)
+  const [shortBreakDuration, setShortBreakDuration] = useState(DEFAULTS.shortBreak)
+  const [longBreakDuration, setLongBreakDuration] = useState(DEFAULTS.longBreak)
 
-  const [phase, setPhase] = useState<Phase>('work');
-  const [timeLeft, setTimeLeft] = useState(DEFAULTS.work);
-  const [isRunning, setIsRunning] = useState(false);
-  const [completedPomodoros, setCompletedPomodoros] = useState(0);
+  const [phase, setPhase] = useState<Phase>('work')
+  const [timeLeft, setTimeLeft] = useState(DEFAULTS.work)
+  const [isRunning, setIsRunning] = useState(false)
+  const [completedPomodoros, setCompletedPomodoros] = useState(0)
 
-  const totalTime = phase === 'work' ? workDuration : phase === 'shortBreak' ? shortBreakDuration : longBreakDuration;
-  const progress = totalTime > 0 ? (totalTime - timeLeft) / totalTime : 0;
+  const totalTime = phase === 'work' ? workDuration : phase === 'shortBreak' ? shortBreakDuration : longBreakDuration
+  const progress = totalTime > 0 ? (totalTime - timeLeft) / totalTime : 0
 
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const getNextPhase = useCallback(
     (currentPhase: Phase, completed: number): { nextPhase: Phase; nextTime: number } => {
       if (currentPhase === 'work') {
         if ((completed + 1) % DEFAULTS.longBreakInterval === 0) {
-          return { nextPhase: 'longBreak', nextTime: longBreakDuration };
+          return { nextPhase: 'longBreak', nextTime: longBreakDuration }
         }
-        return { nextPhase: 'shortBreak', nextTime: shortBreakDuration };
+        return { nextPhase: 'shortBreak', nextTime: shortBreakDuration }
       }
-      return { nextPhase: 'work', nextTime: workDuration };
+      return { nextPhase: 'work', nextTime: workDuration }
     },
-    [workDuration, shortBreakDuration, longBreakDuration],
-  );
+    [workDuration, shortBreakDuration, longBreakDuration]
+  )
 
   useEffect(() => {
-    if (!isRunning) return;
+    if (!isRunning) return
 
     const id = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
-          playBeep();
-          setIsRunning(false);
+          playBeep()
+          setIsRunning(false)
 
           if (phase === 'work') {
-            const newCompleted = completedPomodoros + 1;
-            setCompletedPomodoros(newCompleted);
-            const { nextPhase, nextTime } = getNextPhase(phase, newCompleted - 1);
-            setPhase(nextPhase);
-            return nextTime;
+            const newCompleted = completedPomodoros + 1
+            setCompletedPomodoros(newCompleted)
+            const { nextPhase, nextTime } = getNextPhase(phase, newCompleted - 1)
+            setPhase(nextPhase)
+            return nextTime
           } else {
-            const { nextPhase, nextTime } = getNextPhase(phase, completedPomodoros);
-            setPhase(nextPhase);
-            return nextTime;
+            const { nextPhase, nextTime } = getNextPhase(phase, completedPomodoros)
+            setPhase(nextPhase)
+            return nextTime
           }
         }
-        return prev - 1;
-      });
-    }, 1000);
+        return prev - 1
+      })
+    }, 1000)
 
-    intervalRef.current = id;
-    return () => clearInterval(id);
-  }, [isRunning, phase, completedPomodoros, getNextPhase]);
+    intervalRef.current = id
+    return () => clearInterval(id)
+  }, [isRunning, phase, completedPomodoros, getNextPhase])
 
-  const handleStart = () => setIsRunning(true);
-  const handlePause = () => setIsRunning(false);
+  const handleStart = () => setIsRunning(true)
+  const handlePause = () => setIsRunning(false)
   const handleReset = () => {
-    setIsRunning(false);
-    setPhase('work');
-    setTimeLeft(workDuration);
-    setCompletedPomodoros(0);
-  };
+    setIsRunning(false)
+    setPhase('work')
+    setTimeLeft(workDuration)
+    setCompletedPomodoros(0)
+  }
 
-  const circumference = 2 * Math.PI * 126;
+  const circumference = 2 * Math.PI * 126
 
-  const styles = {
-    container: {
-      minHeight: '100%',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-      color: colors.text,
-    } as React.CSSProperties,
-    header: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '12px',
-      marginBottom: '32px',
-    } as React.CSSProperties,
-    title: {
-      fontSize: '28px',
-      fontWeight: 700,
-      color: colors.text,
-      margin: 0,
-    } as React.CSSProperties,
-    subtitle: {
-      fontSize: '15px',
-      color: colors.textSecondary,
-      margin: 0,
-      marginTop: '4px',
-    } as React.CSSProperties,
-    card: {
-      borderRadius: '12px',
-      marginBottom: '24px',
-    } as React.CSSProperties,
-    cardTitle: {
-      fontSize: '15px',
-      fontWeight: 600,
-      color: colors.textSecondary,
-      textTransform: 'uppercase' as const,
-      letterSpacing: '0.05em',
-      marginBottom: '16px',
-    } as React.CSSProperties,
-    timerWrapper: {
-      display: 'flex',
-      flexDirection: 'column' as const,
-      alignItems: 'center',
-      gap: '24px',
-      padding: '24px 0',
-    } as React.CSSProperties,
-    circularTimer: (phase: Phase, progress: number) => {
-      const size = 260;
-      const strokeWidth = 8;
-      const radius = (size - strokeWidth) / 2;
-      const circumference = 2 * Math.PI * radius;
-      const offset = circumference * (1 - progress);
-      const phaseColors: Record<Phase, string> = {
-        work: '#EF4444',
-        shortBreak: '#22C55E',
-        longBreak: '#A855F7',
-      };
-      const color = phaseColors[phase];
-      return {
-        position: 'relative' as const,
-        width: `${size}px`,
-        height: `${size}px`,
-      };
-    },
-    svgCircle: {
-      transform: 'rotate(-90deg)',
-      transformOrigin: '50% 50%',
-    } as React.CSSProperties,
-    timerInner: {
-      position: 'absolute' as const,
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column' as const,
-      alignItems: 'center',
-      justifyContent: 'center',
-    } as React.CSSProperties,
-    timeDisplay: {
-      fontSize: '64px',
-      fontWeight: 700,
-      color: colors.text,
-      fontFamily: '"SF Mono", "Fira Code", Menlo, Consolas, monospace',
-      lineHeight: 1,
-      letterSpacing: '2px',
-    } as React.CSSProperties,
-    phaseLabel: (phase: Phase) => {
-      const phaseColorMap: Record<Phase, string> = {
-        work: '#EF4444',
-        shortBreak: '#22C55E',
-        longBreak: '#A855F7',
-      };
-      return {
-        fontSize: '15px',
-        fontWeight: 600,
-        color: phaseColorMap[phase],
-        textTransform: 'uppercase' as const,
-        letterSpacing: '0.1em',
-        marginTop: '10px',
-      };
-    },
-    progressBar: {
-      width: '100%',
-      maxWidth: '300px',
-      height: '6px',
-      backgroundColor: colors.border,
-      borderRadius: '3px',
-      overflow: 'hidden' as const,
-    } as React.CSSProperties,
-    progressFill: (phase: Phase, progress: number) => {
-      const phaseColorMap: Record<Phase, string> = {
-        work: '#EF4444',
-        shortBreak: '#22C55E',
-        longBreak: '#A855F7',
-      };
-      return {
-        width: `${progress * 100}%`,
-        height: '100%',
-        backgroundColor: phaseColorMap[phase],
-        borderRadius: '3px',
-        transition: 'width 0.3s linear',
-      };
-    },
-    controls: {
-      display: 'flex',
-      gap: '16px',
-      justifyContent: 'center',
-      flexWrap: 'wrap' as const,
-    } as React.CSSProperties,
-    button: {
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: '10px',
-      padding: '14px 28px',
-      borderRadius: '10px',
-      border: 'none',
-      fontSize: '15px',
-      fontWeight: 600,
-      cursor: 'pointer',
-      transition: 'all 0.15s ease',
-    } as React.CSSProperties,
-    primaryButton: {
-      backgroundColor: colors.accent,
-      color: colors.text,
-    } as React.CSSProperties,
-    secondaryButton: {
-      backgroundColor: colors.border,
-      color: colors.text,
-    } as React.CSSProperties,
-    sessionInfo: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: '32px',
-      marginTop: '12px',
-    } as React.CSSProperties,
-    sessionStat: {
-      display: 'flex',
-      flexDirection: 'column' as const,
-      alignItems: 'center',
-      gap: '6px',
-    } as React.CSSProperties,
-    sessionStatValue: {
-      fontSize: '28px',
-      fontWeight: 700,
-      color: colors.text,
-    } as React.CSSProperties,
-    sessionStatLabel: {
-      fontSize: '13px',
-      color: colors.textSecondary,
-      textTransform: 'uppercase' as const,
-      letterSpacing: '0.05em',
-    } as React.CSSProperties,
-    dotsRow: {
-      display: 'flex',
-      gap: '10px',
-      justifyContent: 'center',
-      marginTop: '16px',
-    } as React.CSSProperties,
-    dot: (filled: boolean): React.CSSProperties => ({
-      width: '14px',
-      height: '14px',
-      borderRadius: '50%',
-      backgroundColor: filled ? colors.accent : colors.border,
-      transition: 'all 0.2s ease',
-    }),
-    configRow: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '16px',
-      marginBottom: '16px',
-    } as React.CSSProperties,
-    configLabel: {
-      fontSize: '15px',
-      color: colors.textSecondary,
-      minWidth: '140px',
-    } as React.CSSProperties,
-    configInput: {
-      backgroundColor: colors.input,
-      border: `1px solid ${colors.border}`,
-      borderRadius: '10px',
-      padding: '10px 14px',
-      color: colors.text,
-      fontSize: '15px',
-      width: '80px',
-      textAlign: 'center' as const,
-      fontFamily: 'inherit',
-    } as React.CSSProperties,
-    configUnit: {
-      fontSize: '14px',
-      color: colors.textSecondary,
-    } as React.CSSProperties,
-  };
+  const phaseColors: Record<Phase, string> = {
+    work: colors.error,
+    shortBreak: colors.success,
+    longBreak: colors.warning
+  }
+
+  const digits = {
+    fontFamily: 'var(--tb-font-display)',
+    fontWeight: 700,
+    fontVariantNumeric: 'tabular-nums',
+    letterSpacing: '0.02em'
+  } as React.CSSProperties
+
+  const statLabel = {
+    fontFamily: 'var(--tb-font-mono)',
+    fontSize: 10.5,
+    textTransform: 'uppercase',
+    letterSpacing: '0.12em',
+    color: colors.textFaint
+  } as React.CSSProperties
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <Timer size={28} color={colors.accent} />
-        <div>
-          <h1 style={styles.title}>Pomodoro Timer</h1>
-          <p style={styles.subtitle}>Stay focused with timed work and break sessions</p>
-        </div>
-      </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, color: colors.text }}>
+      <ToolHeader
+        name="Pomodoro Timer"
+        description="Focus timer with work/break cycles"
+        category="productivity"
+        icon={Timer}
+        serial="pomodoro-timer"
+      />
 
-      <div style={styles.card}>
-        <div style={styles.timerWrapper}>
-          <div style={styles.circularTimer(phase, progress)}>
-            <svg width="260" height="260" style={styles.svgCircle}>
+      <Card>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24, padding: '8px 0' }}>
+          <div style={{ position: 'relative', width: 260, height: 260 }}>
+            <svg width="260" height="260" style={{ transform: 'rotate(-90deg)', transformOrigin: '50% 50%' }}>
+              <circle cx="130" cy="130" r="126" fill="none" stroke={colors.bgDeep} strokeWidth="8" />
               <circle
                 cx="130"
                 cy="130"
                 r="126"
                 fill="none"
-                stroke={colors.border}
-                strokeWidth="8"
-              />
-              <circle
-                cx="130"
-                cy="130"
-                r="126"
-                fill="none"
-                stroke={phase === 'work' ? '#EF4444' : phase === 'shortBreak' ? '#22C55E' : '#A855F7'}
+                stroke={phaseColors[phase]}
                 strokeWidth="8"
                 strokeDasharray={circumference}
                 strokeDashoffset={circumference * (1 - progress)}
@@ -351,126 +152,174 @@ export function PomodoroTimer() {
                 style={{ transition: 'stroke-dashoffset 0.3s linear' }}
               />
             </svg>
-            <div style={styles.timerInner}>
-              <div style={styles.timeDisplay}>{formatTime(timeLeft)}</div>
-              <div style={styles.phaseLabel(phase)}>
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <div style={{ ...digits, fontSize: 64, lineHeight: 1 }}>{formatTime(timeLeft)}</div>
+              <div
+                style={{
+                  marginTop: 10,
+                  fontFamily: 'var(--tb-font-mono)',
+                  fontSize: 11,
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.14em',
+                  color: phaseColors[phase]
+                }}
+              >
                 {phase === 'work' ? 'Focus' : phase === 'shortBreak' ? 'Short Break' : 'Long Break'}
               </div>
             </div>
           </div>
 
-          <div style={styles.progressBar}>
-            <div style={styles.progressFill(phase, progress)} />
+          <div
+            style={{
+              width: '100%',
+              maxWidth: 300,
+              height: 6,
+              backgroundColor: colors.bgDeep,
+              borderRadius: 3,
+              overflow: 'hidden'
+            }}
+          >
+            <div
+              style={{
+                width: `${progress * 100}%`,
+                height: '100%',
+                backgroundColor: phaseColors[phase],
+                borderRadius: 3,
+                transition: 'width 0.3s linear'
+              }}
+            />
           </div>
 
-          <div style={styles.controls}>
+          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
             {!isRunning ? (
-              <button
-                style={{ ...styles.button, ...styles.primaryButton }}
-                onClick={handleStart}
-              >
-                <Zap size={18} />
+              <Button variant="primary" icon={Zap} onClick={handleStart}>
                 Start
-              </button>
+              </Button>
             ) : (
-              <button
-                style={{ ...styles.button, ...styles.primaryButton, backgroundColor: '#DC2626' }}
+              <Button
+                variant="ghost"
+                icon={Pause}
                 onClick={handlePause}
+                style={{ color: colors.error, border: `1px solid ${colors.error}` }}
               >
-                <Pause size={18} />
                 Pause
-              </button>
+              </Button>
             )}
-            <button
-              style={{ ...styles.button, ...styles.secondaryButton }}
-              onClick={handleReset}
-            >
-              <RotateCcw size={18} />
+            <Button variant="ghost" icon={RotateCcw} onClick={handleReset}>
               Reset
-            </button>
+            </Button>
           </div>
         </div>
-      </div>
+      </Card>
 
-      <div style={styles.card}>
-        <div style={styles.cardTitle}>Session</div>
-        <div style={styles.sessionInfo}>
-          <div style={styles.sessionStat}>
-            <span style={styles.sessionStatValue}>{completedPomodoros}</span>
-            <span style={styles.sessionStatLabel}>Pomodoros</span>
+      <Card>
+        <SectionLabel hint={`${completedPomodoros} done`}>Session</SectionLabel>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 32 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+            <span style={{ ...digits, fontSize: 26, lineHeight: 1.1 }}>{completedPomodoros}</span>
+            <span style={statLabel}>Pomodoros</span>
           </div>
-          <div style={styles.sessionStat}>
-            <span style={styles.sessionStatValue}>
-              {Math.floor(completedPomodoros * workDuration / 3600)}h{' '}
-              {Math.floor((completedPomodoros * workDuration % 3600) / 60)}m
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+            <span style={{ ...digits, fontSize: 26, lineHeight: 1.1 }}>
+              {Math.floor((completedPomodoros * workDuration) / 3600)}h{' '}
+              {Math.floor(((completedPomodoros * workDuration) % 3600) / 60)}m
             </span>
-            <span style={styles.sessionStatLabel}>Focus Time</span>
+            <span style={statLabel}>Focus Time</span>
           </div>
-          <div style={styles.sessionStat}>
-            <span style={{ ...styles.sessionStatValue, color: colors.accent }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+            <span style={{ ...digits, fontSize: 26, lineHeight: 1.1, color: colors.accent }}>
               {Math.ceil(completedPomodoros / DEFAULTS.longBreakInterval)}
             </span>
-            <span style={styles.sessionStatLabel}>Cycles</span>
+            <span style={statLabel}>Cycles</span>
           </div>
         </div>
-        <div style={styles.dotsRow}>
+        <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 16 }}>
           {Array.from({ length: DEFAULTS.longBreakInterval }).map((_, i) => (
-            <div key={i} style={styles.dot(i < completedPomodoros % DEFAULTS.longBreakInterval)} />
+            <div
+              key={i}
+              style={{
+                width: 12,
+                height: 12,
+                borderRadius: '50%',
+                backgroundColor: i < completedPomodoros % DEFAULTS.longBreakInterval ? colors.accent : colors.border
+              }}
+            />
           ))}
         </div>
-      </div>
+      </Card>
 
-      <div style={styles.card}>
-        <div style={styles.cardTitle}>Settings</div>
-        <div style={styles.configRow}>
-          <span style={styles.configLabel}>Work</span>
-          <input
-            type="number"
-            min={1}
-            max={120}
-            value={Math.round(workDuration / 60)}
-            onChange={(e) => {
-              const v = Math.max(1, parseInt(e.target.value) || 1);
-              setWorkDuration(v * 60);
-              if (phase === 'work' && !isRunning) setTimeLeft(v * 60);
-            }}
-            style={styles.configInput}
-          />
-          <span style={styles.configUnit}>min</span>
+      <Card>
+        <SectionLabel>Settings</SectionLabel>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: 13.5, color: colors.textSecondary, minWidth: 120 }}>Work</span>
+            <Input
+              type="number"
+              min={1}
+              max={120}
+              value={Math.round(workDuration / 60)}
+              onChange={(e) => {
+                const v = Math.max(1, parseInt(e.target.value) || 1)
+                setWorkDuration(v * 60)
+                if (phase === 'work' && !isRunning) setTimeLeft(v * 60)
+              }}
+              style={{ width: 84, textAlign: 'center' }}
+            />
+            <span style={{ fontFamily: 'var(--tb-font-mono)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', color: colors.textFaint }}>
+              min
+            </span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: 13.5, color: colors.textSecondary, minWidth: 120 }}>Short Break</span>
+            <Input
+              type="number"
+              min={1}
+              max={30}
+              value={Math.round(shortBreakDuration / 60)}
+              onChange={(e) => {
+                const v = Math.max(1, parseInt(e.target.value) || 1)
+                setShortBreakDuration(v * 60)
+                if (phase === 'shortBreak' && !isRunning) setTimeLeft(v * 60)
+              }}
+              style={{ width: 84, textAlign: 'center' }}
+            />
+            <span style={{ fontFamily: 'var(--tb-font-mono)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', color: colors.textFaint }}>
+              min
+            </span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: 13.5, color: colors.textSecondary, minWidth: 120 }}>Long Break</span>
+            <Input
+              type="number"
+              min={1}
+              max={60}
+              value={Math.round(longBreakDuration / 60)}
+              onChange={(e) => {
+                const v = Math.max(1, parseInt(e.target.value) || 1)
+                setLongBreakDuration(v * 60)
+                if (phase === 'longBreak' && !isRunning) setTimeLeft(v * 60)
+              }}
+              style={{ width: 84, textAlign: 'center' }}
+            />
+            <span style={{ fontFamily: 'var(--tb-font-mono)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', color: colors.textFaint }}>
+              min
+            </span>
+          </div>
         </div>
-        <div style={styles.configRow}>
-          <span style={styles.configLabel}>Short Break</span>
-          <input
-            type="number"
-            min={1}
-            max={30}
-            value={Math.round(shortBreakDuration / 60)}
-            onChange={(e) => {
-              const v = Math.max(1, parseInt(e.target.value) || 1);
-              setShortBreakDuration(v * 60);
-              if (phase === 'shortBreak' && !isRunning) setTimeLeft(v * 60);
-            }}
-            style={styles.configInput}
-          />
-          <span style={styles.configUnit}>min</span>
-        </div>
-        <div style={styles.configRow}>
-          <span style={styles.configLabel}>Long Break</span>
-          <input
-            type="number"
-            min={1}
-            max={60}
-            value={Math.round(longBreakDuration / 60)}
-            onChange={(e) => {
-              const v = Math.max(1, parseInt(e.target.value) || 1);
-              setLongBreakDuration(v * 60);
-              if (phase === 'longBreak' && !isRunning) setTimeLeft(v * 60);
-            }}
-            style={styles.configInput}
-          />
-          <span style={styles.configUnit}>min</span>
-        </div>
-      </div>
+      </Card>
     </div>
-  );
+  )
 }

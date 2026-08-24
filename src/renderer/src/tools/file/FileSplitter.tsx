@@ -1,204 +1,184 @@
-import { useState } from 'react';
-import { FolderOpen, Scissors, Save, Zap } from 'lucide-react';
-import { useThemeColors } from '@/lib/theme';
+import { useState } from 'react'
+import { FolderOpen, Scissors, Save, Zap } from 'lucide-react'
+import { useThemeColors } from '@/lib/theme'
+import { ToolHeader, Button, Card, SectionLabel, Input } from '@/components/ui'
 
-type SplitMode = 'lines' | 'size' | 'parts';
+type SplitMode = 'lines' | 'size' | 'parts'
 
 interface ChunkResult {
-  index: number;
-  lines: number;
-  sizeKB: number;
+  index: number
+  lines: number
+  sizeKB: number
 }
 
 export function FileSplitter() {
-  const [fileName, setFileName] = useState<string | null>(null);
-  const [fileContent, setFileContent] = useState<string | null>(null);
-  const [fileSize, setFileSize] = useState<number>(0);
-  const [splitMode, setSplitMode] = useState<SplitMode>('lines');
-  const [linesPerChunk, setLinesPerChunk] = useState(1000);
-  const [kbPerChunk, setKbPerChunk] = useState(500);
-  const [numParts, setNumParts] = useState(2);
-  const [results, setResults] = useState<ChunkResult[]>([]);
-  const [processing, setProcessing] = useState(false);
-  const colors = useThemeColors();
+  const [fileName, setFileName] = useState<string | null>(null)
+  const [fileContent, setFileContent] = useState<string | null>(null)
+  const [fileSize, setFileSize] = useState<number>(0)
+  const [splitMode, setSplitMode] = useState<SplitMode>('lines')
+  const [linesPerChunk, setLinesPerChunk] = useState(1000)
+  const [kbPerChunk, setKbPerChunk] = useState(500)
+  const [numParts, setNumParts] = useState(2)
+  const [results, setResults] = useState<ChunkResult[]>([])
+  const [processing, setProcessing] = useState(false)
+  const colors = useThemeColors()
 
   const formatBytes = (bytes: number): string => {
-    if (bytes === 0) return '0 B';
-    const units = ['B', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${units[i]}`;
-  };
+    if (bytes === 0) return '0 B'
+    const units = ['B', 'KB', 'MB', 'GB']
+    const i = Math.floor(Math.log(bytes) / Math.log(1024))
+    return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${units[i]}`
+  }
 
   const handleOpenFile = async () => {
     try {
-      const result = await window.api.openFile();
+      const result = await window.api.openFile()
       if (result) {
-        setFileName(result.name);
-        setFileContent(result.content);
-        setFileSize(result.size);
-        setResults([]);
+        setFileName(result.name)
+        setFileContent(result.content)
+        setFileSize(result.size)
+        setResults([])
       }
     } catch (err) {
-      console.error('Failed to open file:', err);
+      console.error('Failed to open file:', err)
     }
-  };
+  }
 
   const handleSplit = async () => {
-    if (!fileContent || !fileName) return;
-    setProcessing(true);
-    setResults([]);
+    if (!fileContent || !fileName) return
+    setProcessing(true)
+    setResults([])
 
     try {
-      const lines = fileContent.split(/\r?\n/);
-      const chunks: ChunkResult[] = [];
-      let chunkIndex = 0;
+      const lines = fileContent.split(/\r?\n/)
+      const chunks: ChunkResult[] = []
+      let chunkIndex = 0
 
       if (splitMode === 'lines') {
-        const chunkSize = Math.max(1, linesPerChunk);
+        const chunkSize = Math.max(1, linesPerChunk)
         for (let i = 0; i < lines.length; i += chunkSize) {
-          const chunkLines = lines.slice(i, i + chunkSize);
-          const chunkContent = chunkLines.join('\n');
-          const chunkFileName = `${fileName.replace(/\.[^.]+$/, '')}_part${chunkIndex + 1}.txt`;
-          await window.api.saveFile(chunkFileName, chunkContent);
+          const chunkLines = lines.slice(i, i + chunkSize)
+          const chunkContent = chunkLines.join('\n')
+          const chunkFileName = `${fileName.replace(/\.[^.]+$/, '')}_part${chunkIndex + 1}.txt`
+          await window.api.saveFile(chunkFileName, chunkContent)
           chunks.push({
             index: chunkIndex + 1,
             lines: chunkLines.length,
             sizeKB: parseFloat((new Blob([chunkContent]).size / 1024).toFixed(2)),
-          });
-          chunkIndex++;
+          })
+          chunkIndex++
         }
       } else if (splitMode === 'parts') {
-        const parts = Math.max(2, Math.min(100, numParts));
-        const linesPerPart = Math.ceil(lines.length / parts);
+        const parts = Math.max(2, Math.min(100, numParts))
+        const linesPerPart = Math.ceil(lines.length / parts)
         for (let i = 0; i < lines.length; i += linesPerPart) {
-          const chunkLines = lines.slice(i, i + linesPerPart);
-          const chunkContent = chunkLines.join('\n');
-          const chunkFileName = `${fileName.replace(/\.[^.]+$/, '')}_part${chunkIndex + 1}.txt`;
-          await window.api.saveFile(chunkFileName, chunkContent);
+          const chunkLines = lines.slice(i, i + linesPerPart)
+          const chunkContent = chunkLines.join('\n')
+          const chunkFileName = `${fileName.replace(/\.[^.]+$/, '')}_part${chunkIndex + 1}.txt`
+          await window.api.saveFile(chunkFileName, chunkContent)
           chunks.push({
             index: chunkIndex + 1,
             lines: chunkLines.length,
             sizeKB: parseFloat((new Blob([chunkContent]).size / 1024).toFixed(2)),
-          });
-          chunkIndex++;
+          })
+          chunkIndex++
         }
       } else {
-        const maxBytes = Math.max(1, kbPerChunk) * 1024;
-        let currentChunk: string[] = [];
-        let currentSize = 0;
+        const maxBytes = Math.max(1, kbPerChunk) * 1024
+        let currentChunk: string[] = []
+        let currentSize = 0
         for (const line of lines) {
-          const lineBytes = new Blob([line + '\n']).size;
+          const lineBytes = new Blob([line + '\n']).size
           if (currentSize + lineBytes > maxBytes && currentChunk.length > 0) {
-            const chunkContent = currentChunk.join('\n');
-            const chunkFileName = `${fileName.replace(/\.[^.]+$/, '')}_part${chunkIndex + 1}.txt`;
-            await window.api.saveFile(chunkFileName, chunkContent);
+            const chunkContent = currentChunk.join('\n')
+            const chunkFileName = `${fileName.replace(/\.[^.]+$/, '')}_part${chunkIndex + 1}.txt`
+            await window.api.saveFile(chunkFileName, chunkContent)
             chunks.push({
               index: chunkIndex + 1,
               lines: currentChunk.length,
               sizeKB: parseFloat((new Blob([chunkContent]).size / 1024).toFixed(2)),
-            });
-            chunkIndex++;
-            currentChunk = [];
-            currentSize = 0;
+            })
+            chunkIndex++
+            currentChunk = []
+            currentSize = 0
           }
-          currentChunk.push(line);
-          currentSize += lineBytes;
+          currentChunk.push(line)
+          currentSize += lineBytes
         }
         if (currentChunk.length > 0) {
-          const chunkContent = currentChunk.join('\n');
-          const chunkFileName = `${fileName.replace(/\.[^.]+$/, '')}_part${chunkIndex + 1}.txt`;
-          await window.api.saveFile(chunkFileName, chunkContent);
+          const chunkContent = currentChunk.join('\n')
+          const chunkFileName = `${fileName.replace(/\.[^.]+$/, '')}_part${chunkIndex + 1}.txt`
+          await window.api.saveFile(chunkFileName, chunkContent)
           chunks.push({
             index: chunkIndex + 1,
             lines: currentChunk.length,
             sizeKB: parseFloat((new Blob([chunkContent]).size / 1024).toFixed(2)),
-          });
+          })
         }
       }
 
-      setResults(chunks);
+      setResults(chunks)
     } catch (err) {
-      console.error('Failed to split file:', err);
+      console.error('Failed to split file:', err)
     } finally {
-      setProcessing(false);
+      setProcessing(false)
     }
-  };
+  }
+
+  const modes: { id: SplitMode; label: string }[] = [
+    { id: 'lines', label: 'By Line Count' },
+    { id: 'size', label: 'By File Size (KB)' },
+    { id: 'parts', label: 'By Parts' },
+  ]
 
   return (
-    <div style={{ color: colors.text }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-        <Scissors size={28} color={colors.accent} />
-        <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0 }}>File Splitter</h1>
-      </div>
-      <p style={{ fontSize: 15, color: colors.textSecondary, margin: 0, marginBottom: 32 }}>
-        Split large files into smaller chunks by line count, file size, or number of parts
-      </p>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <ToolHeader
+        name="File Splitter"
+        description="Split large files into smaller chunks by line count or size"
+        category="file"
+        icon={Scissors}
+        serial="file-splitter"
+      />
 
-      <button
-        onClick={handleOpenFile}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          padding: '14px 28px',
-          backgroundColor: colors.accent,
-          color: colors.text,
-          border: 'none',
-          borderRadius: 10,
-          fontSize: 15,
-          fontWeight: 500,
-          cursor: 'pointer',
-          marginBottom: 32,
-        }}
-      >
-        <FolderOpen size={16} />
-        Open File
-      </button>
-
-      {fileName && (
-        <div
-          style={{
-            backgroundColor: colors.input,
-            border: `1px solid ${colors.border}`,
-            borderRadius: 10,
-            padding: 16,
-            marginBottom: 32,
-          }}
-        >
-          <div style={{ fontSize: 15, color: colors.text, fontWeight: 500 }}>{fileName}</div>
-          <div style={{ fontSize: 13, color: colors.textSecondary, marginTop: 4 }}>{formatBytes(fileSize)}</div>
+      <Card>
+        <SectionLabel>Source</SectionLabel>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+          <Button variant="secondary" icon={FolderOpen} onClick={handleOpenFile}>
+            Open File
+          </Button>
+          {fileName && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
+              <span className="tb-mono" style={{ fontSize: 12.5, color: colors.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {fileName}
+              </span>
+              <span className="tb-mono" style={{ fontSize: 11, letterSpacing: '0.04em', color: colors.textFaint }}>
+                {formatBytes(fileSize)}
+              </span>
+            </div>
+          )}
         </div>
-      )}
+      </Card>
 
-      <div style={{ marginBottom: 24 }}>
-        <label style={{ display: 'block', fontSize: 15, fontWeight: 500, marginBottom: 10 }}>Split Mode</label>
-        <div style={{ display: 'flex', gap: 8 }}>
-          {(['lines', 'size', 'parts'] as SplitMode[]).map((mode) => (
-            <button
-              key={mode}
-              onClick={() => setSplitMode(mode)}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: splitMode === mode ? colors.accent : colors.input,
-                color: splitMode === mode ? colors.text : colors.textSecondary,
-                border: `1px solid ${splitMode === mode ? colors.accent : colors.border}`,
-                borderRadius: 8,
-                fontSize: 15,
-                cursor: 'pointer',
-                fontWeight: splitMode === mode ? 500 : 400,
-              }}
+      <Card>
+        <SectionLabel>Split mode</SectionLabel>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
+          {modes.map((mode) => (
+            <Button
+              key={mode.id}
+              variant="secondary"
+              onClick={() => setSplitMode(mode.id)}
+              style={
+                splitMode === mode.id
+                  ? { backgroundColor: colors.accentTint, borderColor: colors.accent }
+                  : undefined
+              }
             >
-              {mode === 'lines' ? 'By Line Count' : mode === 'size' ? 'By File Size (KB)' : 'By Parts'}
-            </button>
+              {mode.label}
+            </Button>
           ))}
         </div>
-      </div>
-
-      <div style={{ marginBottom: 24 }}>
-        <label style={{ display: 'block', fontSize: 15, fontWeight: 500, marginBottom: 10 }}>
-          {splitMode === 'lines' ? 'Lines per chunk' : splitMode === 'size' ? 'KB per chunk' : 'Number of parts'}
-        </label>
-        <input
+        <Input
           type="number"
           min={splitMode === 'parts' ? 2 : 1}
           max={splitMode === 'parts' ? 100 : undefined}
@@ -209,91 +189,73 @@ export function FileSplitter() {
             else if (splitMode === 'size') setKbPerChunk(val);
             else setNumParts(Math.max(2, Math.min(100, val)));
           }}
-          style={{
-            width: '100%',
-            padding: 14,
-            backgroundColor: colors.input,
-            color: colors.text,
-            border: `1px solid ${colors.border}`,
-            borderRadius: 10,
-            fontSize: 15,
-            outline: 'none',
-            boxSizing: 'border-box',
-          }}
+          label={
+            splitMode === 'lines'
+              ? 'Lines per chunk'
+              : splitMode === 'size'
+                ? 'KB per chunk'
+                : 'Number of parts'
+          }
         />
+      </Card>
+
+      <div>
+        <Button
+          variant="primary"
+          size="lg"
+          icon={Zap}
+          onClick={handleSplit}
+          disabled={!fileContent || processing}
+          isLoading={processing}
+        >
+          {processing ? 'Splitting...' : 'Split File'}
+        </Button>
       </div>
 
-      <button
-        onClick={handleSplit}
-        disabled={!fileContent || processing}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          padding: '14px 28px',
-          backgroundColor: !fileContent || processing ? colors.input : colors.accent,
-          color: !fileContent || processing ? colors.textSecondary : colors.text,
-          border: 'none',
-          borderRadius: 10,
-          fontSize: 15,
-          fontWeight: 500,
-          cursor: !fileContent || processing ? 'not-allowed' : 'pointer',
-          marginBottom: 32,
-        }}
-      >
-        <Zap size={16} />
-        {processing ? 'Splitting...' : 'Split File'}
-      </button>
-
       {results.length > 0 && (
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-            <label style={{ fontSize: 15, fontWeight: 500, color: colors.text }}>
-              Results ({results.length} chunk{results.length !== 1 ? 's' : ''} created)
-            </label>
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 8,
-              padding: 16,
-              backgroundColor: colors.input,
-              border: `1px solid ${colors.border}`,
-              borderRadius: 10,
-            }}
-          >
-            {results.map((chunk) => (
+        <Card>
+          <SectionLabel hint={`${results.length} chunk${results.length !== 1 ? 's' : ''} created`}>
+            Results
+          </SectionLabel>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {results.map((chunk, i) => (
               <div
                 key={chunk.index}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  padding: '12px 16px',
-                  backgroundColor: colors.bg,
-                  border: `1px solid ${colors.border}`,
-                  borderRadius: 8,
-                  fontSize: 15,
+                  gap: 12,
+                  padding: '11px 4px',
+                  borderBottom: i < results.length - 1 ? `1px solid ${colors.border}` : 'none',
                 }}
               >
-                <span style={{ color: colors.text, fontWeight: 500 }}>Part {chunk.index}</span>
-                <span style={{ color: colors.textSecondary }}>
-                  {chunk.lines} lines · {chunk.sizeKB} KB
+                <span className="tb-mono" style={{ fontSize: 13.5, fontWeight: 600, color: colors.text }}>
+                  Part {chunk.index}
                 </span>
-                <Save size={14} color={colors.textSecondary} />
+                <span className="tb-mono" style={{ fontSize: 12, color: colors.textSecondary }}>
+                  {chunk.lines.toLocaleString()} lines · {chunk.sizeKB} KB
+                </span>
+                <Save size={14} color={colors.textFaint} />
               </div>
             ))}
           </div>
-          <div style={{ marginTop: 10, display: 'flex', gap: 12, fontSize: 13, color: colors.textSecondary }}>
-            <span>Total: {results.length} parts</span>
-            <span>|</span>
-            <span>{results.reduce((a, c) => a + c.lines, 0).toLocaleString()} lines</span>
-            <span>|</span>
-            <span>{results.reduce((a, c) => a + c.sizeKB, 0).toFixed(2)} KB</span>
-          </div>
-        </div>
+          <p
+            className="tb-mono"
+            style={{
+              marginTop: 12,
+              paddingTop: 12,
+              borderTop: `1px solid ${colors.border}`,
+              fontSize: 11,
+              letterSpacing: '0.04em',
+              color: colors.textFaint,
+            }}
+          >
+            Total: {results.length} parts · {results.reduce((a, c) => a + c.lines, 0).toLocaleString()} lines ·{' '}
+            {results.reduce((a, c) => a + c.sizeKB, 0).toFixed(2)} KB
+          </p>
+        </Card>
       )}
     </div>
-  );
+  )
 }

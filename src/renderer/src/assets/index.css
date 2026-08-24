@@ -1,41 +1,4 @@
-@import "tailwindcss";
-@import "./design-tokens.css";
-
-@theme {
-  --color-background: #090E1A;
-  --color-foreground: #FFFFFF;
-  --color-card: #121827;
-  --color-card-foreground: #FFFFFF;
-  --color-primary: #2563EB;
-  --color-primary-foreground: #FFFFFF;
-  --color-secondary: #1E293B;
-  --color-secondary-foreground: #94A3B8;
-  --color-muted: #1E293B;
-  --color-muted-foreground: #94A3B8;
-  --color-border: #1E293B;
-  --color-input: #1E293B;
-  --color-ring: #2563EB;
-  --color-destructive: #EF4444;
-  --color-destructive-foreground: #FFFFFF;
-}
-
-:root {
-  --color-background: #090E1A;
-  --color-foreground: #FFFFFF;
-  --color-card: #121827;
-  --color-card-foreground: #FFFFFF;
-  --color-primary: #2563EB;
-  --color-primary-foreground: #FFFFFF;
-  --color-secondary: #1E293B;
-  --color-secondary-foreground: #94A3B8;
-  --color-muted: #1E293B;
-  --color-muted-foreground: #94A3B8;
-  --color-border: #1E293B;
-  --color-input: #1E293B;
-  --color-ring: #2563EB;
-  --color-destructive: #EF4444;
-  --color-destructive-foreground: #FFFFFF;
-}
+@import './design-tokens.css';
 
 * {
   margin: 0;
@@ -43,31 +6,88 @@
   box-sizing: border-box;
 }
 
-body {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  overflow: hidden;
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
 }
 
-#root {
-  width: 100vw;
-  height: 100vh;
+body {
+  background-color: var(--tb-bg);
+  color: var(--tb-text);
+  font-family: var(--tb-font-ui);
+  font-size: 14px;
+  line-height: 1.5;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Keyboard focus — visible everywhere, no exceptions */
+:focus-visible {
+  outline: 2px solid var(--tb-accent);
+  outline-offset: 2px;
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+input,
+textarea,
+select {
+  font-family: inherit;
+  color: inherit;
+}
+
+input[type='range'],
+input[type='checkbox'],
+input[type='radio'] {
+  accent-color: var(--tb-accent);
+}
+
+::selection {
+  background-color: color-mix(in srgb, var(--tb-accent) 32%, transparent);
+}
+
+@keyframes tb-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
+  height: 8px;
 }
-
 ::-webkit-scrollbar-track {
-  background: var(--color-background);
+  background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 3px;
+  background: var(--tb-border-strong);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--tb-text-faint);
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-muted-foreground);
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

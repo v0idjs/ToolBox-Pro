@@ -21,8 +21,8 @@ test.describe('Sidebar', () => {
     await expect(page.locator('aside')).toBeVisible();
   });
 
-  test('should show Navigation header', async () => {
-    await expect(page.getByText('Navigation')).toBeVisible();
+  test('should show Index header', async () => {
+    await expect(page.getByText('Index', { exact: true }).first()).toBeVisible();
   });
 
   test('should show Dashboard link', async () => {
@@ -32,8 +32,8 @@ test.describe('Sidebar', () => {
   test('should display tool categories', async () => {
     const sidebar = page.locator('aside');
     await expect(sidebar.getByText('Security').first()).toBeVisible();
-    await expect(sidebar.getByText('Developer Tools').first()).toBeVisible();
-    await expect(sidebar.getByText('Image Tools').first()).toBeVisible();
+    await expect(sidebar.getByText('Developer').first()).toBeVisible();
+    await expect(sidebar.getByText('Image').first()).toBeVisible();
     await expect(sidebar.getByText('QR & Barcode').first()).toBeVisible();
     await expect(sidebar.getByText('Productivity').first()).toBeVisible();
   });

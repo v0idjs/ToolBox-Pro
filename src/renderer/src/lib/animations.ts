@@ -1,171 +1,88 @@
-import type { Variants, Transition } from 'framer-motion';
+import type { Variants, Transition } from 'framer-motion'
 
-// Page transition variants
+// Mechanical, minimal motion — the bench moves like a well-made tool:
+// short travel, quick settle. Reduced motion is handled by <MotionConfig>.
+
 export const pageVariants: Variants = {
   initial: {
     opacity: 0,
-    y: 20,
+    y: 6
   },
   animate: {
     opacity: 1,
-    y: 0,
+    y: 0
   },
   exit: {
     opacity: 0,
-    y: -20,
-  },
-};
+    y: -4
+  }
+}
 
-// Fade in variants
 export const fadeInVariants: Variants = {
-  initial: {
-    opacity: 0,
-  },
-  animate: {
-    opacity: 1,
-  },
-  exit: {
-    opacity: 0,
-  },
-};
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 }
+}
 
-// Slide in from right
 export const slideInRight: Variants = {
-  initial: {
-    opacity: 0,
-    x: 50,
-  },
-  animate: {
-    opacity: 1,
-    x: 0,
-  },
-  exit: {
-    opacity: 0,
-    x: 50,
-  },
-};
+  initial: { opacity: 0, x: 24 },
+  animate: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: 24 }
+}
 
-// Slide in from left
 export const slideInLeft: Variants = {
-  initial: {
-    opacity: 0,
-    x: -50,
-  },
-  animate: {
-    opacity: 1,
-    x: 0,
-  },
-  exit: {
-    opacity: 0,
-    x: -50,
-  },
-};
+  initial: { opacity: 0, x: -24 },
+  animate: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: -24 }
+}
 
-// Scale in variants
 export const scaleIn: Variants = {
-  initial: {
-    opacity: 0,
-    scale: 0.9,
-  },
-  animate: {
-    opacity: 1,
-    scale: 1,
-  },
-  exit: {
-    opacity: 0,
-    scale: 0.9,
-  },
-};
+  initial: { opacity: 0, scale: 0.97 },
+  animate: { opacity: 1, scale: 1 },
+  exit: { opacity: 0, scale: 0.97 }
+}
 
-// Modal variants
 export const modalVariants: Variants = {
   initial: {
     opacity: 0,
-    scale: 0.95,
-    y: 10,
+    scale: 0.98,
+    y: 6
   },
   animate: {
     opacity: 1,
     scale: 1,
-    y: 0,
+    y: 0
   },
   exit: {
     opacity: 0,
-    scale: 0.95,
-    y: 10,
-  },
-};
+    scale: 0.98,
+    y: 6
+  }
+}
 
-// Backdrop variants
 export const backdropVariants: Variants = {
-  initial: {
-    opacity: 0,
-  },
-  animate: {
-    opacity: 1,
-  },
-  exit: {
-    opacity: 0,
-  },
-};
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 }
+}
 
-// List item variants
 export const listItemVariants: Variants = {
-  initial: {
-    opacity: 0,
-    y: 10,
-  },
-  animate: {
-    opacity: 1,
-    y: 0,
-  },
-  exit: {
-    opacity: 0,
-    y: -10,
-  },
-};
+  initial: { opacity: 0, y: 4 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -4 }
+}
 
-// Stagger children
 export const staggerContainer: Variants = {
-  initial: {
-    opacity: 1,
-  },
+  initial: { opacity: 1 },
   animate: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.05,
-    },
-  },
-};
+      staggerChildren: 0.03
+    }
+  }
+}
 
-// Hover scale
-export const hoverScale = {
-  scale: 1.02,
-  transition: { duration: 0.2 },
-};
-
-// Tap scale
-export const tapScale = {
-  scale: 0.98,
-};
-
-// Default transition
 export const defaultTransition: Transition = {
-  type: 'spring',
-  stiffness: 300,
-  damping: 30,
-};
-
-// Smooth transition
-export const smoothTransition: Transition = {
-  type: 'tween',
-  duration: 0.2,
-  ease: 'easeInOut',
-};
-
-// Bounce transition
-export const bounceTransition: Transition = {
-  type: 'spring',
-  stiffness: 400,
-  damping: 10,
-};
+  duration: 0.16,
+  ease: [0.2, 0, 0.13, 1]
+}

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, KeyboardEvent } from 'react'
-import { Plus, Trash2, Check, Circle, CheckCircle2, ChevronUp, ChevronDown, ListTodo, Zap } from 'lucide-react'
+import { Plus, Trash2, Circle, CheckCircle2, ChevronUp, ChevronDown, ListTodo, Zap } from 'lucide-react'
 import { useThemeColors } from '@/lib/theme'
+import { ToolHeader, Button, Card, SectionLabel, Input } from '@/components/ui'
 
 type Todo = {
   id: string
@@ -66,9 +67,7 @@ export function TodoManager() {
 
   const toggleTodo = (id: string) => {
     setTodos((prev) =>
-      prev.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
+      prev.map((todo) => (todo.id === id ? { ...todo, completed: !todo.completed } : todo))
     )
   }
 
@@ -111,94 +110,60 @@ export function TodoManager() {
   ]
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-        <ListTodo size={28} color={colors.accent} />
-        <div>
-          <h1 style={{ fontSize: '28px', fontWeight: 700, margin: 0, color: colors.text }}>
-            Todo Manager
-          </h1>
-          <p style={{ fontSize: '15px', color: colors.textSecondary, margin: 0, marginTop: '4px' }}>
-            Keep track of your tasks and stay organized
-          </p>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, color: colors.text }}>
+      <ToolHeader
+        name="To-Do Manager"
+        description="Manage tasks with a simple to-do list"
+        category="productivity"
+        icon={ListTodo}
+        serial="todo-manager"
+      />
+
+      <Card>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <Input
+            ref={inputRef}
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="What needs to be done?"
+            style={{ flex: 1 }}
+          />
+          <Button variant="primary" icon={Zap} onClick={addTodo} disabled={!input.trim()}>
+            Add
+          </Button>
         </div>
-      </div>
+        <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
+          {filters.map((f) => (
+            <Button
+              key={f.key}
+              size="sm"
+              variant="secondary"
+              onClick={() => setFilter(f.key)}
+              style={
+                filter === f.key
+                  ? { backgroundColor: colors.accentTint, borderColor: colors.accent, color: colors.accent }
+                  : undefined
+              }
+            >
+              {f.label}
+            </Button>
+          ))}
+        </div>
+      </Card>
 
-      <div style={{ display: 'flex', gap: '12px' }}>
-        <input
-          ref={inputRef}
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="What needs to be done?"
-          style={{
-            flex: 1,
-            padding: '14px',
-            borderRadius: '10px',
-            border: `1px solid ${colors.border}`,
-            backgroundColor: colors.bg,
-            color: colors.text,
-            fontSize: '15px',
-            outline: 'none',
-            boxSizing: 'border-box'
-          }}
-        />
-        <button
-          onClick={addTodo}
-          disabled={!input.trim()}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            padding: '14px 28px',
-            borderRadius: '10px',
-            border: 'none',
-            backgroundColor: colors.accent,
-            color: colors.text,
-            fontSize: '15px',
-            fontWeight: 600,
-            cursor: input.trim() ? 'pointer' : 'not-allowed',
-            opacity: input.trim() ? 1 : 0.5,
-            transition: 'opacity 0.2s'
-          }}
-        >
-          <Zap size={18} />
-          Add
-        </button>
-      </div>
-
-      <div style={{ display: 'flex', gap: '10px' }}>
-        {filters.map((f) => (
-          <button
-            key={f.key}
-            onClick={() => setFilter(f.key)}
-            style={{
-              padding: '10px 20px',
-              borderRadius: '8px',
-              border: filter === f.key ? `1px solid ${colors.accent}` : `1px solid ${colors.border}`,
-              backgroundColor: filter === f.key ? colors.accent : colors.input,
-              color: filter === f.key ? colors.text : colors.textSecondary,
-              fontSize: '14px',
-              fontWeight: 500,
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
-          >
-            {f.label}
-          </button>
-        ))}
-      </div>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      <Card>
+        <SectionLabel hint={`${remaining} ${remaining === 1 ? 'item' : 'items'} remaining`}>Tasks</SectionLabel>
         {filteredTodos.length === 0 ? (
           <div
             style={{
-              padding: '48px',
+              padding: 40,
               textAlign: 'center',
-              color: colors.textSecondary,
-              fontSize: '15px',
-              borderRadius: '10px',
+              fontFamily: 'var(--tb-font-mono)',
+              fontSize: 12,
+              letterSpacing: '0.04em',
+              color: colors.textFaint
             }}
           >
             {filter === 'all'
@@ -216,36 +181,37 @@ export function TodoManager() {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '14px',
-                  padding: '14px 18px',
-                  borderRadius: '10px',
-                  transition: 'opacity 0.2s',
-                  opacity: todo.completed ? 0.6 : 1
+                  gap: 12,
+                  padding: '11px 4px',
+                  transition: 'opacity var(--tb-speed-fast) ease',
+                  opacity: todo.completed ? 0.55 : 1,
+                  ...(index > 0 ? { borderTop: `1px solid ${colors.border}` } : {})
                 }}
               >
                 <button
                   onClick={() => toggleTodo(todo.id)}
+                  title={todo.completed ? 'Mark as active' : 'Mark as done'}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '28px',
-                    height: '28px',
+                    width: 26,
+                    height: 26,
                     padding: 0,
                     border: 'none',
                     backgroundColor: 'transparent',
                     cursor: 'pointer',
-                    color: todo.completed ? colors.accent : colors.textSecondary,
+                    color: todo.completed ? colors.success : colors.textSecondary,
                     flexShrink: 0
                   }}
                 >
-                  {todo.completed ? <CheckCircle2 size={24} /> : <Circle size={24} />}
+                  {todo.completed ? <CheckCircle2 size={22} /> : <Circle size={22} />}
                 </button>
 
                 <span
                   style={{
                     flex: 1,
-                    fontSize: '15px',
+                    fontSize: 14.5,
                     color: colors.text,
                     textDecoration: todo.completed ? 'line-through' : 'none',
                     wordBreak: 'break-word'
@@ -254,123 +220,46 @@ export function TodoManager() {
                   {todo.text}
                 </span>
 
-                <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
-                  <button
+                <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    icon={ChevronUp}
                     onClick={() => moveTodo(todo.id, 'up')}
                     disabled={originalIndex === 0}
                     title="Move up"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: '32px',
-                      height: '32px',
-                      padding: 0,
-                      border: `1px solid ${colors.border}`,
-                      borderRadius: '8px',
-                      backgroundColor: colors.bg,
-                      color: colors.textSecondary,
-                      cursor: originalIndex === 0 ? 'not-allowed' : 'pointer',
-                      opacity: originalIndex === 0 ? 0.3 : 1,
-                      transition: 'opacity 0.2s'
-                    }}
-                  >
-                    <ChevronUp size={16} />
-                  </button>
-                  <button
+                    style={{ padding: '5px 7px' }}
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    icon={ChevronDown}
                     onClick={() => moveTodo(todo.id, 'down')}
                     disabled={originalIndex === todos.length - 1}
                     title="Move down"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: '32px',
-                      height: '32px',
-                      padding: 0,
-                      border: `1px solid ${colors.border}`,
-                      borderRadius: '8px',
-                      backgroundColor: colors.bg,
-                      color: colors.textSecondary,
-                      cursor: originalIndex === todos.length - 1 ? 'not-allowed' : 'pointer',
-                      opacity: originalIndex === todos.length - 1 ? 0.3 : 1,
-                      transition: 'opacity 0.2s'
-                    }}
-                  >
-                    <ChevronDown size={16} />
-                  </button>
+                    style={{ padding: '5px 7px' }}
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    icon={Trash2}
+                    onClick={() => deleteTodo(todo.id)}
+                    title="Delete"
+                    style={{ padding: '5px 7px', color: colors.error }}
+                  />
                 </div>
-
-                <button
-                  onClick={() => deleteTodo(todo.id)}
-                  title="Delete"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '36px',
-                    height: '36px',
-                    padding: 0,
-                    border: 'none',
-                    borderRadius: '8px',
-                    backgroundColor: 'transparent',
-                    color: colors.textSecondary,
-                    cursor: 'pointer',
-                    transition: 'color 0.2s, background-color 0.2s',
-                    flexShrink: 0
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#7F1D1D'
-                    e.currentTarget.style.color = '#FCA5A5'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'transparent'
-                    e.currentTarget.style.color = colors.textSecondary
-                  }}
-                >
-                  <Trash2 size={18} />
-                </button>
               </div>
             )
           })
         )}
-      </div>
-
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          paddingTop: '12px'
-        }}
-      >
-        <span style={{ color: colors.textSecondary, fontSize: '14px' }}>
-          {remaining} {remaining === 1 ? 'item' : 'items'} remaining
-        </span>
         {hasCompleted && (
-          <button
-            onClick={clearCompleted}
-            style={{
-              padding: '10px 20px',
-              borderRadius: '8px',
-              border: `1px solid ${colors.border}`,
-              backgroundColor: colors.input,
-              color: colors.textSecondary,
-              fontSize: '14px',
-              cursor: 'pointer',
-              transition: 'color 0.2s'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = '#FCA5A5'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = colors.textSecondary
-            }}
-          >
-            Clear Completed
-          </button>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 12 }}>
+            <Button variant="ghost" size="sm" onClick={clearCompleted} style={{ color: colors.error }}>
+              Clear Completed
+            </Button>
+          </div>
         )}
-      </div>
+      </Card>
     </div>
   )
 }

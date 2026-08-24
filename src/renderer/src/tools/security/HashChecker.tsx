@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { CheckCircle, XCircle, Search, Zap, Copy, Check } from 'lucide-react'
 import { useThemeColors } from '@/lib/theme'
+import { ToolHeader, Button, SectionLabel } from '@/components/ui'
 
 const ALGORITHMS = ['SHA-1', 'SHA-256', 'SHA-512'] as const
 type Algorithm = typeof ALGORITHMS[number]
@@ -44,167 +45,147 @@ export function HashChecker() {
   }
 
   return (
-    <div style={{ color: colors.text }}>
-      <div style={{ marginBottom: 32 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-          <Search size={28} color={colors.accent} />
-          <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0 }}>Hash Checker</h1>
+    <div>
+      <ToolHeader
+        name="Hash Checker"
+        description="Verify text integrity by comparing computed hashes against expected values."
+        category="security"
+        icon={Search}
+        serial="hash-checker"
+      />
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div className="tb-panel" style={{ padding: 20 }}>
+          <SectionLabel hint={`${input.length} chars`}>Input Text</SectionLabel>
+          <textarea
+            className="tb-field tb-mono"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Enter text to verify..."
+            spellCheck={false}
+            style={{ width: '100%', minHeight: 140, resize: 'vertical', fontSize: 13.5 }}
+          />
         </div>
-        <p style={{ fontSize: 15, color: colors.textSecondary, margin: 0, lineHeight: 1.5 }}>
-          Verify text integrity by comparing computed hashes against expected values.
-        </p>
-      </div>
 
-      <div style={{ marginBottom: 24 }}>
-        <label style={{ display: 'block', fontSize: 15, fontWeight: 500, color: colors.textSecondary, marginBottom: 10 }}>Input Text</label>
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Enter text to verify..."
-          style={{
-            width: '100%',
-            minHeight: 160,
-            padding: 16,
-            background: colors.input,
-            border: `1px solid ${colors.border}`,
-            borderRadius: 10,
-            color: colors.text,
-            fontSize: 15,
-            fontFamily: 'monospace',
-            resize: 'vertical',
-            outline: 'none',
-            boxSizing: 'border-box',
-            lineHeight: 1.6
-          }}
-        />
-      </div>
-
-      <div style={{ marginBottom: 24 }}>
-        <label style={{ display: 'block', fontSize: 15, fontWeight: 500, color: colors.textSecondary, marginBottom: 10 }}>Expected Hash</label>
-        <input
-          type="text"
-          value={expectedHash}
-          onChange={(e) => { setExpectedHash(e.target.value); setResult(null) }}
-          placeholder="Paste the hash to verify against..."
-          style={{
-            width: '100%',
-            padding: 16,
-            background: colors.input,
-            border: `1px solid ${colors.border}`,
-            borderRadius: 10,
-            color: colors.text,
-            fontSize: 15,
-            fontFamily: 'monospace',
-            outline: 'none',
-            boxSizing: 'border-box'
-          }}
-        />
-      </div>
-
-      <div style={{ display: 'flex', gap: 10, marginBottom: 24 }}>
-        {ALGORITHMS.map((algo) => (
-          <button
-            key={algo}
-            onClick={() => setAlgorithm(algo)}
-            style={{
-              padding: '10px 20px',
-              background: algorithm === algo ? colors.accent : 'transparent',
-              color: algorithm === algo ? '#fff' : colors.text,
-              border: `1px solid ${algorithm === algo ? colors.accent : colors.border}`,
-              borderRadius: 8,
-              fontSize: 14,
-              cursor: 'pointer',
-              fontWeight: algorithm === algo ? 600 : 400
-            }}
-          >
-            {algo}
-          </button>
-        ))}
-      </div>
-
-      <button
-        onClick={checkHash}
-        disabled={!input || !expectedHash}
-        style={{
-          padding: '14px 28px',
-          background: (!input || !expectedHash) ? colors.border : colors.accent,
-          color: (!input || !expectedHash) ? colors.textSecondary : '#fff',
-          border: 'none',
-          borderRadius: 10,
-          fontSize: 15,
-          fontWeight: 600,
-          cursor: (!input || !expectedHash) ? 'not-allowed' : 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          marginBottom: 32
-        }}
-      >
-        <Zap size={18} />
-        Verify Hash
-      </button>
-
-      {result && (
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-            <span style={{ fontSize: 15, fontWeight: 500, color: colors.textSecondary }}>Verification Result</span>
-            {computedHash && (
+        <div className="tb-panel" style={{ padding: 20 }}>
+          <SectionLabel>Expected Hash</SectionLabel>
+          <input
+            type="text"
+            className="tb-field tb-mono"
+            value={expectedHash}
+            onChange={(e) => { setExpectedHash(e.target.value); setResult(null) }}
+            placeholder="Paste the hash to verify against..."
+            spellCheck={false}
+            style={{ width: '100%', fontSize: 14 }}
+          />
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 14 }}>
+            {ALGORITHMS.map((algo) => (
               <button
-                onClick={copyHash}
+                key={algo}
+                onClick={() => setAlgorithm(algo)}
+                className="tb-mono"
                 style={{
-                  padding: '8px 16px',
-                  background: 'transparent',
-                  color: colors.textSecondary,
-                  border: `1px solid ${colors.border}`,
-                  borderRadius: 8,
-                  fontSize: 14,
+                  padding: '7px 16px',
+                  background: algorithm === algo ? colors.accent : 'transparent',
+                  color: algorithm === algo ? colors.onAccent : colors.textSecondary,
+                  border: `1px solid ${algorithm === algo ? colors.accent : colors.border}`,
+                  borderRadius: 'var(--tb-radius-ctl)',
+                  fontSize: 12.5,
+                  fontWeight: algorithm === algo ? 600 : 500,
+                  letterSpacing: '0.04em',
                   cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6
+                  transition: 'background-color var(--tb-speed-fast) ease, border-color var(--tb-speed-fast) ease, color var(--tb-speed-fast) ease'
                 }}
               >
-                {copied ? <Check size={14} /> : <Copy size={14} />}
-                {copied ? 'Copied' : 'Copy'}
+                {algo}
               </button>
-            )}
-          </div>
-          <div
-            style={{
-              padding: 16,
-              background: result === 'match' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
-              border: `1px solid ${result === 'match' ? '#22C55E' : '#EF4444'}`,
-              borderRadius: 10,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12
-            }}
-          >
-            {result === 'match' ? (
-              <CheckCircle size={24} color="#22C55E" />
-            ) : (
-              <XCircle size={24} color="#EF4444" />
-            )}
-            <div>
-              <div style={{ fontWeight: 600, color: result === 'match' ? '#22C55E' : '#EF4444', fontSize: 15 }}>
-                {result === 'match' ? 'Hash Matched!' : 'Hash Does Not Match'}
-              </div>
-              {computedHash && (
-                <div style={{ fontSize: 13, color: colors.textSecondary, marginTop: 4, fontFamily: 'monospace', wordBreak: 'break-all' }}>
-                  Computed: {computedHash}
-                </div>
-              )}
-            </div>
-          </div>
-          <div style={{ marginTop: 12, fontSize: 13, color: colors.textSecondary, display: 'flex', gap: 16 }}>
-            <span>📊 Status: {result === 'match' ? 'Match' : 'No Match'}</span>
-            <span style={{ color: colors.border }}>|</span>
-            <span>📊 Algorithm: {algorithm}</span>
-            <span style={{ color: colors.border }}>|</span>
-            <span>📊 Input Length: {input.length}</span>
+            ))}
           </div>
         </div>
-      )}
+
+        <Button
+          variant="primary"
+          size="lg"
+          icon={Zap}
+          onClick={checkHash}
+          disabled={!input || !expectedHash}
+        >
+          Verify Hash
+        </Button>
+
+        {result && (
+          <div className="tb-panel" style={{ padding: 20 }}>
+            <SectionLabel
+              hint={
+                computedHash ? (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    icon={copied ? Check : Copy}
+                    onClick={copyHash}
+                    style={
+                      copied
+                        ? { color: colors.success, borderColor: colors.success }
+                        : undefined
+                    }
+                  >
+                    {copied ? 'Copied' : 'Copy'}
+                  </Button>
+                ) : undefined
+              }
+            >
+              Verification Result
+            </SectionLabel>
+            <div
+              style={{
+                background: result === 'match' ? `${colors.success}15` : `${colors.error}15`,
+                border: `1px solid ${result === 'match' ? colors.success : colors.error}40`,
+                borderRadius: 'var(--tb-radius-ctl)',
+                padding: 16,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12
+              }}
+            >
+              {result === 'match' ? (
+                <CheckCircle size={22} color={colors.success} style={{ flexShrink: 0 }} />
+              ) : (
+                <XCircle size={22} color={colors.error} style={{ flexShrink: 0 }} />
+              )}
+              <div style={{ minWidth: 0 }}>
+                <div
+                  style={{
+                    fontWeight: 600,
+                    color: result === 'match' ? colors.success : colors.error,
+                    fontSize: 15
+                  }}
+                >
+                  {result === 'match' ? 'Hash Matched!' : 'Hash Does Not Match'}
+                </div>
+                {computedHash && (
+                  <div
+                    className="tb-mono"
+                    style={{
+                      fontSize: 12,
+                      color: colors.textSecondary,
+                      marginTop: 4,
+                      wordBreak: 'break-all'
+                    }}
+                  >
+                    Computed: {computedHash}
+                  </div>
+                )}
+              </div>
+            </div>
+            <p
+              className="tb-mono"
+              style={{ marginTop: 12, fontSize: 11, letterSpacing: '0.04em', color: colors.textFaint }}
+            >
+              Status: {result === 'match' ? 'Match' : 'No Match'} · Algorithm: {algorithm} · Input length: {input.length}
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

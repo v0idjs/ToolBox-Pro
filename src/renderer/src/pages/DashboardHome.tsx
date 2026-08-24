@@ -1,205 +1,340 @@
-import {
-  Shield,
-  Code,
-  FileText,
-  Image,
-  QrCode,
-  Clock,
-  Zap,
-  HardDrive,
-  type LucideIcon
-} from 'lucide-react'
+import { ArrowUpRight, Star } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { useAppStore } from '@/store/app-store'
-import { useThemeColors } from '@/lib/theme'
-import { getAllTools, getToolsByCategory } from '@/lib/tool-registry'
+import { getAllTools, getToolsByCategory, getTool } from '@/lib/tool-registry'
+import { CATEGORIES, getCategory } from '@/lib/categories'
+import { StatStrip } from '@/components/ui'
 
-const categoryIcons: Record<string, LucideIcon> = {
-  security: Shield,
-  developer: Code,
-  text: FileText,
-  file: FileText,
-  image: Image,
-  qr: QrCode,
-  productivity: Clock
-}
-
-const categoryLabels: Record<string, string> = {
-  security: 'Security',
-  developer: 'Developer Tools',
-  text: 'Text Tools',
-  file: 'File Tools',
-  image: 'Image Tools',
-  qr: 'QR & Barcode',
-  productivity: 'Productivity'
-}
-
-interface ToolCardProps {
+function ToolCard({
+  icon: Icon,
+  title,
+  description,
+  onClick,
+  pinned
+}: {
   icon: LucideIcon
   title: string
   description: string
-  onClick?: () => void
-}
-
-function ToolCard({ icon: Icon, title, description, onClick }: ToolCardProps) {
-  const colors = useThemeColors()
+  onClick: () => void
+  pinned?: boolean
+}) {
   return (
-    <button
-      onClick={onClick}
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-        gap: 12,
-        padding: 20,
-        borderRadius: 12,
-        border: `1px solid ${colors.border}`,
-        backgroundColor: colors.card,
-        color: colors.text,
-        textAlign: 'left',
-        width: '100%',
-        cursor: 'pointer'
-      }}
-    >
+    <button className="tb-panel tb-hoverable" onClick={onClick} style={{ padding: '16px 16px 14px' }}>
       <div
         style={{
-          width: 40,
-          height: 40,
-          borderRadius: 8,
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: colors.accent,
-          color: '#FFFFFF'
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          marginBottom: 14
         }}
       >
-        <Icon size={20} />
+        <span
+          aria-hidden
+          style={{
+            width: 34,
+            height: 34,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 'var(--tb-radius-panel)',
+            backgroundColor: 'var(--tb-accent-tint)',
+            color: 'var(--tb-accent)'
+          }}
+        >
+          <Icon size={17} strokeWidth={1.9} />
+        </span>
+        {pinned && (
+          <Star size={12} aria-label="Pinned" fill="var(--tb-accent)" color="var(--tb-accent)" />
+        )}
       </div>
-      <div>
-        <h3 style={{ fontWeight: 600, fontSize: 14, color: colors.text }}>
-          {title}
-        </h3>
-        <p style={{ fontSize: 12, marginTop: 4, color: colors.textSecondary }}>
-          {description}
-        </p>
-      </div>
+      <h3
+        style={{
+          fontFamily: 'var(--tb-font-display)',
+          fontSize: 15.5,
+          fontWeight: 600,
+          letterSpacing: '0.02em',
+          textTransform: 'uppercase',
+          color: 'var(--tb-text)'
+        }}
+      >
+        {title}
+      </h3>
+      <p style={{ marginTop: 2, fontSize: 12.5, lineHeight: 1.45, color: 'var(--tb-text-secondary)' }}>
+        {description}
+      </p>
     </button>
   )
 }
 
 export function DashboardHome() {
-  const { setActiveTool } = useAppStore()
-  const colors = useThemeColors()
+  const { setActiveTool, favorites, recentTools } = useAppStore()
 
   const allTools = getAllTools()
   const totalTools = allTools.length
-  const categoryIds = ['security', 'developer', 'text', 'file', 'image', 'qr', 'productivity']
-  const categoryToolCounts = Object.fromEntries(
-    categoryIds.map((catId) => [catId, getToolsByCategory(catId).length])
-  )
-  const categoryCount = Object.keys(categoryToolCounts).filter((k) => categoryToolCounts[k] > 0).length
+  const activeCategories = CATEGORIES.filter((c) => getToolsByCategory(c.id).length > 0)
 
-  const stats = [
-    { icon: Zap, label: 'Total Tools', value: String(totalTools) },
-    { icon: HardDrive, label: 'Categories', value: String(categoryCount) },
-    { icon: Shield, label: 'Local Processing', value: '100%' }
+  const quickToolIds = [
+    'password-generator',
+    'json-formatter',
+    'qr-generator',
+    'uuid-generator',
+    'timestamp-converter',
+    'image-converter'
   ]
+  const quickTools = quickToolIds
+    .map((id) => getTool(id))
+    .filter((t): t is NonNullable<typeof t> => Boolean(t))
+    .map((tool) => ({ tool, icon: getCategory(tool.category)?.icon ?? getCategory('developer')!.icon }))
 
-  const quickTools = [
-    { icon: Shield, title: 'Password Generator', description: 'Generate secure passwords', id: 'password-generator' },
-    { icon: QrCode, title: 'QR Generator', description: 'Create QR codes instantly', id: 'qr-generator' },
-    { icon: Code, title: 'JSON Formatter', description: 'Beautify & validate JSON', id: 'json-formatter' },
-    { icon: Code, title: 'UUID Generator', description: 'Generate unique identifiers', id: 'uuid-generator' },
-    { icon: Clock, title: 'Timestamp Converter', description: 'Convert Unix timestamps', id: 'timestamp-converter' },
-    { icon: Image, title: 'Image Converter', description: 'Convert between formats', id: 'image-converter' }
-  ]
+  const recentToolsList = recentTools
+    .slice(0, 6)
+    .map((id) => getTool(id))
+    .filter((t): t is NonNullable<typeof t> => Boolean(t))
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-      <div>
-        <h1 style={{ fontSize: 24, fontWeight: 'bold', color: colors.text }}>
-          Welcome to ToolBox Pro
-        </h1>
-        <p style={{ marginTop: 4, fontSize: 14, color: colors.textSecondary }}>
-          Your universal local productivity toolkit. All tools run 100% offline.
-        </p>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
-        {stats.map((stat) => (
-          <div
-            key={stat.label}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 36 }}>
+      {/* Hero — the bench itself */}
+      <section style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 24, flexWrap: 'wrap' }}>
+        <div style={{ maxWidth: 520 }}>
+          <p
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 16,
-              padding: 16,
-              borderRadius: 12,
-              border: `1px solid ${colors.border}`,
-              backgroundColor: colors.card
+              fontFamily: 'var(--tb-font-mono)',
+              fontSize: 11,
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              letterSpacing: '0.16em',
+              color: 'var(--tb-accent)',
+              marginBottom: 10
             }}
           >
-            <div
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 8,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: colors.accent,
-                color: '#FFFFFF'
-              }}
-            >
-              <stat.icon size={20} />
-            </div>
-            <div>
-              <p style={{ fontSize: 18, fontWeight: 'bold', color: colors.text }}>
-                {stat.value}
-              </p>
-              <p style={{ fontSize: 12, color: colors.textSecondary }}>
-                {stat.label}
-              </p>
-            </div>
+            Local-first · Offline · Yours
+          </p>
+          <h1
+            style={{
+              fontFamily: 'var(--tb-font-display)',
+              fontSize: 34,
+              lineHeight: 1.04,
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              letterSpacing: '0.015em',
+              color: 'var(--tb-text)'
+            }}
+          >
+            Every instrument on one bench
+          </h1>
+          <p style={{ marginTop: 10, fontSize: 14, lineHeight: 1.55, color: 'var(--tb-text-secondary)' }}>
+            {totalTools} tools that run entirely on this machine — no accounts, no telemetry, no
+            network. Pick one below or press{' '}
+            <span className="tb-kbd">Ctrl</span> <span className="tb-kbd">K</span> anywhere.
+          </p>
+        </div>
+        <div aria-hidden style={{ textAlign: 'right', paddingRight: 4 }}>
+          <div
+            style={{
+              fontFamily: 'var(--tb-font-display)',
+              fontSize: 76,
+              lineHeight: 0.9,
+              fontWeight: 700,
+              color: 'var(--tb-text)',
+              fontVariantNumeric: 'tabular-nums'
+            }}
+          >
+            {String(totalTools).padStart(2, '0')}
           </div>
-        ))}
-      </div>
+          <div
+            style={{
+              marginTop: 6,
+              width: 96,
+              height: 13,
+              marginLeft: 'auto',
+              backgroundImage:
+                'repeating-linear-gradient(to right, var(--tb-ruler-major) 0 1px, transparent 1px 8px), repeating-linear-gradient(to right, var(--tb-accent) 0 2px, transparent 2px 24px)',
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'bottom left',
+              backgroundSize: '100% 7px, 100% 13px'
+            }}
+          />
+          <div
+            style={{
+              marginTop: 5,
+              fontFamily: 'var(--tb-font-mono)',
+              fontSize: 10,
+              textTransform: 'uppercase',
+              letterSpacing: '0.16em',
+              color: 'var(--tb-text-faint)'
+            }}
+          >
+            Instruments
+          </div>
+        </div>
+      </section>
 
-      <div>
-        <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16, color: colors.text }}>
-          Quick Access
+      <StatStrip
+        items={[
+          { value: String(activeCategories.length), label: 'Categories' },
+          { value: '100%', label: 'Local processing' },
+          { value: '0', label: 'Network calls' }
+        ]}
+      />
+
+      {/* Quick access */}
+      <section>
+        <h2
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            marginBottom: 14,
+            fontFamily: 'var(--tb-font-mono)',
+            fontSize: 11,
+            fontWeight: 600,
+            textTransform: 'uppercase',
+            letterSpacing: '0.14em',
+            color: 'var(--tb-text-faint)'
+          }}
+        >
+          Quick access
         </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
-          {quickTools.map((tool) => (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
+          {quickTools.map(({ tool, icon }) => (
             <ToolCard
               key={tool.id}
-              icon={tool.icon}
-              title={tool.title}
+              icon={icon}
+              title={tool.name}
               description={tool.description}
+              pinned={favorites.includes(tool.id)}
               onClick={() => setActiveTool(tool.id)}
             />
           ))}
         </div>
-      </div>
+      </section>
 
-      <div>
-        <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16, color: colors.text }}>
-          Categories
+      {/* Recent strip */}
+      {recentToolsList.length > 0 && (
+        <section>
+          <h2
+            style={{
+              marginBottom: 14,
+              fontFamily: 'var(--tb-font-mono)',
+              fontSize: 11,
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              letterSpacing: '0.14em',
+              color: 'var(--tb-text-faint)'
+            }}
+          >
+            Recently used
+          </h2>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {recentToolsList.map((tool) => (
+              <button
+                key={tool.id}
+                onClick={() => setActiveTool(tool.id)}
+                className="tb-hoverable"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '7px 12px',
+                  borderRadius: 'var(--tb-radius-ctl)',
+                  border: '1px solid var(--tb-border-strong)',
+                  backgroundColor: 'var(--tb-raised)',
+                  fontSize: 12.5,
+                  color: 'var(--tb-text-secondary)'
+                }}
+              >
+                <span aria-hidden style={{ width: 5, height: 5, borderRadius: 1, backgroundColor: 'var(--tb-accent)' }} />
+                {tool.name}
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Categories — a manifest, not a card grid */}
+      <section>
+        <h2
+          style={{
+            marginBottom: 14,
+            fontFamily: 'var(--tb-font-mono)',
+            fontSize: 11,
+            fontWeight: 600,
+            textTransform: 'uppercase',
+            letterSpacing: '0.14em',
+            color: 'var(--tb-text-faint)'
+          }}
+        >
+          Bench index
         </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
-          {categoryIds.map((catId) => {
-            const Icon = categoryIcons[catId]
+        <div className="tb-panel" style={{ padding: '6px 16px' }}>
+          {activeCategories.map((category, i) => {
+            const tools = getToolsByCategory(category.id)
+            const firstTool = tools[0]
             return (
-              <ToolCard
-                key={catId}
-                icon={Icon}
-                title={categoryLabels[catId]}
-                description={`${categoryToolCounts[catId]} tools`}
-                onClick={() => setActiveTool(catId)}
-              />
+              <button
+                key={category.id}
+                onClick={() => setActiveTool(firstTool.id)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  width: '100%',
+                  padding: '12px 4px',
+                  textAlign: 'left',
+                  background: 'none',
+                  border: 'none',
+                  borderTop: i > 0 ? '1px solid var(--tb-border)' : 'none',
+                  cursor: 'pointer',
+                  transition: 'background-color var(--tb-speed-fast) ease'
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--tb-accent-tint)')}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+              >
+                <span
+                  style={{
+                    fontFamily: 'var(--tb-font-mono)',
+                    fontSize: 9.5,
+                    fontWeight: 600,
+                    letterSpacing: '0.1em',
+                    padding: '2px 5px',
+                    borderRadius: 2,
+                    border: '1px solid var(--tb-border-strong)',
+                    color: 'var(--tb-text-secondary)'
+                  }}
+                >
+                  {category.tag}
+                </span>
+                <category.icon size={15} color="var(--tb-text-secondary)" />
+                <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--tb-text)' }}>{category.name}</span>
+                <span
+                  style={{
+                    flex: 1,
+                    fontSize: 12,
+                    color: 'var(--tb-text-faint)',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  {tools[0].name.toLowerCase()}
+                  {tools.length > 1 ? ` +${tools.length - 1} more` : ''}
+                </span>
+                <span
+                  style={{
+                    fontFamily: 'var(--tb-font-mono)',
+                    fontSize: 11,
+                    letterSpacing: '0.06em',
+                    color: 'var(--tb-text-faint)'
+                  }}
+                >
+                  ×{String(tools.length).padStart(2, '0')}
+                </span>
+                <ArrowUpRight size={14} color="var(--tb-text-faint)" />
+              </button>
             )
           })}
         </div>
-      </div>
+      </section>
     </div>
   )
 }

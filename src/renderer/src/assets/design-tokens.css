@@ -1,155 +1,243 @@
-/* Design Tokens for ToolBox Pro */
+/* ============================================================
+   ToolBox Pro — "Instrument Workshop" design tokens
+   Graphite steel surfaces · signal-amber indicators · DIN signage
+   ============================================================ */
 
+/* ---------- Self-hosted type (app is offline-first) ---------- */
+@font-face {
+  font-family: 'Barlow';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/Barlow-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Barlow';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('./fonts/Barlow-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Barlow';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./fonts/Barlow-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Barlow';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('./fonts/Barlow-700.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Barlow Semi Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./fonts/BarlowSemiCondensed-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Barlow Semi Condensed';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('./fonts/BarlowSemiCondensed-700.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/IBMPlexMono-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('./fonts/IBMPlexMono-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./fonts/IBMPlexMono-600.woff2') format('woff2');
+}
+
+/* ---------- Tokens ---------- */
 :root {
-  /* Spacing Scale */
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 12px;
-  --spacing-lg: 16px;
-  --spacing-xl: 24px;
-  --spacing-2xl: 32px;
-  --spacing-3xl: 48px;
+  --tb-font-ui: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+  --tb-font-display: 'Barlow Semi Condensed', 'Barlow', 'Segoe UI', system-ui, sans-serif;
+  --tb-font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
 
-  /* Typography Scale */
-  --font-size-xs: 12px;
-  --font-size-sm: 14px;
-  --font-size-base: 16px;
-  --font-size-lg: 18px;
-  --font-size-xl: 20px;
-  --font-size-2xl: 24px;
-  --font-size-3xl: 32px;
+  /* Machined radii */
+  --tb-radius-ctl: 4px;
+  --tb-radius-panel: 6px;
+  --tb-radius-modal: 10px;
 
-  /* Font Weights */
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
+  --tb-speed-fast: 110ms;
+  --tb-speed: 160ms;
 
-  /* Border Radius */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius-full: 9999px;
-
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-
-  /* Transitions */
-  --transition-fast: 150ms ease;
-  --transition-normal: 200ms ease;
-  --transition-slow: 300ms ease;
-
-  /* Z-Index Scale */
-  --z-dropdown: 100;
-  --z-modal: 200;
-  --z-tooltip: 300;
+  /* Dark "Graphite" palette (default) */
+  --tb-bg: #101214;
+  --tb-bg-deep: #0c0e10;
+  --tb-card: #17191d;
+  --tb-raised: #1f2226;
+  --tb-border: #2a2e34;
+  --tb-border-strong: #3b4047;
+  --tb-text: #e9e7e1;
+  --tb-text-secondary: #9aa1a8;
+  --tb-text-faint: #70767d;
+  --tb-accent: #e8a33d;
+  --tb-accent-hover: #f2b45a;
+  --tb-on-accent: #211806;
+  --tb-accent-tint: rgba(232, 163, 61, 0.13);
+  --tb-success: #66be7c;
+  --tb-warning: #e0b341;
+  --tb-error: #e85c52;
+  --tb-shadow-modal: 0 24px 64px rgba(0, 0, 0, 0.55), 0 4px 16px rgba(0, 0, 0, 0.4);
+  --tb-ruler-minor: rgba(112, 118, 125, 0.28);
+  --tb-ruler-major: rgba(112, 118, 125, 0.55);
+  --tb-hazard-a: rgba(232, 92, 82, 0.5);
 }
 
-/* Dark Theme Colors */
-[data-theme="dark"] {
-  --color-bg: #090E1A;
-  --color-card: #121827;
-  --color-border: #1E293B;
-  --color-text: #FFFFFF;
-  --color-text-secondary: #94A3B8;
-  --color-accent: #2563EB;
-  --color-accent-hover: #1D4ED8;
-  --color-input: #0F172A;
-  --color-success: #22C55E;
-  --color-warning: #F59E0B;
-  --color-error: #EF4444;
+[data-theme='light'] {
+  /* Light "Zinc" palette — shop-manual paper */
+  --tb-bg: #e2e3df;
+  --tb-bg-deep: #d6d8d3;
+  --tb-card: #f7f6f2;
+  --tb-raised: #ffffff;
+  --tb-border: #cfd2cb;
+  --tb-border-strong: #b4b8af;
+  --tb-text: #1d1f1b;
+  --tb-text-secondary: #5d6259;
+  --tb-text-faint: #878c82;
+  --tb-accent: #96630b;
+  --tb-accent-hover: #7e5309;
+  --tb-on-accent: #fff9ef;
+  --tb-accent-tint: rgba(150, 99, 11, 0.13);
+  --tb-success: #2e6b3c;
+  --tb-warning: #8a5d06;
+  --tb-error: #bc3a31;
+  --tb-shadow-modal: 0 24px 64px rgba(29, 31, 27, 0.28), 0 4px 16px rgba(29, 31, 27, 0.18);
+  --tb-ruler-minor: rgba(133, 140, 130, 0.35);
+  --tb-ruler-major: rgba(133, 140, 130, 0.65);
+  --tb-hazard-a: rgba(188, 58, 49, 0.42);
 }
 
-/* Light Theme Colors */
-[data-theme="light"] {
-  --color-bg: #F1F5F9;
-  --color-card: #FFFFFF;
-  --color-border: #E2E8F0;
-  --color-text: #0F172A;
-  --color-text-secondary: #64748B;
-  --color-accent: #2563EB;
-  --color-accent-hover: #1D4ED8;
-  --color-input: #F8FAFC;
-  --color-success: #22C55E;
-  --color-warning: #F59E0B;
-  --color-error: #EF4444;
+/* ---------- Shared primitives ---------- */
+
+.tb-panel {
+  background-color: var(--tb-card);
+  border: 1px solid var(--tb-border);
+  border-radius: var(--tb-radius-panel);
 }
 
-/* Utility Classes */
-.card {
-  background-color: var(--color-card);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
-}
-
-.input {
-  background-color: var(--color-input);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-sm) var(--spacing-md);
-  color: var(--color-text);
-  font-size: var(--font-size-base);
-  transition: border-color var(--transition-fast);
-}
-
-.input:focus {
-  outline: none;
-  border-color: var(--color-accent);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
-}
-
-.button {
-  background-color: var(--color-accent);
-  color: white;
-  border: none;
-  border-radius: var(--radius-md);
-  padding: var(--spacing-sm) var(--spacing-lg);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
+/* Interactive panels — cards that respond like switches */
+.tb-hoverable {
   cursor: pointer;
-  transition: background-color var(--transition-fast);
+  text-align: left;
+  transition: background-color var(--tb-speed-fast) ease, border-color var(--tb-speed-fast) ease,
+    transform var(--tb-speed-fast) ease;
+}
+.tb-hoverable:hover {
+  background-color: var(--tb-raised);
+  border-color: var(--tb-border-strong);
+}
+.tb-hoverable:active {
+  transform: translateY(1px);
 }
 
-.button:hover {
-  background-color: var(--color-accent-hover);
+/* Calibration ruler — the bench's structural signature */
+.tb-ruler {
+  height: 13px;
+  flex-shrink: 0;
+  position: relative;
+  border-bottom: 1px solid var(--tb-border);
+  background-image: repeating-linear-gradient(
+      to right,
+      var(--tb-ruler-minor) 0 1px,
+      transparent 1px 8px
+    ),
+    repeating-linear-gradient(to right, var(--tb-ruler-major) 0 1px, transparent 1px 40px);
+  background-repeat: no-repeat;
+  background-position: top left;
+  background-size: 100% 6px, 100% 12px;
+}
+.tb-ruler::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 26px;
+  height: 3px;
+  background-color: var(--tb-accent);
 }
 
-.button:disabled {
-  opacity: 0.5;
+/* Hazard tape — used exactly once: danger zones */
+.tb-hazard-top {
+  position: relative;
+}
+.tb-hazard-top::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  border-radius: var(--tb-radius-panel) var(--tb-radius-panel) 0 0;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--tb-hazard-a) 0 7px,
+    transparent 7px 14px
+  );
+}
+
+/* Keyboard chips */
+.tb-kbd {
+  font-family: var(--tb-font-mono);
+  font-size: 11px;
+  line-height: 1;
+  padding: 3px 5px;
+  border-radius: 3px;
+  border: 1px solid var(--tb-border-strong);
+  border-bottom-width: 2px;
+  background-color: var(--tb-raised);
+  color: var(--tb-text-secondary);
+}
+
+/* Form fields — real :focus states, no JS simulation */
+.tb-field {
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--tb-text);
+  background-color: var(--tb-raised);
+  border: 1px solid var(--tb-border);
+  border-radius: var(--tb-radius-ctl);
+  padding: 8px 10px;
+  transition: border-color var(--tb-speed-fast) ease, box-shadow var(--tb-speed-fast) ease;
+}
+.tb-field::placeholder {
+  color: var(--tb-text-faint);
+}
+.tb-field:hover:not(:disabled) {
+  border-color: var(--tb-border-strong);
+}
+.tb-field:focus {
+  outline: none;
+  border-color: var(--tb-accent);
+  box-shadow: 0 0 0 3px var(--tb-accent-tint);
+}
+.tb-field:disabled {
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
-.button-secondary {
-  background-color: transparent;
-  border: 1px solid var(--color-border);
-  color: var(--color-text);
-}
-
-.button-secondary:hover {
-  background-color: var(--color-card);
-}
-
-.text-primary {
-  color: var(--color-text);
-}
-
-.text-secondary {
-  color: var(--color-text-secondary);
-}
-
-.heading {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text);
-}
-
-.subheading {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text);
+textarea.tb-field,
+.tb-mono {
+  font-family: var(--tb-font-mono);
 }

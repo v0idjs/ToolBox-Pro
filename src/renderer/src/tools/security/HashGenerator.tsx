@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { Hash, Copy, Check, Zap } from 'lucide-react'
 import { useThemeColors } from '@/lib/theme'
+import { ToolHeader, Button, SectionLabel } from '@/components/ui'
 
 const ALGORITHMS = ['SHA-1', 'SHA-256', 'SHA-512', 'MD5'] as const
 type Algorithm = typeof ALGORITHMS[number]
@@ -49,13 +50,13 @@ function computeMD5(input: string): string {
     a = hh(a, b, c, d, k[9], 4, -640364487); d = hh(d, a, b, c, k[12], 11, -421815835)
     c = hh(c, d, a, b, k[15], 16, 530742520); b = hh(b, c, d, a, k[2], 23, -995338651)
     a = ii(a, b, c, d, k[0], 6, -198630844); d = ii(d, a, b, c, k[7], 10, 1126891415)
-    c = ii(c, d, a, b, k[14], 15, -1416354905); b = ii(b, c, d, a, k[5], 21, -57434055)
+    c = ii(a, b, c, d, k[14], 15, -1416354905); b = ii(b, c, d, a, k[5], 21, -57434055)
     a = ii(a, b, c, d, k[12], 6, 1700485571); d = ii(d, a, b, c, k[3], 10, -1894986606)
-    c = ii(c, d, a, b, k[10], 15, -1051523); b = ii(b, c, d, a, k[1], 21, -2054922799)
+    c = ii(a, b, c, d, k[10], 15, -1051523); b = ii(b, c, d, a, k[1], 21, -2054922799)
     a = ii(a, b, c, d, k[8], 6, 1873313359); d = ii(d, a, b, c, k[15], 10, -30611744)
-    c = ii(c, d, a, b, k[6], 15, -1560198380); b = ii(b, c, d, a, k[13], 21, 1309151649)
+    c = ii(a, b, c, d, k[6], 15, -1560198380); b = ii(b, c, d, a, k[13], 21, 1309151649)
     a = ii(a, b, c, d, k[4], 6, -145523070); d = ii(d, a, b, c, k[11], 10, -1120210379)
-    c = ii(c, d, a, b, k[2], 15, 718787259); b = ii(b, c, d, a, k[9], 21, -343485551)
+    c = ii(a, b, c, d, k[2], 15, 718787259); b = ii(b, c, d, a, k[9], 21, -343485551)
     x[0] = add32(a, x[0]); x[1] = add32(b, x[1])
     x[2] = add32(c, x[2]); x[3] = add32(d, x[3])
   }
@@ -140,130 +141,99 @@ export function HashGenerator() {
   }
 
   return (
-    <div style={{ color: colors.text }}>
-      <div style={{ marginBottom: 32 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-          <Hash size={28} color={colors.accent} />
-          <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0 }}>Hash Generator</h1>
+    <div>
+      <ToolHeader
+        name="Hash Generator"
+        description="Compute cryptographic hashes from text using SHA-1, SHA-256, SHA-512, or MD5 algorithms."
+        category="security"
+        icon={Hash}
+        serial="hash-generator"
+      />
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div className="tb-panel" style={{ padding: 20 }}>
+          <SectionLabel>Input Text</SectionLabel>
+          <textarea
+            className="tb-field tb-mono"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Enter text to hash..."
+            spellCheck={false}
+            style={{ width: '100%', minHeight: 140, resize: 'vertical', fontSize: 13.5 }}
+          />
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 14 }}>
+            {ALGORITHMS.map((algo) => (
+              <button
+                key={algo}
+                onClick={() => setAlgorithm(algo)}
+                className="tb-mono"
+                style={{
+                  padding: '7px 16px',
+                  background: algorithm === algo ? colors.accent : 'transparent',
+                  color: algorithm === algo ? colors.onAccent : colors.textSecondary,
+                  border: `1px solid ${algorithm === algo ? colors.accent : colors.border}`,
+                  borderRadius: 'var(--tb-radius-ctl)',
+                  fontSize: 12.5,
+                  fontWeight: algorithm === algo ? 600 : 500,
+                  letterSpacing: '0.04em',
+                  cursor: 'pointer',
+                  transition: 'background-color var(--tb-speed-fast) ease, border-color var(--tb-speed-fast) ease, color var(--tb-speed-fast) ease'
+                }}
+              >
+                {algo}
+              </button>
+            ))}
+          </div>
         </div>
-        <p style={{ fontSize: 15, color: colors.textSecondary, margin: 0, lineHeight: 1.5 }}>
-          Compute cryptographic hashes from text using SHA-1, SHA-256, SHA-512, or MD5 algorithms.
-        </p>
-      </div>
 
-      <div style={{ marginBottom: 24 }}>
-        <label style={{ display: 'block', fontSize: 15, fontWeight: 500, color: colors.textSecondary, marginBottom: 10 }}>Input Text</label>
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Enter text to hash..."
-          style={{
-            width: '100%',
-            minHeight: 160,
-            padding: 16,
-            background: colors.input,
-            border: `1px solid ${colors.border}`,
-            borderRadius: 10,
-            color: colors.text,
-            fontSize: 15,
-            fontFamily: 'monospace',
-            resize: 'vertical',
-            outline: 'none',
-            boxSizing: 'border-box',
-            lineHeight: 1.6
-          }}
-        />
-      </div>
+        <Button variant="primary" size="lg" icon={Zap} onClick={generateHash}>
+          Generate Hash
+        </Button>
 
-      <div style={{ display: 'flex', gap: 10, marginBottom: 24 }}>
-        {ALGORITHMS.map((algo) => (
-          <button
-            key={algo}
-            onClick={() => setAlgorithm(algo)}
-            style={{
-              padding: '10px 20px',
-              background: algorithm === algo ? colors.accent : 'transparent',
-              color: algorithm === algo ? '#fff' : colors.text,
-              border: `1px solid ${algorithm === algo ? colors.accent : colors.border}`,
-              borderRadius: 8,
-              fontSize: 14,
-              cursor: 'pointer',
-              fontWeight: algorithm === algo ? 600 : 400
-            }}
-          >
-            {algo}
-          </button>
-        ))}
-      </div>
-
-      <button
-        onClick={generateHash}
-        style={{
-          padding: '14px 28px',
-          background: colors.accent,
-          color: '#fff',
-          border: 'none',
-          borderRadius: 10,
-          fontSize: 15,
-          fontWeight: 600,
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          marginBottom: 32
-        }}
-      >
-        <Zap size={18} />
-        Generate Hash
-      </button>
-
-      {hash && (
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-            <span style={{ fontSize: 15, fontWeight: 500, color: colors.textSecondary }}>Result ({algorithm})</span>
-            <button
-              onClick={copyHash}
+        {hash && (
+          <div className="tb-panel" style={{ padding: 20 }}>
+            <SectionLabel hint={algorithm}>
+              Result
+            </SectionLabel>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 10 }}>
+              <Button
+                variant="secondary"
+                size="sm"
+                icon={copied ? Check : Copy}
+                onClick={copyHash}
+                style={
+                  copied
+                    ? { color: colors.success, borderColor: colors.success }
+                    : undefined
+                }
+              >
+                {copied ? 'Copied' : 'Copy'}
+              </Button>
+            </div>
+            <div
+              className="tb-mono"
               style={{
-                padding: '8px 16px',
-                background: 'transparent',
-                color: colors.textSecondary,
+                padding: 14,
+                background: colors.bgDeep,
                 border: `1px solid ${colors.border}`,
-                borderRadius: 8,
+                borderRadius: 'var(--tb-radius-ctl)',
                 fontSize: 14,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6
+                wordBreak: 'break-all',
+                color: colors.text,
+                lineHeight: 1.6
               }}
             >
-              {copied ? <Check size={14} /> : <Copy size={14} />}
-              {copied ? 'Copied' : 'Copy'}
-            </button>
+              {hash}
+            </div>
+            <p
+              className="tb-mono"
+              style={{ marginTop: 12, fontSize: 11, letterSpacing: '0.04em', color: colors.textFaint }}
+            >
+              {hash.length * 4} bits · {hash.length} chars · {algorithm}
+            </p>
           </div>
-          <div
-            style={{
-              padding: 16,
-              background: colors.input,
-              border: `1px solid ${colors.border}`,
-              borderRadius: 10,
-              fontFamily: 'monospace',
-              fontSize: 14,
-              wordBreak: 'break-all',
-              color: colors.text,
-              lineHeight: 1.6
-            }}
-          >
-            {hash}
-          </div>
-          <div style={{ marginTop: 12, fontSize: 13, color: colors.textSecondary, display: 'flex', gap: 16 }}>
-            <span>📊 Bits: {hash.length * 4}</span>
-            <span style={{ color: colors.border }}>|</span>
-            <span>📊 Chars: {hash.length}</span>
-            <span style={{ color: colors.border }}>|</span>
-            <span>📊 Algorithm: {algorithm}</span>
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }

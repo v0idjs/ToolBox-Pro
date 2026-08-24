@@ -1,305 +1,183 @@
-import { useState } from 'react';
-import { FileText, Zap, Copy, Download, FolderOpen } from 'lucide-react';
-import { useThemeColors } from '@/lib/theme';
+import { useState } from 'react'
+import { Zap, Copy, Check, Download, FolderOpen, CopyX } from 'lucide-react'
+import { useThemeColors } from '@/lib/theme'
+import { ToolHeader, Button, Card, SectionLabel, Textarea, Toggle } from '@/components/ui'
 
 export function RemoveDuplicates() {
-  const [input, setInput] = useState('');
-  const [output, setOutput] = useState('');
-  const [caseSensitive, setCaseSensitive] = useState(false);
-  const [removeEmpty, setRemoveEmpty] = useState(false);
-  const [stats, setStats] = useState<{ original: number; unique: number; removed: number } | null>(null);
-  const [copied, setCopied] = useState(false);
-  const [fileName, setFileName] = useState('');
-  const colors = useThemeColors();
+  const [input, setInput] = useState('')
+  const [output, setOutput] = useState('')
+  const [caseSensitive, setCaseSensitive] = useState(false)
+  const [removeEmpty, setRemoveEmpty] = useState(false)
+  const [stats, setStats] = useState<{ original: number; unique: number; removed: number } | null>(null)
+  const [copied, setCopied] = useState(false)
+  const [fileName, setFileName] = useState('')
+  const colors = useThemeColors()
 
   const handleRemove = () => {
-    let lines = input.split('\n');
+    let lines = input.split('\n')
     if (removeEmpty) {
-      lines = lines.filter((l) => l.trim() !== '');
+      lines = lines.filter((l) => l.trim() !== '')
     }
-    const seen = new Set<string>();
-    const unique: string[] = [];
+    const seen = new Set<string>()
+    const unique: string[] = []
     for (const line of lines) {
-      const key = caseSensitive ? line : line.toLowerCase();
+      const key = caseSensitive ? line : line.toLowerCase()
       if (!seen.has(key)) {
-        seen.add(key);
-        unique.push(line);
+        seen.add(key)
+        unique.push(line)
       }
     }
-    const removed = lines.length - unique.length;
-    setStats({ original: lines.length, unique: unique.length, removed });
-    setOutput(unique.join('\n'));
-  };
+    const removed = lines.length - unique.length
+    setStats({ original: lines.length, unique: unique.length, removed })
+    setOutput(unique.join('\n'))
+  }
 
   const handleCopy = async () => {
-    if (!output) return;
+    if (!output) return
     try {
-      await navigator.clipboard.writeText(output);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      await navigator.clipboard.writeText(output)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
     } catch {}
-  };
+  }
 
   const handleSave = async () => {
-    await window.api.saveFile('no-duplicates.txt', output);
-  };
+    await window.api.saveFile('no-duplicates.txt', output)
+  }
 
   const handleOpenFile = async () => {
     try {
-      const result = await window.api.openFile();
+      const result = await window.api.openFile()
       if (result) {
-        setInput(result.content);
-        setFileName(result.name);
-        setOutput('');
-        setStats(null);
+        setInput(result.content)
+        setFileName(result.name)
+        setOutput('')
+        setStats(null)
       }
     } catch (err) {
-      console.error('Failed to open file:', err);
+      console.error('Failed to open file:', err)
     }
-  };
+  }
 
   return (
-    <div style={{ color: colors.text }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-        <FileText size={28} color={colors.accent} />
-        <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0 }}>Remove Duplicates</h1>
-      </div>
-      <p style={{ fontSize: 15, color: colors.textSecondary, margin: 0, marginBottom: 32 }}>
-        Paste text and remove duplicate lines, keeping the first occurrence
-      </p>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <ToolHeader
+        name="Remove Duplicate Lines"
+        description="Remove duplicate lines from text, preserving first occurrence"
+        category="file"
+        icon={CopyX}
+        serial="remove-duplicates"
+      />
 
-      <div style={{ display: 'flex', gap: 24, marginBottom: 24 }}>
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-            <label style={{ fontSize: 15, fontWeight: 500, color: colors.text }}>Input</label>
-            <button
-              onClick={handleOpenFile}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                backgroundColor: 'transparent',
-                color: colors.textSecondary,
-                border: `1px solid ${colors.border}`,
-                borderRadius: 6,
-                padding: '4px 10px',
-                fontSize: 13,
-                cursor: 'pointer',
-              }}
-            >
-              <FolderOpen size={14} />
-              Open File
-            </button>
-            {fileName && (
-              <span style={{ fontSize: 13, color: colors.textSecondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {fileName}
-              </span>
-            )}
-          </div>
-          <textarea
-            style={{
-              backgroundColor: colors.bg,
-              border: `1px solid ${colors.border}`,
-              borderRadius: 10,
-              color: colors.text,
-              padding: 16,
-              fontSize: 15,
-              fontFamily: 'ui-monospace, monospace',
-              resize: 'vertical',
-              width: '100%',
-              minHeight: 160,
-              outline: 'none',
-              boxSizing: 'border-box',
-            }}
-            placeholder="Paste your text here..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            spellCheck={false}
-          />
+      <Card>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 12 }}>
+          <SectionLabel hint={fileName || undefined}>Input</SectionLabel>
+          <Button variant="ghost" size="sm" icon={FolderOpen} onClick={handleOpenFile}>
+            Open File
+          </Button>
         </div>
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <label style={{ fontSize: 15, fontWeight: 500, marginBottom: 10, color: colors.text }}>Output</label>
-          <textarea
-            style={{
-              backgroundColor: colors.bg,
-              border: `1px solid ${colors.border}`,
-              borderRadius: 10,
-              color: colors.text,
-              padding: 16,
-              fontSize: 15,
-              fontFamily: 'ui-monospace, monospace',
-              resize: 'vertical',
-              width: '100%',
-              minHeight: 160,
-              outline: 'none',
-              boxSizing: 'border-box',
-            }}
-            value={output}
-            readOnly
-            placeholder="Result will appear here..."
-            spellCheck={false}
-          />
-          <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
-            <button
-              style={{
-                backgroundColor: 'transparent',
-                color: copied ? '#22C55E' : colors.textSecondary,
-                border: `1px solid ${copied ? '#22C55E' : colors.border}`,
-                borderRadius: 8,
-                padding: '8px 16px',
-                fontSize: 13,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                opacity: output ? 1 : 0.4,
-              }}
+        <Textarea
+          className="tb-field tb-mono"
+          placeholder="Paste your text here..."
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          style={{ width: '100%', minHeight: 180 }}
+        />
+      </Card>
+
+      <Card>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 9 }}>
+              <Toggle checked={caseSensitive} onChange={setCaseSensitive} label="Case sensitive" />
+              <span style={{ fontSize: 13.5, color: colors.text }}>Case sensitive</span>
+            </span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 9 }}>
+              <Toggle checked={removeEmpty} onChange={setRemoveEmpty} label="Remove empty lines" />
+              <span style={{ fontSize: 13.5, color: colors.text }}>Remove empty lines</span>
+            </span>
+          </div>
+          <Button variant="primary" size="lg" icon={Zap} onClick={handleRemove} disabled={!input.trim()}>
+            Remove Duplicates
+          </Button>
+        </div>
+      </Card>
+
+      <Card>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 12 }}>
+          <SectionLabel>Output</SectionLabel>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={copied ? Check : Copy}
               onClick={handleCopy}
               disabled={!output}
+              style={copied ? { color: colors.success } : undefined}
             >
-              <Copy size={14} />
               {copied ? 'Copied' : 'Copy'}
-            </button>
-            <button
-              style={{
-                backgroundColor: 'transparent',
-                color: colors.textSecondary,
-                border: `1px solid ${colors.border}`,
-                borderRadius: 8,
-                padding: '8px 16px',
-                fontSize: 13,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                opacity: output ? 1 : 0.4,
-              }}
-              onClick={handleSave}
-              disabled={!output}
-            >
-              <Download size={14} />
+            </Button>
+            <Button variant="ghost" size="sm" icon={Download} onClick={handleSave} disabled={!output}>
               Save to file
-            </button>
+            </Button>
           </div>
         </div>
-      </div>
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 24, flexWrap: 'wrap' }}>
-        <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', userSelect: 'none', fontSize: 15, color: colors.textSecondary }}>
-          <div
-            style={{
-              width: 40,
-              height: 22,
-              borderRadius: 11,
-              backgroundColor: caseSensitive ? colors.accent : colors.border,
-              position: 'relative',
-              transition: 'background-color 0.2s',
-              cursor: 'pointer',
-            }}
-            onClick={() => setCaseSensitive(!caseSensitive)}
-          >
-            <div
-              style={{
-                width: 16,
-                height: 16,
-                borderRadius: '50%',
-                backgroundColor: colors.text,
-                position: 'absolute',
-                top: 3,
-                left: caseSensitive ? 21 : 3,
-                transition: 'left 0.2s',
-              }}
-            />
-          </div>
-          Case sensitive
-        </label>
-        <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', userSelect: 'none', fontSize: 15, color: colors.textSecondary }}>
-          <div
-            style={{
-              width: 40,
-              height: 22,
-              borderRadius: 11,
-              backgroundColor: removeEmpty ? colors.accent : colors.border,
-              position: 'relative',
-              transition: 'background-color 0.2s',
-              cursor: 'pointer',
-            }}
-            onClick={() => setRemoveEmpty(!removeEmpty)}
-          >
-            <div
-              style={{
-                width: 16,
-                height: 16,
-                borderRadius: '50%',
-                backgroundColor: colors.text,
-                position: 'absolute',
-                top: 3,
-                left: removeEmpty ? 21 : 3,
-                transition: 'left 0.2s',
-              }}
-            />
-          </div>
-          Remove empty lines
-        </label>
-        <button
-          style={{
-            backgroundColor: colors.accent,
-            color: colors.text,
-            border: 'none',
-            borderRadius: 10,
-            padding: '14px 28px',
-            fontSize: 15,
-            fontWeight: 500,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            marginLeft: 'auto',
-          }}
-          onClick={handleRemove}
-          disabled={!input.trim()}
-        >
-          <Zap size={16} />
-          Remove Duplicates
-        </button>
-      </div>
+        <Textarea
+          className="tb-field tb-mono"
+          placeholder="Result will appear here..."
+          value={output}
+          readOnly
+          style={{ width: '100%', minHeight: 180, backgroundColor: colors.bgDeep }}
+        />
+      </Card>
 
       {stats && (
-        <div>
-          <label style={{ display: 'block', fontSize: 15, fontWeight: 500, marginBottom: 10 }}>Results</label>
-          <div
+        <Card>
+          <SectionLabel>Results</SectionLabel>
+          <div style={{ display: 'flex', alignItems: 'baseline', columnGap: 20, rowGap: 8, flexWrap: 'wrap' }}>
+            {[
+              { value: stats.original.toLocaleString(), label: 'Original lines', color: colors.text },
+              { value: stats.unique.toLocaleString(), label: 'Unique', color: colors.accent },
+              { value: stats.removed.toLocaleString(), label: 'Removed', color: colors.error }
+            ].map((item, i) => (
+              <div key={item.label} style={{ display: 'flex', alignItems: 'baseline', gap: 20 }}>
+                {i > 0 && <span aria-hidden style={{ width: 1, height: 14, backgroundColor: colors.border }} />}
+                <span
+                  className="tb-mono"
+                  style={{ fontSize: 17, fontWeight: 700, letterSpacing: '0.02em', color: item.color }}
+                >
+                  {item.value}
+                </span>
+                <span
+                  style={{
+                    fontFamily: 'var(--tb-font-mono)',
+                    fontSize: 10.5,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.12em',
+                    color: colors.textFaint
+                  }}
+                >
+                  {item.label}
+                </span>
+              </div>
+            ))}
+          </div>
+          <p
+            className="tb-mono"
             style={{
-              display: 'flex',
-              gap: 16,
-              marginBottom: 12,
-              padding: 16,
-              backgroundColor: colors.input,
-              border: `1px solid ${colors.border}`,
-              borderRadius: 10,
+              marginTop: 12,
+              paddingTop: 12,
+              borderTop: `1px solid ${colors.border}`,
+              fontSize: 11,
+              letterSpacing: '0.04em',
+              color: colors.textFaint
             }}
           >
-            <div style={{ flex: 1, textAlign: 'center' }}>
-              <div style={{ fontSize: 28, fontWeight: 700, color: colors.text }}>{stats.original}</div>
-              <div style={{ fontSize: 13, color: colors.textSecondary, marginTop: 4, textTransform: 'uppercase' }}>Original</div>
-            </div>
-            <div style={{ color: colors.border, alignSelf: 'center', fontSize: 20 }}>|</div>
-            <div style={{ flex: 1, textAlign: 'center' }}>
-              <div style={{ fontSize: 28, fontWeight: 700, color: colors.accent }}>{stats.unique}</div>
-              <div style={{ fontSize: 13, color: colors.textSecondary, marginTop: 4, textTransform: 'uppercase' }}>Unique</div>
-            </div>
-            <div style={{ color: colors.border, alignSelf: 'center', fontSize: 20 }}>|</div>
-            <div style={{ flex: 1, textAlign: 'center' }}>
-              <div style={{ fontSize: 28, fontWeight: 700, color: '#EF4444' }}>{stats.removed}</div>
-              <div style={{ fontSize: 13, color: colors.textSecondary, marginTop: 4, textTransform: 'uppercase' }}>Removed</div>
-            </div>
-          </div>
-          <div style={{ display: 'flex', gap: 12, fontSize: 13, color: colors.textSecondary }}>
-            <span>{stats.original.toLocaleString()} lines processed</span>
-            <span>|</span>
-            <span>{((stats.removed / stats.original) * 100).toFixed(1)}% duplicates removed</span>
-          </div>
-        </div>
+            {stats.original.toLocaleString()} lines processed ·{' '}
+            {((stats.removed / stats.original) * 100).toFixed(1)}% duplicates removed
+          </p>
+        </Card>
       )}
     </div>
-  );
+  )
 }

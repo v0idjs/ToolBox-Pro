@@ -1,337 +1,289 @@
-import { useState, useRef } from "react";
-import { FolderOpen, Merge, Save, Trash2, ArrowUp, ArrowDown, Zap } from "lucide-react";
-import { useThemeColors } from '@/lib/theme';
+import { useState } from 'react'
+import { FolderOpen, Merge, Save, Trash2, ArrowUp, ArrowDown, Zap, Copy, Check } from 'lucide-react'
+import { useThemeColors } from '@/lib/theme'
+import { ToolHeader, Button, Card, SectionLabel, Input } from '@/components/ui'
 
 interface FileEntry {
-  id: string;
-  name: string;
-  size: number;
-  content: string;
+  id: string
+  name: string
+  size: number
+  content: string
 }
 
 export function FileMerger() {
-  const [files, setFiles] = useState<FileEntry[]>([]);
-  const [separator, setSeparator] = useState<"none" | "newline" | "custom">("none");
-  const [customSep, setCustomSep] = useState("");
-  const [result, setResult] = useState("");
-  const [copied, setCopied] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const themeColors = useThemeColors();
-  const colors = {
-    bg: themeColors.bg,
-    card: themeColors.card,
-    input: themeColors.input,
-    border: themeColors.border,
-    text: themeColors.text,
-    muted: themeColors.textSecondary,
-    primary: themeColors.accent,
-    danger: "#DC2626",
-    hover: themeColors.accentHover,
-  };
+  const [files, setFiles] = useState<FileEntry[]>([])
+  const [separator, setSeparator] = useState<'none' | 'newline' | 'custom'>('none')
+  const [customSep, setCustomSep] = useState('')
+  const [result, setResult] = useState('')
+  const [copied, setCopied] = useState(false)
+  const colors = useThemeColors()
 
   const loadFiles = async () => {
-    const loaded = await window.api.openFiles();
-    if (!loaded) return;
+    const loaded = await window.api.openFiles()
+    if (!loaded) return
     setFiles((prev) => {
       const newFiles: FileEntry[] = loaded.map((f: { name: string; content: string }) => ({
         id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
         name: f.name,
         size: new Blob([f.content]).size,
         content: f.content,
-      }));
-      return [...prev, ...newFiles];
-    });
-  };
+      }))
+      return [...prev, ...newFiles]
+    })
+  }
 
   const removeFile = (id: string) => {
-    setFiles((prev) => prev.filter((f) => f.id !== id));
-  };
+    setFiles((prev) => prev.filter((f) => f.id !== id))
+  }
 
   const moveFile = (index: number, dir: -1 | 1) => {
     setFiles((prev) => {
-      const next = [...prev];
-      const target = index + dir;
-      if (target < 0 || target >= next.length) return prev;
-      [next[index], next[target]] = [next[target], next[index]];
-      return next;
-    });
-  };
+      const next = [...prev]
+      const target = index + dir
+      if (target < 0 || target >= next.length) return prev
+      ;[next[index], next[target]] = [next[target], next[index]]
+      return next
+    })
+  }
 
   const getSeparator = () => {
     switch (separator) {
-      case "newline":
-        return "\n";
-      case "custom":
-        return customSep;
-      case "none":
+      case 'newline':
+        return '\n'
+      case 'custom':
+        return customSep
+      case 'none':
       default:
-        return "";
+        return ''
     }
-  };
+  }
 
   const mergeFiles = () => {
-    const sep = getSeparator();
-    const merged = files.map((f) => f.content).join(sep);
-    setResult(merged);
-  };
+    const sep = getSeparator()
+    const merged = files.map((f) => f.content).join(sep)
+    setResult(merged)
+  }
 
   const saveResult = async () => {
-    if (!result) return;
-    await window.api.saveFile('merged-output.txt', result);
-  };
+    if (!result) return
+    await window.api.saveFile('merged-output.txt', result)
+  }
 
   const handleCopy = async () => {
-    if (!result) return;
+    if (!result) return
     try {
-      await navigator.clipboard.writeText(result);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      await navigator.clipboard.writeText(result)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
     } catch {}
-  };
+  }
 
-  const totalSize = files.reduce((acc, f) => acc + f.size, 0);
+  const totalSize = files.reduce((acc, f) => acc + f.size, 0)
+
+  const separators: { id: 'none' | 'newline' | 'custom'; label: string }[] = [
+    { id: 'none', label: 'No separator' },
+    { id: 'newline', label: 'Newline' },
+    { id: 'custom', label: 'Custom string' },
+  ]
 
   return (
-    <div style={{ color: colors.text }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-        <Merge size={28} color={colors.primary} />
-        <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0 }}>File Merger</h1>
-      </div>
-      <p style={{ fontSize: 15, color: colors.muted, margin: 0, marginBottom: 32 }}>
-        Combine multiple text files into one, with configurable separators
-      </p>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <ToolHeader
+        name="File Merger"
+        description="Merge multiple text files into one combined file"
+        category="file"
+        icon={Merge}
+        serial="file-merger"
+      />
 
-      <button
-        onClick={loadFiles}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          padding: "14px 28px",
-          background: colors.primary,
-          color: colors.text,
-          border: "none",
-          borderRadius: 10,
-          cursor: "pointer",
-          fontSize: 15,
-          fontWeight: 500,
-          marginBottom: 32,
-        }}
-      >
-        <Zap size={16} /> Open Files
-      </button>
+      <Card>
+        <SectionLabel hint={files.length > 0 ? `Total ${totalSize.toLocaleString()} bytes` : undefined}>
+          Files
+        </SectionLabel>
+        <Button variant="secondary" icon={FolderOpen} onClick={loadFiles}>
+          Open Files
+        </Button>
 
-      {files.length > 0 && (
-        <div
-          style={{
-            background: colors.input,
-            border: `1px solid ${colors.border}`,
-            borderRadius: 10,
-            padding: 16,
-            marginBottom: 32,
-          }}
-        >
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
-            <span style={{ fontWeight: 500, fontSize: 15 }}>{files.length} file(s) loaded</span>
-            <span style={{ color: colors.muted, fontSize: 13 }}>
-              Total: {totalSize.toLocaleString()} bytes
+        {files.length > 0 && (
+          <div style={{ marginTop: 12 }}>
+            <span style={{ fontSize: 13.5, color: colors.textSecondary }}>
+              {files.length} file{files.length !== 1 ? 's' : ''} loaded
             </span>
+            <div style={{ marginTop: 8 }}>
+              {files.map((f, i) => (
+                <div
+                  key={f.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    padding: '9px 4px',
+                    borderBottom: i < files.length - 1 ? `1px solid ${colors.border}` : 'none',
+                  }}
+                >
+                  <button
+                    onClick={() => moveFile(i, -1)}
+                    disabled={i === 0}
+                    aria-label={`Move ${f.name} up`}
+                    style={{
+                      display: 'flex',
+                      padding: 3,
+                      background: 'transparent',
+                      border: 'none',
+                      borderRadius: 'var(--tb-radius-ctl)',
+                      color: i === 0 ? colors.textFaint : colors.textSecondary,
+                      cursor: i === 0 ? 'default' : 'pointer',
+                    }}
+                  >
+                    <ArrowUp size={14} />
+                  </button>
+                  <button
+                    onClick={() => moveFile(i, 1)}
+                    disabled={i === files.length - 1}
+                    aria-label={`Move ${f.name} down`}
+                    style={{
+                      display: 'flex',
+                      padding: 3,
+                      background: 'transparent',
+                      border: 'none',
+                      borderRadius: 'var(--tb-radius-ctl)',
+                      color: i === files.length - 1 ? colors.textFaint : colors.textSecondary,
+                      cursor: i === files.length - 1 ? 'default' : 'pointer',
+                    }}
+                  >
+                    <ArrowDown size={14} />
+                  </button>
+                  <span
+                    className="tb-mono"
+                    style={{ flex: 1, fontSize: 12.5, color: colors.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                  >
+                    {f.name}
+                  </span>
+                  <span
+                    className="tb-mono"
+                    style={{ fontSize: 12, color: colors.textFaint, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}
+                  >
+                    {f.size.toLocaleString()} B
+                  </span>
+                  <button
+                    onClick={() => removeFile(f.id)}
+                    aria-label={`Remove ${f.name}`}
+                    style={{
+                      display: 'flex',
+                      padding: 3,
+                      background: 'transparent',
+                      border: 'none',
+                      borderRadius: 'var(--tb-radius-ctl)',
+                      color: colors.error,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            {files.map((f, i) => (
-              <div
-                key={f.id}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  padding: "10px 14px",
-                  background: colors.bg,
-                  borderRadius: 8,
-                  border: `1px solid ${colors.border}`,
-                }}
-              >
-                <button
-                  onClick={() => moveFile(i, -1)}
-                  disabled={i === 0}
-                  style={{ background: "none", border: "none", color: i === 0 ? colors.border : colors.muted, cursor: i === 0 ? "default" : "pointer", padding: 2 }}
-                >
-                  <ArrowUp size={14} />
-                </button>
-                <button
-                  onClick={() => moveFile(i, 1)}
-                  disabled={i === files.length - 1}
-                  style={{ background: "none", border: "none", color: i === files.length - 1 ? colors.border : colors.muted, cursor: i === files.length - 1 ? "default" : "pointer", padding: 2 }}
-                >
-                  <ArrowDown size={14} />
-                </button>
-
-                <span style={{ flex: 1, fontSize: 15, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {f.name}
-                </span>
-                <span style={{ color: colors.muted, fontSize: 13, whiteSpace: "nowrap" }}>
-                  {f.size.toLocaleString()} bytes
-                </span>
-                <button
-                  onClick={() => removeFile(f.id)}
-                  style={{ background: "none", border: "none", color: colors.danger, cursor: "pointer", padding: 2 }}
-                >
-                  <Trash2 size={14} />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+        )}
+      </Card>
 
       {files.length > 0 && (
-        <div
-          style={{
-            background: colors.input,
-            border: `1px solid ${colors.border}`,
-            borderRadius: 10,
-            padding: 16,
-            marginBottom: 32,
-          }}
-        >
-          <label style={{ fontWeight: 500, display: "block", marginBottom: 10, fontSize: 15 }}>Separator</label>
-          <div style={{ display: "flex", gap: 8, marginBottom: separator === "custom" ? 10 : 0 }}>
-            {([
-              ["none", "No separator"],
-              ["newline", "Newline"],
-              ["custom", "Custom string"],
-            ] as const).map(([val, label]) => (
-              <button
-                key={val}
-                onClick={() => setSeparator(val)}
-                style={{
-                  padding: "10px 20px",
-                  borderRadius: 8,
-                  border: `1px solid ${separator === val ? colors.primary : colors.border}`,
-                  background: separator === val ? colors.primary : colors.bg,
-                  color: colors.text,
-                  cursor: "pointer",
-                  fontSize: 15,
-                  fontWeight: separator === val ? 500 : 400,
-                }}
+        <Card>
+          <SectionLabel>Separator</SectionLabel>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {separators.map((sep) => (
+              <Button
+                key={sep.id}
+                variant="secondary"
+                onClick={() => setSeparator(sep.id)}
+                style={
+                  separator === sep.id
+                    ? { backgroundColor: colors.accentTint, borderColor: colors.accent }
+                    : undefined
+                }
               >
-                {label}
-              </button>
+                {sep.label}
+              </Button>
             ))}
           </div>
-          {separator === "custom" && (
-            <input
-              value={customSep}
-              onChange={(e) => setCustomSep(e.target.value)}
-              placeholder="Enter separator string"
-              style={{
-                width: "100%",
-                padding: 14,
-                borderRadius: 10,
-                border: `1px solid ${colors.border}`,
-                background: colors.bg,
-                color: colors.text,
-                fontSize: 15,
-                boxSizing: "border-box",
-                marginTop: 10,
-              }}
-            />
+          {separator === 'custom' && (
+            <div style={{ marginTop: 12 }}>
+              <Input
+                value={customSep}
+                onChange={(e) => setCustomSep(e.target.value)}
+                placeholder="Enter separator string"
+              />
+            </div>
           )}
-        </div>
+        </Card>
       )}
 
       {files.length > 0 && (
-        <button
-          onClick={mergeFiles}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            padding: "14px 28px",
-            background: colors.primary,
-            color: colors.text,
-            border: "none",
-            borderRadius: 10,
-            cursor: "pointer",
-            fontSize: 15,
-            fontWeight: 500,
-            marginBottom: 32,
-          }}
-        >
-          <Zap size={16} /> Merge Files
-        </button>
+        <div>
+          <Button variant="primary" size="lg" icon={Zap} onClick={mergeFiles}>
+            Merge Files
+          </Button>
+        </div>
       )}
 
       {result && (
-        <div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-            <label style={{ fontSize: 15, fontWeight: 500 }}>Result ({result.length.toLocaleString()} chars)</label>
+        <Card>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 12 }}>
+            <SectionLabel hint={`${result.length.toLocaleString()} chars`}>Result</SectionLabel>
             <div style={{ display: 'flex', gap: 8 }}>
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
+                icon={Save}
+                onClick={saveResult}
+              >
+                Save
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                icon={copied ? Check : Copy}
                 onClick={handleCopy}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  padding: "8px 16px",
-                  background: copied ? '#22C55E' : colors.input,
-                  color: copied ? '#fff' : colors.text,
-                  border: `1px solid ${copied ? '#22C55E' : colors.border}`,
-                  borderRadius: 8,
-                  cursor: "pointer",
-                  fontSize: 13,
-                  fontWeight: 500,
-                }}
+                style={copied ? { color: colors.success } : undefined}
               >
                 {copied ? 'Copied' : 'Copy'}
-              </button>
-              <button
-                onClick={saveResult}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  padding: "8px 16px",
-                  background: colors.primary,
-                  color: colors.text,
-                  border: "none",
-                  borderRadius: 8,
-                  cursor: "pointer",
-                  fontSize: 13,
-                  fontWeight: 500,
-                }}
-              >
-                <Save size={14} /> Save
-              </button>
+              </Button>
             </div>
           </div>
           <div
+            className="tb-mono"
             style={{
-              background: colors.bg,
+              backgroundColor: colors.bgDeep,
               border: `1px solid ${colors.border}`,
-              borderRadius: 10,
-              padding: 16,
-              fontSize: 15,
-              whiteSpace: "pre-wrap",
-              wordBreak: "break-all",
+              borderRadius: 'var(--tb-radius-ctl)',
+              padding: 14,
+              fontSize: 12.5,
+              lineHeight: 1.6,
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'break-all',
               maxHeight: 300,
-              overflow: "auto",
-              color: colors.muted,
-              fontFamily: 'monospace',
+              overflow: 'auto',
+              color: colors.text,
             }}
           >
-            {result.length > 500 ? result.slice(0, 500) + "\n... (truncated)" : result}
+            {result.length > 500 ? result.slice(0, 500) + '\n... (truncated)' : result}
           </div>
-          <div style={{ marginTop: 10, display: 'flex', gap: 12, fontSize: 13, color: colors.muted }}>
-            <span>{files.length} files merged</span>
-            <span>|</span>
-            <span>{result.length.toLocaleString()} characters</span>
-            <span>|</span>
-            <span>{new Blob([result]).size.toLocaleString()} bytes</span>
-          </div>
-        </div>
+          <p
+            className="tb-mono"
+            style={{
+              marginTop: 12,
+              paddingTop: 12,
+              borderTop: `1px solid ${colors.border}`,
+              fontSize: 11,
+              letterSpacing: '0.04em',
+              color: colors.textFaint,
+            }}
+          >
+            {files.length} files merged · {result.length.toLocaleString()} characters ·{' '}
+            {new Blob([result]).size.toLocaleString()} bytes
+          </p>
+        </Card>
       )}
     </div>
-  );
+  )
 }

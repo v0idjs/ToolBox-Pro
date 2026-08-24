@@ -1,145 +1,7 @@
-import { useState, useRef, useCallback } from 'react';
-import { Upload, Info, Camera, FileImage, Zap } from 'lucide-react';
-import { useThemeColors } from '@/lib/theme';
-
-function getStyles(c: { bg: string; card: string; border: string; text: string; textSecondary: string; accent: string; input: string }) {
-  return {
-    container: {
-      minHeight: '100%',
-      color: c.text,
-      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-    },
-    header: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '12px',
-      marginBottom: '32px',
-    },
-    title: {
-      fontSize: '28px',
-      fontWeight: 700,
-      color: c.text,
-      margin: 0,
-    },
-    subtitle: {
-      fontSize: '15px',
-      color: c.textSecondary,
-      margin: 0,
-      marginTop: '4px',
-    },
-    card: {
-      backgroundColor: c.input,
-      border: `1px solid ${c.border}`,
-      borderRadius: '12px',
-      padding: '24px',
-      marginBottom: '32px',
-    },
-    dropZone: {
-      border: `2px dashed ${c.border}`,
-      borderRadius: '12px',
-      padding: '56px 24px',
-      textAlign: 'center' as const,
-      cursor: 'pointer',
-      transition: 'border-color 0.2s, background-color 0.2s',
-      backgroundColor: c.input,
-    },
-    dropZoneActive: {
-      borderColor: c.accent,
-      backgroundColor: `${c.accent}1A`,
-    },
-    dropIcon: {
-      color: c.accent,
-      marginBottom: '16px',
-    },
-    dropText: {
-      fontSize: '16px',
-      color: c.text,
-      marginBottom: '10px',
-    },
-    dropSubtext: {
-      fontSize: '14px',
-      color: c.textSecondary,
-    },
-    browseButton: {
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: '10px',
-      backgroundColor: c.accent,
-      color: c.text,
-      border: 'none',
-      borderRadius: '10px',
-      padding: '14px 28px',
-      fontSize: '15px',
-      fontWeight: 500,
-      cursor: 'pointer',
-      marginTop: '16px',
-      transition: 'background-color 0.2s',
-    },
-    previewContainer: {
-      display: 'flex',
-      gap: '28px',
-      flexWrap: 'wrap' as const,
-      marginTop: '24px',
-    },
-    previewWrapper: {
-      flex: '1 1 300px',
-      minWidth: '280px',
-    },
-    previewImage: {
-      width: '100%',
-      maxHeight: '400px',
-      objectFit: 'contain' as const,
-      borderRadius: '10px',
-      border: `1px solid ${c.border}`,
-      backgroundColor: c.input,
-    },
-    metadataWrapper: {
-      flex: '1 1 400px',
-      minWidth: '320px',
-    },
-    metadataTable: {
-      width: '100%',
-      borderCollapse: 'collapse' as const,
-      fontSize: '15px',
-    },
-    metadataRow: {
-      borderBottom: `1px solid ${c.border}`,
-    },
-    metadataLabel: {
-      padding: '14px 16px',
-      color: c.textSecondary,
-      fontWeight: 500,
-      whiteSpace: 'nowrap' as const,
-      width: '160px',
-      verticalAlign: 'top' as const,
-    },
-    metadataValue: {
-      padding: '14px 16px',
-      color: c.text,
-      wordBreak: 'break-word' as const,
-    },
-    sectionHeader: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '10px',
-      fontSize: '15px',
-      fontWeight: 600,
-      color: c.accent,
-      marginBottom: '14px',
-      marginTop: '24px',
-    },
-    noImage: {
-      display: 'flex',
-      flexDirection: 'column' as const,
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '56px',
-      color: c.textSecondary,
-      fontSize: '15px',
-      gap: '14px',
-    },
-  };
-}
+import { useState, useRef, useCallback } from 'react'
+import { Upload, FileImage } from 'lucide-react'
+import { useThemeColors } from '@/lib/theme'
+import { ToolHeader, Button, SectionLabel } from '@/components/ui'
 
 function parseExifData(buffer: ArrayBuffer): Record<string, string> {
   const dataView = new DataView(buffer);
@@ -315,8 +177,7 @@ export function ImageMetadata() {
   const [dimensions, setDimensions] = useState<{ width: number; height: number } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const themeColors = useThemeColors();
-  const styles = getStyles(themeColors);
+  const colors = useThemeColors();
 
   const processFile = useCallback(async (file: File) => {
     setImageFile(file);
@@ -420,100 +281,162 @@ export function ImageMetadata() {
     fileInputRef.current?.click();
   }, []);
 
-  return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <FileImage size={28} color={themeColors.accent} />
-        <div>
-          <h1 style={styles.title}>Image Metadata</h1>
-          <p style={styles.subtitle}>View image properties and EXIF data</p>
-        </div>
-      </div>
+  const keyCellStyle = {
+    padding: '11px 4px',
+    fontFamily: 'var(--tb-font-mono)',
+    fontSize: 10.5,
+    textTransform: 'uppercase' as const,
+    letterSpacing: '0.08em',
+    color: colors.textFaint,
+    whiteSpace: 'nowrap' as const,
+    width: 170,
+    verticalAlign: 'top' as const
+  };
 
-      <div style={styles.card}>
+  const valueCellStyle = {
+    padding: '11px 4px',
+    fontFamily: 'var(--tb-font-mono)',
+    fontSize: 12.5,
+    color: colors.text,
+    wordBreak: 'break-word' as const
+  };
+
+  return (
+    <div>
+      <ToolHeader
+        name="Image Metadata Viewer"
+        description="View image properties and EXIF data."
+        category="image"
+        icon={FileImage}
+        serial="image-metadata"
+      />
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        style={{ display: 'none' }}
+        onChange={handleFileSelect}
+      />
+
+      {imagePreview ? (
+        <div className="tb-panel" style={{ padding: 20 }}>
+          <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+            <div style={{ flex: '1 1 300px', minWidth: 280 }}>
+              <img
+                src={imagePreview}
+                alt="Preview"
+                style={{
+                  width: '100%',
+                  maxHeight: 400,
+                  objectFit: 'contain',
+                  borderRadius: 'var(--tb-radius-ctl)',
+                  border: `1px solid ${colors.border}`,
+                  background: colors.bgDeep,
+                  display: 'block'
+                }}
+              />
+            </div>
+
+            <div style={{ flex: '1 1 360px', minWidth: 300 }}>
+              {dimensions && (
+                <>
+                  <SectionLabel>Image properties</SectionLabel>
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <tbody>
+                      <tr style={{ borderBottom: `1px solid ${colors.border}` }}>
+                        <td style={keyCellStyle}>Dimensions</td>
+                        <td style={valueCellStyle}>
+                          {dimensions.width} × {dimensions.height}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </>
+              )}
+
+              {Object.keys(metadata).length > 0 && (
+                <>
+                  <SectionLabel>File &amp; metadata</SectionLabel>
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <tbody>
+                      {Object.entries(metadata).map(([key, value]) => (
+                        <tr key={key} style={{ borderBottom: `1px solid ${colors.border}` }}>
+                          <td style={keyCellStyle}>{key}</td>
+                          <td style={valueCellStyle}>{value}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      ) : (
         <div
-          style={{
-            ...styles.dropZone,
-            ...(isDragging ? styles.dropZoneActive : {}),
-          }}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onClick={handleBrowseClick}
+          style={{
+            border: `1px dashed ${isDragging ? colors.accent : colors.borderStrong}`,
+            borderRadius: 'var(--tb-radius-panel)',
+            background: isDragging ? colors.accentTint : colors.raised,
+            padding: '56px 24px',
+            textAlign: 'center',
+            cursor: 'pointer',
+            transition:
+              'border-color var(--tb-speed-fast) ease, background-color var(--tb-speed-fast) ease'
+          }}
         >
-          <Upload size={48} style={styles.dropIcon} />
-          <p style={styles.dropText}>Drop an image here</p>
-          <p style={styles.dropSubtext}>Supports JPEG, PNG, GIF, WebP, BMP</p>
-          <button
-            style={styles.browseButton}
+          <Upload size={44} color={colors.textSecondary} style={{ marginBottom: 14 }} />
+          <p style={{ fontSize: 15, color: colors.textSecondary, margin: 0 }}>
+            Drop an image here
+          </p>
+          <p
+            style={{
+              fontSize: 11,
+              fontFamily: 'var(--tb-font-mono)',
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              color: colors.textFaint,
+              marginTop: 12
+            }}
+          >
+            JPEG · PNG · GIF · WEBP · BMP
+          </p>
+          <Button
+            variant="secondary"
+            icon={Upload}
             onClick={(e) => {
               e.stopPropagation();
               handleBrowseClick();
             }}
+            style={{ marginTop: 16 }}
           >
-            <Upload size={18} />
             Browse Files
-          </button>
-        </div>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          style={{ display: 'none' }}
-          onChange={handleFileSelect}
-        />
-      </div>
-
-      {imagePreview && (
-        <div style={styles.previewContainer}>
-          <div style={styles.previewWrapper}>
-            <img src={imagePreview} alt="Preview" style={styles.previewImage} />
-          </div>
-
-          <div style={styles.metadataWrapper}>
-            {dimensions && (
-              <>
-                <div style={styles.sectionHeader}>
-                  <Info size={18} />
-                  Image Properties
-                </div>
-                <table style={styles.metadataTable}>
-                  <tbody>
-                    <tr style={styles.metadataRow}>
-                      <td style={styles.metadataLabel}>Dimensions</td>
-                      <td style={styles.metadataValue}>{dimensions.width} x {dimensions.height}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </>
-            )}
-
-            {Object.keys(metadata).length > 0 && (
-              <>
-                <div style={styles.sectionHeader}>
-                  <Camera size={18} />
-                  File & Metadata
-                </div>
-                <table style={styles.metadataTable}>
-                  <tbody>
-                    {Object.entries(metadata).map(([key, value]) => (
-                      <tr key={key} style={styles.metadataRow}>
-                        <td style={styles.metadataLabel}>{key}</td>
-                        <td style={styles.metadataValue}>{value}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </>
-            )}
-          </div>
+          </Button>
         </div>
       )}
 
       {!imagePreview && (
-        <div style={{ ...styles.card, ...styles.noImage }}>
-          <FileImage size={48} color="#1E293B" />
-          <p>No image selected</p>
+        <div
+          className="tb-panel"
+          style={{
+            padding: 56,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: colors.textSecondary,
+            fontSize: 14,
+            gap: 14,
+            marginTop: 16
+          }}
+        >
+          <FileImage size={44} color={colors.borderStrong} />
+          <p style={{ margin: 0 }}>No image selected</p>
         </div>
       )}
     </div>

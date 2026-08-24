@@ -1,4 +1,5 @@
 import { useState, useEffect, Component, type ReactNode } from 'react'
+import { ArrowLeft } from 'lucide-react'
 import { DashboardLayout } from './components/layout/DashboardLayout'
 import { DashboardHome } from './pages/DashboardHome'
 import { SearchModal } from './components/SearchModal'
@@ -13,7 +14,6 @@ import { registerFileTools } from './tools/file'
 import { registerImageTools } from './tools/image'
 import { registerQRTools } from './tools/qr'
 import { registerProductivityTools } from './tools/productivity'
-import { ArrowLeft } from 'lucide-react'
 
 class ErrorBoundary extends Component<
   { children: ReactNode; fallback?: ReactNode },
@@ -30,8 +30,20 @@ class ErrorBoundary extends Component<
     if (this.state.hasError) {
       return (
         this.props.fallback || (
-          <div style={{ padding: 20, color: '#EF4444', fontSize: 14 }}>
-            Error: {this.state.error}
+          <div
+            className="tb-panel"
+            style={{
+              padding: 20,
+              borderColor: 'var(--tb-error)',
+              fontSize: 13,
+              fontFamily: 'var(--tb-font-mono)',
+              color: 'var(--tb-error)'
+            }}
+          >
+            This tool hit an error: {this.state.error}
+            <span style={{ display: 'block', marginTop: 8, color: 'var(--tb-text-secondary)' }}>
+              Switch tools and back to retry.
+            </span>
           </div>
         )
       )
@@ -47,10 +59,40 @@ registerImageTools()
 registerQRTools()
 registerProductivityTools()
 
+function BackToDashboard({ onClick }: { onClick: () => void }) {
+  const colors = useThemeColors()
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 7,
+        marginBottom: 18,
+        padding: '4px 8px 4px 6px',
+        borderRadius: 'var(--tb-radius-ctl)',
+        border: 'none',
+        background: 'transparent',
+        fontFamily: 'var(--tb-font-mono)',
+        fontSize: 11.5,
+        textTransform: 'uppercase',
+        letterSpacing: '0.1em',
+        color: colors.textSecondary,
+        cursor: 'pointer',
+        transition: 'color var(--tb-speed-fast) ease, background-color var(--tb-speed-fast) ease'
+      }}
+      onMouseEnter={(e) => (e.currentTarget.style.color = colors.text)}
+      onMouseLeave={(e) => (e.currentTarget.style.color = colors.textSecondary)}
+    >
+      <ArrowLeft size={13} />
+      Back to Dashboard
+    </button>
+  )
+}
+
 function App() {
   const { activeTool, setActiveTool, loadFavorites, loadRecentTools } = useAppStore()
   const { loadSettings } = useSettings()
-  const colors = useThemeColors()
   const [view, setView] = useState<'dashboard' | 'settings'>('dashboard')
 
   useEffect(() => {
@@ -59,53 +101,31 @@ function App() {
     loadSettings()
   }, [loadFavorites, loadRecentTools, loadSettings])
 
+  // Keep Escape working as "go back" from settings
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && view === 'settings') setView('dashboard')
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [view])
+
   const tool = activeTool && activeTool !== 'home' ? getTool(activeTool) : null
 
   return (
-    <DashboardLayout onSettingsClick={() => setView('settings')}>
+    <DashboardLayout
+      onSettingsClick={() => setView('settings')}
+      viewKey={view === 'settings' ? 'settings' : tool?.id ?? 'home'}
+    >
       {view === 'settings' ? (
         <div>
-          <button
-            onClick={() => setView('dashboard')}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              fontSize: 14,
-              color: colors.textSecondary,
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              marginBottom: 16
-            }}
-          >
-            <ArrowLeft size={14} />
-            Back to Dashboard
-          </button>
+          <BackToDashboard onClick={() => setView('dashboard')} />
           <SettingsPage />
         </div>
       ) : tool ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '32px 40px' }}>
-          <button
-            onClick={() => setActiveTool('home')}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              fontSize: 14,
-              color: colors.textSecondary,
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              marginBottom: 16
-            }}
-          >
-            <ArrowLeft size={14} />
-            Back to Dashboard
-          </button>
-          <ErrorBoundary>
-            {tool.render()}
-          </ErrorBoundary>
+        <div>
+          <BackToDashboard onClick={() => setActiveTool('home')} />
+          <ErrorBoundary>{tool.render()}</ErrorBoundary>
         </div>
       ) : (
         <DashboardHome />

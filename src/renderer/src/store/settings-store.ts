@@ -8,11 +8,12 @@ export interface Settings {
 }
 
 const SETTINGS_KEY = 'toolbox-pro-settings'
+export const DEFAULT_ACCENT = '#E8A33D'
 const DEFAULTS: Settings = {
   startupBehavior: 'dashboard',
   showRecentInSidebar: true,
   theme: 'dark',
-  accentColor: '#2563EB'
+  accentColor: DEFAULT_ACCENT
 }
 
 interface SettingsState extends Settings {
