@@ -65,6 +65,7 @@ tmp/
 # AI tools
 .opencode/
 .specify/
+AGENTS.md
 
 # Auto-generated configs
 electron.vite.config.*.mjs
@@ -73,3 +74,6 @@ electron.vite.config.*.mjs
 tasks.md
 PRD.md
 prd.md
+/.agents
+skills-lock.json
+
