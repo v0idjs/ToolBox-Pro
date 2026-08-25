@@ -6,6 +6,11 @@ const api = {
   openFolder: () => ipcRenderer.invoke('dialog:openFolder'),
   saveFile: (defaultName?: string, content?: string) =>
     ipcRenderer.invoke('dialog:saveFile', defaultName, content),
+  saveFileBinary: (
+    defaultName?: string,
+    base64?: string,
+    filters?: { name: string; extensions: string[] }[]
+  ) => ipcRenderer.invoke('dialog:saveFileBinary', defaultName, base64, filters),
   listFiles: (dirPath: string) => ipcRenderer.invoke('fs:listFiles', dirPath),
   batchRename: (renames: { from: string; to: string }[]) => ipcRenderer.invoke('fs:batchRename', renames),
   computeFileHash: (filePath: string, algorithm: string) => ipcRenderer.invoke('fs:computeFileHash', filePath, algorithm),

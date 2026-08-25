@@ -103,6 +103,22 @@ ipcMain.handle('dialog:saveFile', async (_event, defaultName?: string, content?:
   return result.filePath
 })
 
+ipcMain.handle(
+  'dialog:saveFileBinary',
+  async (_event, defaultName?: string, base64?: string, filters?: { name: string; extensions: string[] }[]) => {
+    const result = await dialog.showSaveDialog({
+      defaultPath: defaultName || 'output.bin',
+      filters: filters && filters.length > 0 ? filters : []
+    })
+    if (result.canceled || !result.filePath) return null
+    if (!isPathSafe(result.filePath)) return null
+    if (base64 !== undefined) {
+      await writeFile(result.filePath, Buffer.from(base64, 'base64'))
+    }
+    return result.filePath
+  }
+)
+
 ipcMain.handle('fs:getFolderSize', async (_event, dirPath: string) => {
   const files: { path: string; size: number }[] = []
   const dirs = new Set<string>()

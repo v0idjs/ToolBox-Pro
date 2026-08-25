@@ -10,6 +10,7 @@ import { ColorConverter } from '@/tools/developer/ColorConverter'
 import { JSONToCSVConverter } from '@/tools/developer/JSONToCSVConverter'
 import { NumberBaseConverter } from '@/tools/developer/NumberBaseConverter'
 import { CSSUnitConverter } from '@/tools/developer/CSSUnitConverter'
+import { TextEncodingConverter } from '@/tools/developer/TextEncodingConverter'
 
 export function registerDeveloperTools() {
   registerTools([
@@ -111,6 +112,15 @@ export function registerDeveloperTools() {
       category: 'developer',
       keywords: ['css', 'px', 'rem', 'em', 'vw', 'unit', 'convert', 'responsive'],
       render: () => <CSSUnitConverter />
+    },
+    {
+      id: 'text-encoding-converter',
+      name: 'Text Encoding Converter',
+      description: 'Convert text and files between UTF-8, UTF-16, Windows-1252, and ASCII',
+      icon: 'Languages',
+      category: 'developer',
+      keywords: ['encoding', 'utf', 'ascii', 'ansi', 'latin1', 'bom', 'charset', 'convert'],
+      render: () => <TextEncodingConverter />
     }
   ])
 }

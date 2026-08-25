@@ -4,7 +4,7 @@
 
 **Universal Local Productivity Toolkit**
 
-A modern desktop application containing 37 utility tools in a single application. Works completely offline with a premium dashboard UI.
+A modern desktop application containing 39 utility tools in a single application. Works completely offline with a premium dashboard UI.
 
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Electron](https://img.shields.io/badge/Electron-35.x-purple.svg)](https://www.electronjs.org/)
@@ -26,7 +26,7 @@ A modern desktop application containing 37 utility tools in a single application
 - **Base64 Encoder/Decoder** - Encode and decode Base64 strings
 - **JWT Decoder** - Inspect JSON Web Token payloads
 
-### Developer Tools (11)
+### Developer Tools (12)
 - **JSON Formatter** - Beautify, minify, and validate JSON
 - **XML Formatter** - Format and validate XML documents
 - **YAML Formatter** - Format and validate YAML files
@@ -38,8 +38,9 @@ A modern desktop application containing 37 utility tools in a single application
 - **JSON ↔ CSV Converter** - Flatten nested JSON to CSV and parse CSV back to JSON with dot-notation keys
 - **Number Base Converter** - Convert between binary, octal, decimal, hex, and custom bases in real time
 - **CSS Unit Converter** - Convert px, rem, em, vw with configurable base font size and viewport width
+- **Text Encoding Converter** - Convert text and files between UTF-8, UTF-16, Windows-1252, and ASCII with BOM handling
 
-### File Tools (7)
+### File Tools (8)
 - **Remove Duplicate Lines** - Deduplicate text content with file upload support
 - **File Splitter** - Split large files into smaller parts (Windows line-ending aware)
 - **File Merger** - Combine multiple files into one
@@ -47,6 +48,7 @@ A modern desktop application containing 37 utility tools in a single application
 - **File Checksum Verifier** - Verify file integrity with MD5, SHA-1, or SHA-256 via drag & drop
 - **Folder Size Analyzer** - Analyze disk usage with recursive folder size calculation
 - **Duplicate File Finder** - Find duplicate files by content hash
+- **PDF Merger & Splitter** - Combine PDF files or extract page ranges and split into chunked parts
 
 ### Image Tools (5)
 - **Image Converter** - Convert between PNG, JPG, WEBP, and BMP formats
@@ -66,7 +68,7 @@ A modern desktop application containing 37 utility tools in a single application
 - **Stopwatch** - Precision timing with requestAnimationFrame
 - **Countdown Timer** - Custom countdown with alerts
 
-**Total: 37 tools across 6 categories**
+**Total: 39 tools across 6 categories**
 
 ## Screenshots
 

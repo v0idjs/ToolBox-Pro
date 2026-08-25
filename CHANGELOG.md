@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **PDF Merger & Splitter** - Combine multiple PDFs in any order, extract page ranges (`1-3, 5`), or split into chunks of N pages; powered by `pdf-lib`, fully offline, encrypted files detected and skipped
+- **Text Encoding Converter** - Convert pasted text or raw files between UTF-8 (with/without BOM), UTF-16 LE/BE (BOM), Windows-1252/Latin-1, and ASCII with replacement reporting, BOM auto-detection, and a hex preview of output bytes
+- **Binary save channel** - New `dialog:saveFileBinary` IPC handler writes base64 payloads through the native Save dialog (path-validated, file-type filters), extending the preload contract for document tools
 - **Secret Scanner** — Detect 50+ types of leaked API keys, tokens, and credentials across 14 categories (Cloud, AI/ML, Source Control, Platform, Communication, CI/CD, Hosting, DevOps, Infrastructure, Database, Cryptography, Secrets Management, General, Informational)
 - **Password Strength Analyzer** — Entropy calculation, pattern detection (keyboard walks, common words, sequential chars, repetitions), 4-scenario crack time estimates, improvement suggestions
 - **Batch File Rename** — 5 rename modes: Find & Replace, Regex, Prefix/Suffix, Numbering, Case Change with live preview table

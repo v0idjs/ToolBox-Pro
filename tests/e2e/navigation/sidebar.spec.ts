@@ -40,8 +40,8 @@ test.describe('Sidebar', () => {
 
   test('should show tools under Security category', async () => {
     const sidebar = page.locator('aside');
-    await expect(sidebar.getByRole('button', { name: /Password Generator/ })).toBeVisible();
-    await expect(sidebar.getByRole('button', { name: /Hash Generator/ })).toBeVisible();
+    await expect(sidebar.getByRole('button', { name: /Password Generator/ }).first()).toBeVisible();
+    await expect(sidebar.getByRole('button', { name: /Hash Generator/ }).first()).toBeVisible();
   });
 
   test('should navigate to tool from sidebar', async () => {

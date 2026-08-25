@@ -6,6 +6,7 @@ import { FolderSizeAnalyzer } from '@/tools/file/FolderSizeAnalyzer'
 import { DuplicateFileFinder } from '@/tools/file/DuplicateFileFinder'
 import { BatchFileRename } from '@/tools/file/BatchFileRename'
 import { FileChecksumVerifier } from '@/tools/file/FileChecksumVerifier'
+import { PdfMergeSplit } from '@/tools/file/PdfMergeSplit'
 
 export function registerFileTools() {
   registerTools([
@@ -71,6 +72,15 @@ export function registerFileTools() {
       category: 'file',
       keywords: ['duplicate', 'file', 'find', 'hash', 'md5'],
       render: () => <DuplicateFileFinder />
+    },
+    {
+      id: 'pdf-merge-split',
+      name: 'PDF Merger & Splitter',
+      description: 'Combine PDF files or extract and split pages into new documents',
+      icon: 'FileStack',
+      category: 'file',
+      keywords: ['pdf', 'merge', 'split', 'extract', 'pages', 'combine'],
+      render: () => <PdfMergeSplit />
     }
   ])
 }
