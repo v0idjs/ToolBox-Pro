@@ -4,7 +4,7 @@
 
 **Universal Local Productivity Toolkit**
 
-A modern desktop application containing 39 utility tools in a single application. Works completely offline with a premium dashboard UI.
+A modern desktop application containing 40 utility tools in a single application. Works completely offline with a premium dashboard UI.
 
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Electron](https://img.shields.io/badge/Electron-35.x-purple.svg)](https://www.electronjs.org/)
@@ -26,7 +26,7 @@ A modern desktop application containing 39 utility tools in a single application
 - **Base64 Encoder/Decoder** - Encode and decode Base64 strings
 - **JWT Decoder** - Inspect JSON Web Token payloads
 
-### Developer Tools (12)
+### Developer Tools (13)
 - **JSON Formatter** - Beautify, minify, and validate JSON
 - **XML Formatter** - Format and validate XML documents
 - **YAML Formatter** - Format and validate YAML files
@@ -39,6 +39,7 @@ A modern desktop application containing 39 utility tools in a single application
 - **Number Base Converter** - Convert between binary, octal, decimal, hex, and custom bases in real time
 - **CSS Unit Converter** - Convert px, rem, em, vw with configurable base font size and viewport width
 - **Text Encoding Converter** - Convert text and files between UTF-8, UTF-16, Windows-1252, and ASCII with BOM handling
+- **SQL Formatter** - Beautify and minify SQL queries with dialect-aware keyword casing (PostgreSQL, MySQL, T-SQL, PL/SQL, and more)
 
 ### File Tools (8)
 - **Remove Duplicate Lines** - Deduplicate text content with file upload support
@@ -68,7 +69,7 @@ A modern desktop application containing 39 utility tools in a single application
 - **Stopwatch** - Precision timing with requestAnimationFrame
 - **Countdown Timer** - Custom countdown with alerts
 
-**Total: 39 tools across 6 categories**
+**Total: 40 tools across 6 categories**
 
 ## Screenshots
 

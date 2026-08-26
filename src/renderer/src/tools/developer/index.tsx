@@ -11,6 +11,7 @@ import { JSONToCSVConverter } from '@/tools/developer/JSONToCSVConverter'
 import { NumberBaseConverter } from '@/tools/developer/NumberBaseConverter'
 import { CSSUnitConverter } from '@/tools/developer/CSSUnitConverter'
 import { TextEncodingConverter } from '@/tools/developer/TextEncodingConverter'
+import { SqlFormatter } from '@/tools/developer/SqlFormatter'
 
 export function registerDeveloperTools() {
   registerTools([
@@ -121,6 +122,15 @@ export function registerDeveloperTools() {
       category: 'developer',
       keywords: ['encoding', 'utf', 'ascii', 'ansi', 'latin1', 'bom', 'charset', 'convert'],
       render: () => <TextEncodingConverter />
+    },
+    {
+      id: 'sql-formatter',
+      name: 'SQL Formatter',
+      description: 'Beautify and minify SQL queries with dialect-aware keyword casing',
+      icon: 'Database',
+      category: 'developer',
+      keywords: ['sql', 'format', 'beautify', 'minify', 'query', 'database'],
+      render: () => <SqlFormatter />
     }
   ])
 }

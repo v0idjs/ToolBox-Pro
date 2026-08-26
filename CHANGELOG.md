@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **SQL Formatter** - Beautify and minify SQL queries with dialect-aware formatting for PostgreSQL, MySQL, SQLite, T-SQL, PL/SQL, BigQuery, and more; keyword casing, indent style, and query spacing options
 - **PDF Merger & Splitter** - Combine multiple PDFs in any order, extract page ranges (`1-3, 5`), or split into chunks of N pages; powered by `pdf-lib`, fully offline, encrypted files detected and skipped
 - **Text Encoding Converter** - Convert pasted text or raw files between UTF-8 (with/without BOM), UTF-16 LE/BE (BOM), Windows-1252/Latin-1, and ASCII with replacement reporting, BOM auto-detection, and a hex preview of output bytes
 - **Binary save channel** - New `dialog:saveFileBinary` IPC handler writes base64 payloads through the native Save dialog (path-validated, file-type filters), extending the preload contract for document tools
