@@ -31,7 +31,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -46,13 +46,22 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build
+        if: matrix.os == 'ubuntu-latest'
+        run: npm run build:linux
+
+      - name: Build
+        if: matrix.os == 'windows-latest'
+        run: npm run build:win
+
+      - name: Build
+        if: matrix.os == 'macos-latest'
+        run: npm run build:mac
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-${{ matrix.os }}
-          path: out/
+          path: dist/
           retention-days: 7
 
   release:
@@ -69,11 +78,10 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
-      - name: Download build artifact
+      - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          name: build-ubuntu-latest
-          path: out/
+          path: artifacts/
 
       - name: Get version
         id: version
@@ -87,6 +95,6 @@ jobs:
           generate_release_notes: true
           draft: false
           prerelease: false
-          files: out/**/*
+          files: artifacts/**/*
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
