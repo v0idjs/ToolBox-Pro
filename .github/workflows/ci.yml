@@ -69,10 +69,11 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
-      - name: Download all artifacts
+      - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
-          path: artifacts/
+          name: build-ubuntu-latest
+          path: out/
 
       - name: Get version
         id: version
@@ -86,6 +87,6 @@ jobs:
           generate_release_notes: true
           draft: false
           prerelease: false
-          files: artifacts/**/*
+          files: out/**/*
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
